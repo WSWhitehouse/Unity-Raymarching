@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using WSWhitehouse.RayMarching.Enums;
-using WSWhitehouse.RayMarching.Util;
+using WSWhitehouse.Util;
 
 namespace WSWhitehouse.RayMarching
 {
     [ExecuteAlways, DisallowMultipleComponent]
-    public class Shape : MonoBehaviour
+    public class SDFShape : MonoBehaviour
     {
         [SerializeField] private ShapeType shapeType = ShapeType.Cube;
         public ShapeType ShapeType => shapeType;
@@ -18,17 +18,7 @@ namespace WSWhitehouse.RayMarching
 
         public Vector3 Position => transform.position;
 
-        public Vector3 Rotation
-        {
-            get
-            {
-                Vector3 eulerAngles = transform.rotation.eulerAngles;
-                float x = Util.Rotation.DegreesToRightAngles(eulerAngles.x);
-                float y = eulerAngles.y;
-                float z = eulerAngles.z;
-                return Util.Rotation.EulerAnglesToRadians(new Vector3(x, y, z));
-            }
-        }
+        public Vector3 Rotation => -Math.QuaternionToEulerAngles(transform.rotation);
 
 
         public Vector3 Scale
@@ -41,10 +31,10 @@ namespace WSWhitehouse.RayMarching
                 }
 
                 Vector3 parentScale = Vector3.one;
-                Shape parentShape = transform.parent.GetComponent<Shape>();
-                if (parentShape != null)
+                SDFShape parentSDFShape = transform.parent.GetComponent<SDFShape>();
+                if (parentSDFShape != null)
                 {
-                    parentScale = parentShape.Scale;
+                    parentScale = parentSDFShape.Scale;
                 }
 
                 return Vector3.Scale(transform.localScale, parentScale);

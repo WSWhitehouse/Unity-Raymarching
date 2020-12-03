@@ -11,12 +11,12 @@
               <e p="ShapeType.cs" t="Include" />
             </e>
             <e p="RayMarching.cs" t="Include" />
-            <e p="Shape.cs" t="Include" />
+            <e p="SDFShape.cs" t="Include" />
             <e p="Structs" t="Include">
               <e p="ShapeData.cs" t="Include" />
             </e>
             <e p="Util" t="Include">
-              <e p="Rotation.cs" t="Include" />
+              <e p="Math.cs" t="Include" />
             </e>
           </e>
           <e p="Shaders" t="Include">

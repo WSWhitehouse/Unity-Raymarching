@@ -20,7 +20,7 @@ namespace WSWhitehouse.RayMarching
         private RenderTexture _target;
 
         // Shape List
-        [SerializeField] private List<Shape> _shapes = new List<Shape>();
+        [SerializeField] private List<SDFShape> _shapes = new List<SDFShape>();
         public int NumOfShapes => _shapes.Count;
 
         private void Awake()
@@ -97,7 +97,7 @@ namespace WSWhitehouse.RayMarching
 
         private void InitSceneShapes()
         {
-            _shapes = FindObjectsOfType<Shape>().ToList();
+            _shapes = FindObjectsOfType<SDFShape>().ToList();
 
             _shapes.Sort((a, b) => a.Operation.CompareTo(b.Operation));
 
@@ -105,17 +105,17 @@ namespace WSWhitehouse.RayMarching
 
             for (int i = 0; i < NumOfShapes; i++)
             {
-                Shape shape = _shapes[i];
-                Vector3 colour = new Vector3(shape.Colour.r, shape.Colour.g, shape.Colour.b);
+                SDFShape sdfShape = _shapes[i];
+                Vector3 colour = new Vector3(sdfShape.Colour.r, sdfShape.Colour.g, sdfShape.Colour.b);
 
                 shapeData[i] = new ShapeData
                 {
-                    Position = shape.Position,
-                    Rotation = shape.Rotation,
-                    Scale = shape.Scale,
+                    Position = sdfShape.Position,
+                    Rotation = sdfShape.Rotation,
+                    Scale = sdfShape.Scale,
                     Colour = colour,
-                    ShapeType = (int) shape.ShapeType,
-                    Operation = (int) shape.Operation
+                    ShapeType = (int) sdfShape.ShapeType,
+                    Operation = (int) sdfShape.Operation
                 };
             }
 

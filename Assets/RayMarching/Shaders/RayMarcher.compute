@@ -34,26 +34,19 @@ struct Shape
 StructuredBuffer<Shape> Shapes;
 int NumShapes;
 
-// ROTATION
-float2x2 RotateAngle(float angle)
-{
-    float s = sin(angle);
-    float c = cos(angle);
-    return float2x2(c, -s, s, c);
-}
-
+/// ROTATION
 // https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
 float3x3 RotateMatrix(float3 rotation)
 {
-    // Heading
-    float ch = cos(rotation.y);
-    float sh = sin(rotation.y);
-    // Attitude
-    float ca = cos(rotation.z);
-    float sa = sin(rotation.z);
-    // Bank
+    // Bank (X Rot)
     float cb = cos(rotation.x);
     float sb = sin(rotation.x);
+    // Heading (Y Rot)
+    float ch = cos(rotation.y);
+    float sh = sin(rotation.y);
+    // Attitude (Z Rot)
+    float ca = cos(rotation.z);
+    float sa = sin(rotation.z);
 
     /* --------------------------- */
     /* Matrix row column ordering: */
@@ -81,17 +74,6 @@ float3x3 RotateMatrix(float3 rotation)
 float SDF_Cube(float3 origin, Shape shape)
 {
     float3 pos = shape.position;
-    float3 rot = shape.rotation;
-
-    pos = mul(RotateMatrix(rot), pos);
-    origin = mul(RotateMatrix(rot), origin);
-
-    // pos.yz = mul(RotateAngle(rot.x), pos.yz);
-    // pos.xz = mul(RotateAngle(rot.y), pos.xz);
-    // pos.xy = mul(RotateAngle(rot.z), pos.xy);
-    // origin.yz = mul(RotateAngle(rot.x), origin.yz);
-    // origin.xz = mul(RotateAngle(rot.y), origin.xz);
-    // origin.xy = mul(RotateAngle(rot.z), origin.xy);
     float3 scale = shape.scale;
 
     float3 o = abs(origin - pos) - scale;
@@ -101,6 +83,9 @@ float SDF_Cube(float3 origin, Shape shape)
 /// SHAPE DISTANCE
 float GetShapeDistance(float3 origin, Shape shape)
 {
+    shape.position = mul(RotateMatrix(shape.rotation), shape.position);
+    origin = mul(RotateMatrix(shape.rotation), origin);
+
     if (shape.shapeType == 0)
     {
         return SDF_Cube(origin, shape);

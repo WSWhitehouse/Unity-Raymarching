@@ -42,6 +42,38 @@ float2x2 RotateAngle(float angle)
     return float2x2(c, -s, s, c);
 }
 
+// https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
+float3x3 RotateMatrix(float3 rotation)
+{
+    // Heading
+    float ch = cos(rotation.y);
+    float sh = sin(rotation.y);
+    // Attitude
+    float ca = cos(rotation.z);
+    float sa = sin(rotation.z);
+    // Bank
+    float cb = cos(rotation.x);
+    float sb = sin(rotation.x);
+
+    /* --------------------------- */
+    /* Matrix row column ordering: */
+    /*   [m00 m01 m02]             */
+    /*   [m10 m11 m12]             */
+    /*   [m20 m21 m22]             */
+    /* --------------------------- */
+    float m00 = ch * ca;
+    float m01 = sh * sb - ch * sa * cb;
+    float m02 = ch * sa * sb + sh * cb;
+    float m10 = sa;
+    float m11 = ca * cb;
+    float m12 = -ca * sb;
+    float m20 = -sh * ca;
+    float m21 = sh * sa * cb + ch * sb;
+    float m22 = -sh * sa * sb + ch * cb;
+
+    return float3x3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+}
+
 /// DISTANCE FUNCTIONS
 // Following distance functions from 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
@@ -50,12 +82,16 @@ float SDF_Cube(float3 origin, Shape shape)
 {
     float3 pos = shape.position;
     float3 rot = shape.rotation;
-    pos.yz = mul(RotateAngle(rot.x), pos.yz);
-    pos.xz = mul(RotateAngle(rot.y), pos.xz);
-    pos.xy = mul(RotateAngle(rot.z), pos.xy);
-    origin.yz = mul(RotateAngle(rot.x), origin.yz);
-    origin.xz = mul(RotateAngle(rot.y), origin.xz);
-    origin.xy = mul(RotateAngle(rot.z), origin.xy);
+
+    pos = mul(RotateMatrix(rot), pos);
+    origin = mul(RotateMatrix(rot), origin);
+
+    // pos.yz = mul(RotateAngle(rot.x), pos.yz);
+    // pos.xz = mul(RotateAngle(rot.y), pos.xz);
+    // pos.xy = mul(RotateAngle(rot.z), pos.xy);
+    // origin.yz = mul(RotateAngle(rot.x), origin.yz);
+    // origin.xz = mul(RotateAngle(rot.y), origin.xz);
+    // origin.xy = mul(RotateAngle(rot.z), origin.xy);
     float3 scale = shape.scale;
 
     float3 o = abs(origin - pos) - scale;

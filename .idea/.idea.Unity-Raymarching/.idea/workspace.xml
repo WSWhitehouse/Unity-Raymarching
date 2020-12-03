@@ -20,6 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,9 +46,11 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.shader" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Matrix2x2.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Radians.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Rotation.cs" />
       </list>
     </option>
   </component>
@@ -97,6 +103,7 @@
       <updated>1606870617794</updated>
       <workItem from="1606870633040" duration="330000" />
       <workItem from="1606870995341" duration="8832000" />
+      <workItem from="1606955196527" duration="5702000" />
     </task>
     <servers />
   </component>

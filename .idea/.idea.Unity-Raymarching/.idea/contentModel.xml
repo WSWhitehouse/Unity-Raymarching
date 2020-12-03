@@ -15,6 +15,9 @@
             <e p="Structs" t="Include">
               <e p="ShapeData.cs" t="Include" />
             </e>
+            <e p="Util" t="Include">
+              <e p="Rotation.cs" t="Include" />
+            </e>
           </e>
           <e p="Shaders" t="Include">
             <e p="RayMarcher.compute" t="Include" />

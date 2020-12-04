@@ -20,14 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Math.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/ShapeType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/ShapeType.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Rotation.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Rotation.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Math.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Math.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Math.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
     </list>
@@ -40,25 +39,30 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/f0/5ee1463c/Mathf.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/cd/4ef5d2a6/Transform.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/a0/2ac5b04e/ExecuteAlways.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/54/d6301574/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/ShapeType.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/ShapeType.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/Operation.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.shader" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Matrix2x2.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Radians.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Rotation.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Shape.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/RotHelper.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/InspectorEulerAngles.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Math.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Matrix2x2.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/InspectorAngles.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/ShapeType.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
       </list>
     </option>
   </component>
@@ -112,7 +116,7 @@
       <workItem from="1606870633040" duration="330000" />
       <workItem from="1606870995341" duration="8832000" />
       <workItem from="1606955196527" duration="5702000" />
-      <workItem from="1607014197946" duration="2962000" />
+      <workItem from="1607014197946" duration="20323000" />
     </task>
     <servers />
   </component>
@@ -137,9 +141,13 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1606875057810">
+    <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog" timestamp="1607033221456">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1606875057810" />
+    <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1607033221456" />
+    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1607040704449">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1607040704449" />
   </component>
 </project>

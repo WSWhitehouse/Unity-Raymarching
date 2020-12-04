@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 namespace WSWhitehouse.Util
 {
     public static class Math
@@ -42,6 +41,18 @@ namespace WSWhitehouse.Util
             return x * y;
         }
 
+        public static float OppositeSign(float val)
+        {
+            float sign = Mathf.Sign(val);
+
+            if (sign > 0)
+            {
+                return Mathf.Abs(val);
+            }
+
+            return -Mathf.Abs(val);
+        }
+
         #endregion // MATH_FUNCTIONS
 
         #region ROTATIONS
@@ -74,25 +85,50 @@ namespace WSWhitehouse.Util
         /// </summary>
         /// <param name="q">Quaternion to convert</param>
         /// <returns>EulerAngles</returns>
+        /// http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
+        /// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
         public static Vector3 QuaternionToEulerAngles(Quaternion q)
         {
-            Vector3 angles;
+            q = q.normalized;
+            float x; // Bank
+            float y; // Heading
+            float z; // Attitude
 
-            // roll (x-axis rotation)
-            float xSinCosp = 2 * (q.w * q.x + q.y * q.z);
-            float xCosCosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+            float test = q.x * q.y + q.z * q.w;
+            if (test > 0.499)
+            {
+                // singularity at north pole
+                y = 2 * Mathf.Atan2(q.x, q.w);
+                z = Mathf.PI / 2;
+                x = 0;
+                return new Vector3(x, y, z);
+            }
 
-            // pitch (y-axis rotation)
-            float ySin = 2 * (q.w * q.y - q.z * q.x);
+            if (test < -0.499)
+            {
+                // singularity at south pole
+                y = -2 * Mathf.Atan2(q.x, q.w);
+                z = -Mathf.PI / 2;
+                x = 0;
+                return new Vector3(x, y, z);
+            }
 
-            // yaw (z-axis rotation)
-            float zSinCosp = 2 * (q.w * q.z + q.x * q.y);
-            float zCosCosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+            float sqx = q.x * q.x;
+            float sqy = q.y * q.y;
+            float sqz = q.z * q.z;
+            y = Mathf.Atan2(2 * q.y * q.w - 2 * q.x * q.z, 1 - 2 * sqy - 2 * sqz);
+            z = Mathf.Asin(2 * test);
+            x = Mathf.Atan2(2 * q.x * q.w - 2 * q.y * q.z, 1 - 2 * sqx - 2 * sqz);
+            return new Vector3(x, y, z);
+        }
 
-            angles.x = Mathf.Atan2(xSinCosp, xCosCosp);
-            angles.y = Mathf.Abs(ySin) >= 1 ? CopySign(Mathf.PI / 2, ySin) : Mathf.Asin(ySin);
-            angles.z = Mathf.Atan2(zSinCosp, zCosCosp);
-            return angles;
+        public static Vector3 QuaternionToOppositeEulerAngles(Quaternion q)
+        {
+            Vector3 eulerAngles = QuaternionToEulerAngles(q);
+            eulerAngles.x = OppositeSign(eulerAngles.x);
+            eulerAngles.y = OppositeSign(eulerAngles.y);
+            eulerAngles.z = OppositeSign(eulerAngles.z);
+            return eulerAngles;
         }
 
         #endregion // ROTATIONS

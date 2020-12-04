@@ -28,11 +28,22 @@ struct Shape
     float3 scale;
     float3 colour;
     int shapeType;
+    float marchingStepAmount;
     int operation;
+    float blendStrength;
+    float roundness;
+    int numOfChildren;
 };
 
 StructuredBuffer<Shape> Shapes;
 int NumShapes;
+
+/// HELPER FUNCTIONS
+float min(float3 a)
+{
+    float val = min(a.x, a.y);
+    return min(val, a.z);
+}
 
 /// ROTATION
 // https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
@@ -71,27 +82,51 @@ float3x3 RotateMatrix(float3 rotation)
 // Following distance functions from 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 
-float SDF_Cube(float3 origin, Shape shape)
+float SdfCube(float3 origin, Shape shape)
 {
     float3 pos = shape.position;
     float3 scale = shape.scale;
-
+    
     float3 o = abs(origin - pos) - scale;
     return length(max(o, 0.0)) + min(max(o.x, max(o.y, o.z)), 0.0);
 }
 
+float SdfSphere(float3 origin, Shape shape)
+{
+    float3 pos = shape.position;
+    float radius = min(shape.scale);
+
+    return distance(origin, pos) - radius;
+}
+
 /// SHAPE DISTANCE
-float GetShapeDistance(float3 origin, Shape shape)
+void PrepSdfShape(inout float3 origin, inout Shape shape)
 {
     shape.position = mul(RotateMatrix(shape.rotation), shape.position);
     origin = mul(RotateMatrix(shape.rotation), origin);
+    shape.scale -= shape.roundness;
+}
+
+float SdfShape(float dst, Shape shape)
+{
+    return (dst - shape.roundness) / shape.marchingStepAmount;
+}
+
+float GetShapeDistance(float3 origin, Shape shape)
+{
+    PrepSdfShape(origin, shape);
 
     if (shape.shapeType == 0)
     {
-        return SDF_Cube(origin, shape);
+        return SdfShape(SdfCube(origin, shape), shape);
     }
 
-    return maxDst;
+    if (shape.shapeType == 1)
+    {
+        return SdfSphere(origin, shape) - shape.roundness;
+    }
+
+    return maxDst - shape.roundness;
 }
 
 /// RAY
@@ -121,10 +156,10 @@ Ray CreateCameraRay(float2 uv)
 /// OPERATIONS
 // polynomial smooth min (k = 0.1);
 // from https://www.iquilezles.org/www/articles/smin/smin.htm
-float4 Blend(float a, float b, float3 colA, float3 colB, float k)
+float4 Blend(float a, float b, float3 colA, float3 colB, float blendStrength)
 {
-    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
-    float blendDst = lerp(b, a, h) - k * h * (1.0 - h);
+    float h = clamp(0.5 + 0.5 * (b - a) / blendStrength, 0.0, 1.0);
+    float blendDst = lerp(b, a, h) - blendStrength * h * (1.0 - h);
     float3 blendCol = lerp(colB, colA, h);
     return float4(blendCol, blendDst);
 }
@@ -181,11 +216,27 @@ float4 SceneInfo(float3 origin)
     for (int i = 0; i < NumShapes; i ++)
     {
         Shape shape = Shapes[i];
+        int numChildren = shape.numOfChildren;
+
         float localDst = GetShapeDistance(origin, shape);
         float3 localColour = shape.colour;
 
+
+        for (int j = 0; j < numChildren; j ++)
+        {
+            Shape childShape = Shapes[i + j + 1];
+            float childDst = GetShapeDistance(origin, childShape);
+
+            float4 combined = Combine(localDst, childDst, localColour, childShape.colour, childShape.operation,
+                                      childShape.blendStrength);
+            localColour = combined.xyz;
+            localDst = combined.w;
+        }
+
+        i += numChildren; // skip over children in outer loop
+
         float4 globalCombined = Combine(globalDst, localDst, globalColour, localColour, shape.operation,
-                                        1);
+                                        shape.blendStrength);
         globalColour = globalCombined.xyz;
         globalDst = globalCombined.w;
     }

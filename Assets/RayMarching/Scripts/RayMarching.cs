@@ -101,11 +101,28 @@ namespace WSWhitehouse.RayMarching
 
             _shapes.Sort((a, b) => a.Operation.CompareTo(b.Operation));
 
+            List<SDFShape> orderedShapes = new List<SDFShape>();
+
+            foreach (SDFShape shape in _shapes)
+            {
+                if (shape.transform.parent != null)
+                {
+                    //orderedShapes.Add(shape);
+                    continue;
+                }
+
+                Transform parentShape = shape.transform;
+                orderedShapes.Add(shape);
+                shape.NumOfChildren = parentShape.childCount;
+
+                SortChildShapes(parentShape, ref orderedShapes);
+            }
+
             ShapeData[] shapeData = new ShapeData[NumOfShapes];
 
             for (int i = 0; i < NumOfShapes; i++)
             {
-                SDFShape sdfShape = _shapes[i];
+                SDFShape sdfShape = orderedShapes[i];
                 Vector3 colour = new Vector3(sdfShape.Colour.r, sdfShape.Colour.g, sdfShape.Colour.b);
 
                 shapeData[i] = new ShapeData
@@ -115,7 +132,11 @@ namespace WSWhitehouse.RayMarching
                     Scale = sdfShape.Scale,
                     Colour = colour,
                     ShapeType = (int) sdfShape.ShapeType,
-                    Operation = (int) sdfShape.Operation
+                    MarchingStepAmount = sdfShape.MarchingStepAmount,
+                    Operation = (int) sdfShape.Operation,
+                    Roundness = sdfShape.Roundness,
+                    BlendStrength = sdfShape.BlendStrength,
+                    NumOfChildren = sdfShape.NumOfChildren
                 };
             }
 
@@ -126,6 +147,26 @@ namespace WSWhitehouse.RayMarching
             rayMarchingShader.SetInt("NumShapes", NumOfShapes);
 
             _computeBuffer.Add(shapeBuffer);
+        }
+
+        private static void SortChildShapes(Transform parentShape, ref List<SDFShape> orderedShapes)
+        {
+            for (int j = 0; j < parentShape.childCount; j++)
+            {
+                SDFShape childShape = parentShape.GetChild(j).GetComponent<SDFShape>();
+
+                // Sort Nested Child Shapes
+                if (childShape.transform.childCount > 0)
+                {
+                    // Currently not working
+                    //SortChildShapes(childShape.transform, ref orderedShapes);
+                }
+
+                if (childShape == null) continue;
+
+                orderedShapes.Add(childShape);
+                orderedShapes[orderedShapes.Count - 1].NumOfChildren = 0;
+            }
         }
     }
 }

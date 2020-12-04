@@ -16,7 +16,9 @@
               <e p="ShapeData.cs" t="Include" />
             </e>
             <e p="Util" t="Include">
+              <e p="InspectorAngles.cs" t="Include" />
               <e p="Math.cs" t="Include" />
+              <e p="Matrix2x2.cs" t="Include" />
             </e>
           </e>
           <e p="Shaders" t="Include">

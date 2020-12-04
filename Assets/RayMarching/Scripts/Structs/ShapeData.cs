@@ -12,11 +12,17 @@ namespace WSWhitehouse.RayMarching.Structs
         // Object Properties
         public Vector3 Colour;
         public int ShapeType;
+        
+        // Operation
+        public float MarchingStepAmount;
         public int Operation;
-
+        public float BlendStrength;
+        public float Roundness;
+        public int NumOfChildren;
+        
         public static int GetSize()
         {
-            return (sizeof(float) * 12) + (sizeof(int) * 2);
+            return (sizeof(float) * 15) + (sizeof(int) * 3);
         }
     }
 }

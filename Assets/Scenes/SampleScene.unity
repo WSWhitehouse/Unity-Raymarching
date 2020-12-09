@@ -375,7 +375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rayMarchingShader: {fileID: 7200000, guid: 75bbe5c2268f3ac408fcc00e33bf5209, type: 3}
   mainLight: {fileID: 705507994}
-  _shapes: []
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,10 +434,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shapeType: 0
   colour: {r: 1, g: 0, b: 0, a: 1}
+  texture: {fileID: 0}
   marchingStepAmount: 1
   operation: 0
   blendStrength: 1
-  roundness: 0
+  roundness: 0.364
 --- !u!65 &1024845403
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -508,10 +508,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1024845401}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.31665275, y: -0.41594422, z: -0.28715557, w: 0.80266005}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -48.349, y: -46.977, z: -17.293}

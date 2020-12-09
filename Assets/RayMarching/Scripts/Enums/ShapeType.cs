@@ -3,6 +3,8 @@
     public enum ShapeType
     {
         Cube = 0,
-        Sphere = 1
+        BoundingBox = 1,
+        Sphere = 2,
+        Torus = 3
     }
 }

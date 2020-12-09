@@ -20,7 +20,7 @@ namespace WSWhitehouse.RayMarching
         private RenderTexture _target;
 
         // Shape List
-        [SerializeField] private List<SDFShape> _shapes = new List<SDFShape>();
+        private List<SDFShape> _shapes = new List<SDFShape>();
         public int NumOfShapes => _shapes.Count;
 
         private void Awake()

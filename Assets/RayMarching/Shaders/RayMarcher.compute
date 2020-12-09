@@ -1,146 +1,146 @@
 ﻿#pragma kernel CSMain
 
-/// RENDER VARIABLES
+// INCLUDES
+#include "WSWMath.cginc"
+#include "InterpolationF.cginc"
+
+// CONST VARIABLES
+static const float MAX_DST = 80;
+static const float EPSILON = 0.001f;
+static const float SHADOW_BIAS = EPSILON * 50;
+
+// RENDER VARIABLES
 Texture2D<float4> Source;
 RWTexture2D<float4> Destination;
 
-/// CAMERA VARIABLES
+// CAMERA VARIABLES
 float4x4 _CameraToWorld;
 float4x4 _CameraInverseProjection;
 
-/// LIGHT VARIABLES
+// LIGHT VARIABLES
 float3 _Light;
 bool _PositionLight;
 
-/// CONST VARIABLES
-static const float maxDst = 80;
-static const float epsilon = 0.001f;
-static const float shadowBias = epsilon * 50;
-
-/// TIME VARIABLES
+// TIME VARIABLES
 float _Time;
 
-/// SHAPE VARIABLES
+// SHAPE VARIABLES
 struct Shape
 {
-    float3 position;
-    float3 rotation;
-    float3 scale;
-    float3 colour;
-    int shapeType;
-    float marchingStepAmount;
-    int operation;
-    float blendStrength;
-    float roundness;
-    int numOfChildren;
+    float3 Position;
+    float3 Rotation;
+    float3 Scale;
+    float3 Colour;
+    int ShapeType;
+    float MarchingStepAmount;
+    int Operation;
+    float BlendStrength;
+    float Roundness;
+    int NumOfChildren;
 };
 
 StructuredBuffer<Shape> Shapes;
 int NumShapes;
 
-/// HELPER FUNCTIONS
-float min(float3 a)
-{
-    float val = min(a.x, a.y);
-    return min(val, a.z);
-}
-
-/// ROTATION
-// https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
-float3x3 RotateMatrix(float3 rotation)
-{
-    // Bank (X Rot)
-    float cb = cos(rotation.x);
-    float sb = sin(rotation.x);
-    // Heading (Y Rot)
-    float ch = cos(rotation.y);
-    float sh = sin(rotation.y);
-    // Attitude (Z Rot)
-    float ca = cos(rotation.z);
-    float sa = sin(rotation.z);
-
-    /* --------------------------- */
-    /* Matrix row column ordering: */
-    /*   [m00 m01 m02]             */
-    /*   [m10 m11 m12]             */
-    /*   [m20 m21 m22]             */
-    /* --------------------------- */
-    float m00 = ch * ca;
-    float m01 = sh * sb - ch * sa * cb;
-    float m02 = ch * sa * sb + sh * cb;
-    float m10 = sa;
-    float m11 = ca * cb;
-    float m12 = -ca * sb;
-    float m20 = -sh * ca;
-    float m21 = sh * sa * cb + ch * sb;
-    float m22 = -sh * sa * sb + ch * cb;
-
-    return float3x3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
-}
-
-/// DISTANCE FUNCTIONS
+// DISTANCE FUNCTIONS
 // Following distance functions from 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 
-float SdfCube(float3 origin, Shape shape)
+float SdfBox(float3 origin, Shape shape)
 {
-    float3 pos = shape.position;
-    float3 scale = shape.scale;
-    
+    float3 pos = shape.Position;
+    float3 scale = shape.Scale;
+
     float3 o = abs(origin - pos) - scale;
     return length(max(o, 0.0)) + min(max(o.x, max(o.y, o.z)), 0.0);
 }
 
+float SdfBoundingBox(float3 origin, Shape shape)
+{
+    float thickness = min(shape.Scale);
+    float3 pos = shape.Position - origin - float3(shape.Scale.x, shape.Scale.y, shape.Scale.z);
+    float3 q = abs(pos + thickness) - thickness;
+    return min(min(
+                   length(max(float3(pos.x, q.y, q.z), 0.0f)) + min(max(pos.x, max(q.y, q.z)), 0.0),
+                   length(max(float3(q.x, pos.y, q.z), 0.0f)) + min(max(q.x, max(pos.y, q.z)), 0.0)),
+               length(max(float3(q.x, q.y, pos.z), 0.0f)) + min(max(q.x, max(q.y, pos.z)), 0.0));
+}
+
 float SdfSphere(float3 origin, Shape shape)
 {
-    float3 pos = shape.position;
-    float radius = min(shape.scale);
+    float3 pos = shape.Position;
+    float radius = min(shape.Scale);
 
     return distance(origin, pos) - radius;
 }
 
-/// SHAPE DISTANCE
+float SdfTorus(float3 origin, Shape shape)
+{
+    float3 pos = shape.Position;
+    float3 scale = shape.Scale;
+    float sizeX = scale.x;
+    float sizeY = scale.y;
+
+    float2 q = float2(length((origin - pos).xz) - sizeX, origin.y - pos.y);
+    return length(q) - sizeY;
+}
+
+// SHAPE DISTANCE
 void PrepSdfShape(inout float3 origin, inout Shape shape)
 {
-    shape.position = mul(RotateMatrix(shape.rotation), shape.position);
-    origin = mul(RotateMatrix(shape.rotation), origin);
-    shape.scale -= shape.roundness;
+    shape.Position = mul(RotateMatrix(shape.Rotation), shape.Position);
+    origin = mul(RotateMatrix(shape.Rotation), origin);
+    shape.Scale -= shape.Roundness;
 }
 
 float SdfShape(float dst, Shape shape)
 {
-    return (dst - shape.roundness) / shape.marchingStepAmount;
+    return (dst - shape.Roundness) / shape.MarchingStepAmount;
 }
 
 float GetShapeDistance(float3 origin, Shape shape)
 {
     PrepSdfShape(origin, shape);
 
-    if (shape.shapeType == 0)
+    // float shapeA = SdfShape(SdfBox(origin, shape), shape);
+    // float shapeB = SdfShape(SdfTorus(origin, shape), shape);
+    // return Lerp(shapeA, shapeB, sin(_Time) * 0.5 + 0.5);
+
+    if (shape.ShapeType == 0) // Box
     {
-        return SdfShape(SdfCube(origin, shape), shape);
+        return SdfShape(SdfBox(origin, shape), shape);
     }
 
-    if (shape.shapeType == 1)
+    if (shape.ShapeType == 1) // Bounding Box
     {
-        return SdfSphere(origin, shape) - shape.roundness;
+        return SdfShape(SdfBoundingBox(origin, shape), shape);
     }
 
-    return maxDst - shape.roundness;
+    if (shape.ShapeType == 2) // Sphere
+    {
+        return SdfShape(SdfSphere(origin, shape), shape);
+    }
+
+    if (shape.ShapeType == 3) // Torus
+    {
+        return SdfShape(SdfTorus(origin, shape), shape);
+    }
+
+    return MAX_DST - shape.Roundness;
 }
 
-/// RAY
+// RAY
 struct Ray
 {
-    float3 origin;
-    float3 direction;
+    float3 Origin;
+    float3 Direction;
 };
 
 Ray CreateRay(float3 origin, float3 direction)
 {
     Ray ray;
-    ray.origin = origin;
-    ray.direction = direction;
+    ray.Origin = origin;
+    ray.Direction = direction;
     return ray;
 }
 
@@ -153,7 +153,7 @@ Ray CreateCameraRay(float2 uv)
     return CreateRay(origin, direction);
 }
 
-/// OPERATIONS
+// OPERATIONS
 // polynomial smooth min (k = 0.1);
 // from https://www.iquilezles.org/www/articles/smin/smin.htm
 float4 Blend(float a, float b, float3 colA, float3 colB, float blendStrength)
@@ -177,15 +177,13 @@ float4 Combine(float dstA, float dstB, float3 colourA, float3 colourB, int opera
             colour = colourB;
         }
     }
-        // Blend
-    else if (operation == 1)
+    else if (operation == 1) // Blend
     {
         float4 blend = Blend(dstA, dstB, colourA, colourB, blendStrength);
         dst = blend.w;
         colour = blend.xyz;
     }
-        // Cut
-    else if (operation == 2)
+    else if (operation == 2) // Cut
     {
         // max(a,-b)
         if (-dstB > dst)
@@ -194,8 +192,7 @@ float4 Combine(float dstA, float dstB, float3 colourA, float3 colourB, int opera
             colour = colourB;
         }
     }
-        // Mask
-    else if (operation == 3)
+    else if (operation == 3) // Mask
     {
         // max(a,b)
         if (dstB > dst)
@@ -210,16 +207,16 @@ float4 Combine(float dstA, float dstB, float3 colourA, float3 colourB, int opera
 
 float4 SceneInfo(float3 origin)
 {
-    float globalDst = maxDst;
+    float globalDst = MAX_DST;
     float3 globalColour = 1;
 
     for (int i = 0; i < NumShapes; i ++)
     {
         Shape shape = Shapes[i];
-        int numChildren = shape.numOfChildren;
+        int numChildren = shape.NumOfChildren;
 
         float localDst = GetShapeDistance(origin, shape);
-        float3 localColour = shape.colour;
+        float3 localColour = shape.Colour;
 
 
         for (int j = 0; j < numChildren; j ++)
@@ -227,16 +224,16 @@ float4 SceneInfo(float3 origin)
             Shape childShape = Shapes[i + j + 1];
             float childDst = GetShapeDistance(origin, childShape);
 
-            float4 combined = Combine(localDst, childDst, localColour, childShape.colour, childShape.operation,
-                                      childShape.blendStrength);
+            float4 combined = Combine(localDst, childDst, localColour, childShape.Colour, childShape.Operation,
+                                      childShape.BlendStrength);
             localColour = combined.xyz;
             localDst = combined.w;
         }
 
         i += numChildren; // skip over children in outer loop
 
-        float4 globalCombined = Combine(globalDst, localDst, globalColour, localColour, shape.operation,
-                                        shape.blendStrength);
+        float4 globalCombined = Combine(globalDst, localDst, globalColour, localColour, shape.Operation,
+                                        shape.BlendStrength);
         globalColour = globalCombined.xyz;
         globalDst = globalCombined.w;
     }
@@ -246,9 +243,9 @@ float4 SceneInfo(float3 origin)
 
 float3 EstimateNormal(float3 pos)
 {
-    float x = SceneInfo(float3(pos.x + epsilon, pos.y, pos.z)).w - SceneInfo(float3(pos.x - epsilon, pos.y, pos.z)).w;
-    float y = SceneInfo(float3(pos.x, pos.y + epsilon, pos.z)).w - SceneInfo(float3(pos.x, pos.y - epsilon, pos.z)).w;
-    float z = SceneInfo(float3(pos.x, pos.y, pos.z + epsilon)).w - SceneInfo(float3(pos.x, pos.y, pos.z - epsilon)).w;
+    float x = SceneInfo(float3(pos.x + EPSILON, pos.y, pos.z)).w - SceneInfo(float3(pos.x - EPSILON, pos.y, pos.z)).w;
+    float y = SceneInfo(float3(pos.x, pos.y + EPSILON, pos.z)).w - SceneInfo(float3(pos.x, pos.y - EPSILON, pos.z)).w;
+    float z = SceneInfo(float3(pos.x, pos.y, pos.z + EPSILON)).w - SceneInfo(float3(pos.x, pos.y, pos.z - EPSILON)).w;
     return normalize(float3(x, y, z));
 }
 
@@ -262,17 +259,17 @@ float CalculateShadow(Ray ray, float dstToShadePoint)
     while (rayDst < dstToShadePoint)
     {
         marchSteps ++;
-        float4 sceneInfo = SceneInfo(ray.origin);
+        float4 sceneInfo = SceneInfo(ray.Origin);
         float dst = sceneInfo.w;
 
-        if (dst <= epsilon)
+        if (dst <= EPSILON)
         {
             return shadowIntensity;
         }
 
         brightness = min(brightness, dst * 200);
 
-        ray.origin += ray.direction * dst;
+        ray.Origin += ray.Direction * dst;
         rayDst += dst;
     }
     return shadowIntensity + (1 - shadowIntensity) * brightness;
@@ -293,28 +290,28 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     Ray ray = CreateCameraRay(uv);
     int marchSteps = 0;
 
-    while (rayDst < maxDst)
+    while (rayDst < MAX_DST)
     {
         marchSteps ++;
-        float4 sceneInfo = SceneInfo(ray.origin);
+        float4 sceneInfo = SceneInfo(ray.Origin);
         float dst = sceneInfo.w;
 
-        if (dst <= epsilon)
+        if (dst <= EPSILON)
         {
-            float3 pointOnSurface = ray.origin + ray.direction * dst;
-            float3 normal = EstimateNormal(pointOnSurface - ray.direction * epsilon);
-            float3 lightDir = _PositionLight ? normalize(_Light - ray.origin) : -_Light;
+            float3 pointOnSurface = ray.Origin + ray.Direction * dst;
+            float3 normal = EstimateNormal(pointOnSurface - ray.Direction * EPSILON);
+            float3 lightDir = _PositionLight ? normalize(_Light - ray.Origin) : -_Light;
             float lighting = saturate(saturate(dot(normal, lightDir)));
             float3 col = sceneInfo.xyz;
 
             // Shadow
-            float3 offsetPos = pointOnSurface + normal * shadowBias;
+            float3 offsetPos = pointOnSurface + normal * SHADOW_BIAS;
             float3 dirToLight = _PositionLight ? normalize(_Light - offsetPos) : -_Light;
 
-            ray.origin = offsetPos;
-            ray.direction = dirToLight;
+            ray.Origin = offsetPos;
+            ray.Direction = dirToLight;
 
-            float dstToLight = _PositionLight ? distance(offsetPos, _Light) : maxDst;
+            float dstToLight = _PositionLight ? distance(offsetPos, _Light) : MAX_DST;
             float shadow = CalculateShadow(ray, dstToLight);
 
             Destination[id.xy] = float4(col * lighting * shadow, 1);
@@ -322,7 +319,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             break;
         }
 
-        ray.origin += ray.direction * dst;
+        ray.Origin += ray.Direction * dst;
         rayDst += dst;
     }
 }

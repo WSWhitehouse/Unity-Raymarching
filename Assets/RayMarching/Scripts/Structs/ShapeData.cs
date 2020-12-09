@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
 namespace WSWhitehouse.RayMarching.Structs
 {
@@ -12,17 +13,32 @@ namespace WSWhitehouse.RayMarching.Structs
         // Object Properties
         public Vector3 Colour;
         public int ShapeType;
-        
+
         // Operation
         public float MarchingStepAmount;
         public int Operation;
         public float BlendStrength;
         public float Roundness;
         public int NumOfChildren;
-        
+
         public static int GetSize()
         {
+            unsafe
+            {
+                return GetSizeUnsafe();
+            }
+
+            return GetSizeSafe();
+        }
+
+        private static int GetSizeSafe()
+        {
             return (sizeof(float) * 15) + (sizeof(int) * 3);
+        }
+        
+        private static int GetSizeUnsafe()
+        {
+            return UnsafeUtility.SizeOf<ShapeData>();
         }
     }
 }

@@ -8,6 +8,9 @@ namespace WSWhitehouse.RayMarching
 {
     public class FlyCamera : MonoBehaviour
     {
+        // File adapted from:
+        // https://gist.github.com/McFunkypants/5a9dad582461cb8d9de3
+        
         // Movement
         [SerializeField, Tooltip("Regular Movement Speed")]
         private float movementSpeed = 50.0f;

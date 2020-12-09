@@ -53,6 +53,24 @@ namespace WSWhitehouse.Util
             return -Mathf.Abs(val);
         }
 
+        public static Vector3 Clamp(Vector3 value, float min, float max)
+        {
+            Vector3 v;
+            v.x = Mathf.Clamp(value.x, min, max);
+            v.y = Mathf.Clamp(value.y, min, max);
+            v.z = Mathf.Clamp(value.z, min, max);
+            return v;
+        }
+        
+        public static Vector3 Clamp(Vector3 value, Vector3 min, Vector3 max)
+        {
+            Vector3 v;
+            v.x = Mathf.Clamp(value.x, min.x, max.x);
+            v.y = Mathf.Clamp(value.y, min.y, max.y);
+            v.z = Mathf.Clamp(value.z, min.z, max.z);
+            return v;
+        }
+
         #endregion // MATH_FUNCTIONS
 
         #region ROTATIONS

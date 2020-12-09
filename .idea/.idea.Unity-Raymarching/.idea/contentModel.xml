@@ -10,6 +10,7 @@
               <e p="Operation.cs" t="Include" />
               <e p="ShapeType.cs" t="Include" />
             </e>
+            <e p="FlyCamera.cs" t="Include" />
             <e p="RayMarching.cs" t="Include" />
             <e p="SDFShape.cs" t="Include" />
             <e p="Structs" t="Include">

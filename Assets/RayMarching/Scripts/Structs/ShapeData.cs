@@ -13,6 +13,7 @@ namespace WSWhitehouse.RayMarching.Structs
         // Object Properties
         public Vector3 Colour;
         public int ShapeType;
+        public Vector3 Modifier;
 
         // Operation
         public float MarchingStepAmount;
@@ -33,7 +34,7 @@ namespace WSWhitehouse.RayMarching.Structs
 
         private static int GetSizeSafe()
         {
-            return (sizeof(float) * 15) + (sizeof(int) * 3);
+            return (sizeof(float) * 18) + (sizeof(int) * 3);
         }
         
         private static int GetSizeUnsafe()

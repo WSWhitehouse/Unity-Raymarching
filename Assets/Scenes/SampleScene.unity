@@ -432,13 +432,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c430bf2212d0c3d4bae37e5e26049e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shapeType: 0
+  shapeType: 1
+  modifier: {x: 0.25, y: 0, z: 0}
   colour: {r: 1, g: 0, b: 0, a: 1}
-  texture: {fileID: 0}
   marchingStepAmount: 1
   operation: 0
   blendStrength: 1
-  roundness: 0.364
+  roundness: 0
 --- !u!65 &1024845403
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -459,7 +459,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1024845401}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -508,10 +508,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1024845401}
-  m_LocalRotation: {x: -0.31665275, y: -0.41594422, z: -0.28715557, w: 0.80266005}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.043, y: 0, z: 0.037}
+  m_LocalScale: {x: 1, y: 1.25, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -48.349, y: -46.977, z: -17.293}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

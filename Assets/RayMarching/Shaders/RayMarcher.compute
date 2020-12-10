@@ -32,6 +32,7 @@ struct Shape
     float3 Scale;
     float3 Colour;
     int ShapeType;
+    float3 Modifier;
     float MarchingStepAmount;
     int Operation;
     float BlendStrength;
@@ -55,15 +56,71 @@ float SdfBox(float3 origin, Shape shape)
     return length(max(o, 0.0)) + min(max(o.x, max(o.y, o.z)), 0.0);
 }
 
+static const int arraySize = 12;
+float edges[arraySize];
+
 float SdfBoundingBox(float3 origin, Shape shape)
 {
-    float thickness = min(shape.Scale);
-    float3 pos = shape.Position - origin - float3(shape.Scale.x, shape.Scale.y, shape.Scale.z);
-    float3 q = abs(pos + thickness) - thickness;
-    return min(min(
-                   length(max(float3(pos.x, q.y, q.z), 0.0f)) + min(max(pos.x, max(q.y, q.z)), 0.0),
-                   length(max(float3(q.x, pos.y, q.z), 0.0f)) + min(max(q.x, max(pos.y, q.z)), 0.0)),
-               length(max(float3(q.x, q.y, pos.z), 0.0f)) + min(max(q.x, max(q.y, pos.z)), 0.0));
+    float minScale = min(shape.Scale);
+    float maxThickness = minScale / 2.0f;
+    float thickness = shape.Modifier.x * maxThickness;
+    float3 center = shape.Position;
+    float3 edgePos = float3(shape.Scale.x - thickness, shape.Scale.y - thickness, shape.Scale.z - thickness);
+
+    float3 edge = abs(origin - center + float3(edgePos.x, edgePos.y, 0)) // XY
+        - float3(thickness, thickness, shape.Scale.z);
+    edges[0] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(edgePos.x, 0, edgePos.z)) // XZ
+        - float3(thickness, shape.Scale.y, thickness);
+    edges[1] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(0, edgePos.y, edgePos.z)) // YZ
+        - float3(shape.Scale.x, thickness, thickness);
+    edges[2] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(-edgePos.x, -edgePos.y, 0)) // -X-Y
+        - float3(thickness, thickness, shape.Scale.z);
+    edges[3] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(-edgePos.x, 0, -edgePos.z)) // -X-Z
+        - float3(thickness, shape.Scale.y, thickness);
+    edges[4] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(0, -edgePos.y, -edgePos.z)) // -Y-Z
+        - float3(shape.Scale.x, thickness, thickness);
+    edges[5] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(-edgePos.x, edgePos.y, 0)) // -XY
+        - float3(thickness, thickness, shape.Scale.z);
+    edges[6] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(-edgePos.x, 0, edgePos.z)) // -XZ
+        - float3(thickness, shape.Scale.y, thickness);
+    edges[7] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(edgePos.x, -edgePos.y, 0)) // X-Y
+        - float3(thickness, thickness, shape.Scale.z);
+    edges[8] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(edgePos.x, 0, -edgePos.z)) // X-Z
+        - float3(thickness, shape.Scale.y, thickness);
+    edges[9] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(0, -edgePos.y, edgePos.z)) // -YZ
+        - float3(shape.Scale.x, thickness, thickness);
+    edges[10] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    edge = abs(origin - center + float3(0, edgePos.y, -edgePos.z)) // Y-Z
+        - float3(shape.Scale.x, thickness, thickness);
+    edges[11] = length(max(edge, 0.0)) + min(max(edge.x, max(edge.y, edge.z)), 0.0);
+
+    float dst = edges[0];
+    for (int i = 1; i < arraySize; i++)
+    {
+        dst = min(dst, edges[i]);
+    }
+    return dst;
 }
 
 float SdfSphere(float3 origin, Shape shape)
@@ -77,12 +134,14 @@ float SdfSphere(float3 origin, Shape shape)
 float SdfTorus(float3 origin, Shape shape)
 {
     float3 pos = shape.Position;
-    float3 scale = shape.Scale;
-    float sizeX = scale.x;
-    float sizeY = scale.y;
+    float minScale = min(shape.Scale);
+    float maxThickness = minScale / 2.0f;
+    float modifier = shape.Modifier.x * maxThickness;
+    //float modifier = shape.Modifier.x;
+    float size = min(shape.Scale.x, shape.Scale.z)-modifier;
 
-    float2 q = float2(length((origin - pos).xz) - sizeX, origin.y - pos.y);
-    return length(q) - sizeY;
+    float2 q = float2(length((origin - pos).xz) - size, origin.y - pos.y);
+    return length(q) - modifier;
 }
 
 // SHAPE DISTANCE

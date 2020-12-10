@@ -132,6 +132,7 @@ namespace WSWhitehouse.RayMarching
                     Scale = sdfShape.Scale,
                     Colour = colour,
                     ShapeType = (int) sdfShape.ShapeType,
+                    Modifier = sdfShape.Modifier,
                     MarchingStepAmount = sdfShape.MarchingStepAmount,
                     Operation = (int) sdfShape.Operation,
                     Roundness = sdfShape.Roundness,

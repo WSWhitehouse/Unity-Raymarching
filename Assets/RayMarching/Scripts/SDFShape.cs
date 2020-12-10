@@ -35,6 +35,14 @@ namespace WSWhitehouse.RayMarching
         [SerializeField] private ShapeType shapeType = ShapeType.Cube;
         public ShapeType ShapeType => shapeType;
 
+        [SerializeField] private Vector3 modifier = Vector3.zero;
+        public Vector3 Modifier
+        {
+            get => modifier;
+            set => modifier = value;
+        }
+        
+
         [SerializeField] private Color colour = Color.white;
         public Color Colour => colour;
 
@@ -64,5 +72,7 @@ namespace WSWhitehouse.RayMarching
 
 
         public int NumOfChildren { get; set; }
+
+
     }
 }

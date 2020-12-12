@@ -2,6 +2,12 @@
 
 This project is heavily adapted from [Sebastian League's Ray Marching](https://github.com/SebLague/Ray-Marching) project.
 
+## Software
+
+This project was developed using the following software:
+- Unity 2020.1.13f
+- JetBrians Rider 2020.2.4
+
 ## Compatibility
 
 - Tested on Unity 2020.1

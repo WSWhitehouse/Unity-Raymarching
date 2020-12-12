@@ -32,4 +32,4 @@ This project is heavily adapted from [Sebastian League's Ray Marching](https://g
 
 ## License
 
-This project is under the MIT License. Read the [LICENSE.md] file for more information.
+This project is under the MIT License. Read the [LICENSE.md](./LICENSE.md) file for more information.

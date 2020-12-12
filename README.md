@@ -8,7 +8,7 @@ This project is heavily adapted from [Sebastian League's Ray Marching](https://g
 
 ## Sources
 
-Here is a list of sources I used when creating and expanding this project:
+Here is a list of sources I used when developing this project:
 
 - [Inigo Quilez:](https://www.youtube.com/c/InigoQuilez)
   - https://iquilezles.org/www/articles/distfunctions/distfunctions.htm

@@ -8,14 +8,16 @@ This project is heavily adapted from [Sebastian League's Ray Marching](https://g
 
 ## Sources
 
+Here is a list of sources I used when creating and expanding this project:
+
+- [Inigo Quilez:](https://www.youtube.com/c/InigoQuilez)
+  - https://iquilezles.org/www/articles/distfunctions/distfunctions.htm
+  - https://www.shadertoy.com/user/iq
 - Other GitHub Projects:
   - https://github.com/SebLague/Ray-Marching
   - https://github.com/IRCSS/UnityRaymarching/tree/master/Assets
   - https://github.com/electricsquare/raymarching-workshop
   - https://github.com/hecomi/uRaymarchingExamples
-- [Inigo Quilez:](https://www.youtube.com/c/InigoQuilez)
-  - https://iquilezles.org/www/articles/distfunctions/distfunctions.htm
-  - https://www.shadertoy.com/user/iq
 - [The Art of Code:](https://www.youtube.com/c/TheArtofCodeIsCool/featured)
   - https://www.shadertoy.com/user/BigWIngs
   - https://www.youtube.com/watch?v=S8AWd66hoCo

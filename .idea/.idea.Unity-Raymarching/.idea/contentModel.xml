@@ -8,6 +8,7 @@
             <e p="Enums" t="Include">
               <e p="Operation.cs" t="Include" />
               <e p="ShapeType.cs" t="Include" />
+              <e p="WaveDirection.cs" t="Include" />
             </e>
             <e p="FlyCamera.cs" t="Include" />
             <e p="RayMarching.cs" t="Include" />
@@ -19,6 +20,7 @@
               <e p="InspectorAngles.cs" t="Include" />
               <e p="Math.cs" t="Include" />
               <e p="Matrix2x2.cs" t="Include" />
+              <e p="WaveDirectionVector.cs" t="Include" />
             </e>
           </e>
           <e p="Shaders" t="Include">

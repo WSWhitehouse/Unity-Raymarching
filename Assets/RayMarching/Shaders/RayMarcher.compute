@@ -27,16 +27,31 @@ float _Time;
 // SHAPE VARIABLES
 struct Shape
 {
+    // Translation
     float3 Position;
     float3 Rotation;
     float3 Scale;
+
+    // Object Properties
     float3 Colour;
     int ShapeType;
     float3 Modifier;
+
+    // RayMarch
     float MarchingStepAmount;
     int Operation;
     float BlendStrength;
     float Roundness;
+    float WallThickness;
+
+    // Sine Wave
+    int EnableSineWave;
+    float3 SineWaveDirection;
+    float SineWaveFreq;
+    float SineWaveSpeed;
+    float SineWaveAmp;
+
+    // Num of Children
     int NumOfChildren;
 };
 
@@ -137,8 +152,7 @@ float SdfTorus(float3 origin, Shape shape)
     float minScale = min(shape.Scale);
     float maxThickness = minScale / 2.0f;
     float modifier = shape.Modifier.x * maxThickness;
-    //float modifier = shape.Modifier.x;
-    float size = min(shape.Scale.x, shape.Scale.z)-modifier;
+    float size = min(shape.Scale.x, shape.Scale.z) - modifier;
 
     float2 q = float2(length((origin - pos).xz) - size, origin.y - pos.y);
     return length(q) - modifier;
@@ -152,9 +166,55 @@ void PrepSdfShape(inout float3 origin, inout Shape shape)
     shape.Scale -= shape.Roundness;
 }
 
-float SdfShape(float dst, Shape shape)
+float SineWave(float3 origin, Shape shape)
 {
-    return (dst - shape.Roundness) / shape.MarchingStepAmount;
+    if (shape.EnableSineWave == 1)
+    {
+        float direction = 0;
+
+        if (shape.SineWaveDirection.x == 1)
+        {
+            direction += origin.x;
+        }
+        else if (shape.SineWaveDirection.x == -1)
+        {
+            direction -= origin.x;
+        }
+
+        if (shape.SineWaveDirection.y == 1)
+        {
+            direction += origin.y;
+        }
+        else if (shape.SineWaveDirection.y == -1)
+        {
+            direction -= origin.y;
+        }
+
+        if (shape.SineWaveDirection.z == 1)
+        {
+            direction += origin.z;
+        }
+        else if (shape.SineWaveDirection.z == -1)
+        {
+            direction -= origin.z;
+        }
+
+        return sin(direction * shape.SineWaveFreq +
+            (_Time * shape.SineWaveSpeed)) * shape.SineWaveAmp;
+    }
+
+    return 0;
+}
+
+float SdfShape(float dst, float3 origin, Shape shape)
+{
+    return (abs(dst - shape.Roundness + shape.WallThickness) - shape.WallThickness -
+        SineWave(origin, shape)) / shape.MarchingStepAmount;
+}
+
+float3 RepeatFinite(in float3 p, in float c, in float3 l)
+{
+    return p - c * clamp(round(p / c), -l, l);
 }
 
 float GetShapeDistance(float3 origin, Shape shape)
@@ -162,30 +222,41 @@ float GetShapeDistance(float3 origin, Shape shape)
     PrepSdfShape(origin, shape);
 
     // float shapeA = SdfShape(SdfBox(origin, shape), shape);
-    // float shapeB = SdfShape(SdfTorus(origin, shape), shape);
+    // float shapeB = SdfShape(SdfSphere(origin, shape), shape);
     // return Lerp(shapeA, shapeB, sin(_Time) * 0.5 + 0.5);
+
+    float dst = MAX_DST;
+
+    // origin = Twist(origin, float3(10,15,20));
+    //origin = RepeatFinite(origin, 3, float3(2, 2, 2));
 
     if (shape.ShapeType == 0) // Box
     {
-        return SdfShape(SdfBox(origin, shape), shape);
+        dst = SdfBox(origin, shape);
+        //return SdfShape(SdfBox(origin, shape), shape);
     }
 
     if (shape.ShapeType == 1) // Bounding Box
     {
-        return SdfShape(SdfBoundingBox(origin, shape), shape);
+        dst = SdfBoundingBox(origin, shape);
+        //return SdfShape(SdfBoundingBox(origin, shape), shape);
     }
 
     if (shape.ShapeType == 2) // Sphere
     {
-        return SdfShape(SdfSphere(origin, shape), shape);
+        dst = SdfSphere(origin, shape);
+        //return SdfShape(SdfSphere(origin, shape), shape);
     }
 
     if (shape.ShapeType == 3) // Torus
     {
-        return SdfShape(SdfTorus(origin, shape), shape);
+        dst = SdfTorus(origin, shape);
+        //return SdfShape(SdfTorus(origin, shape), shape);
     }
 
-    return MAX_DST - shape.Roundness;
+
+    return SdfShape(dst, origin, shape);
+    //return MAX_DST;
 }
 
 // RAY

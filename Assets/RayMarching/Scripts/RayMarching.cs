@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using WSWhitehouse.RayMarching.Structs;
+using WSWhitehouse.RayMarching;
 
 namespace WSWhitehouse.RayMarching
 {
@@ -127,16 +127,31 @@ namespace WSWhitehouse.RayMarching
 
                 shapeData[i] = new ShapeData
                 {
+                    // Translation
                     Position = sdfShape.Position,
                     Rotation = sdfShape.Rotation,
                     Scale = sdfShape.Scale,
+                    
+                    // Object Properties
                     Colour = colour,
                     ShapeType = (int) sdfShape.ShapeType,
                     Modifier = sdfShape.Modifier,
+                    
+                    // RayMarch
                     MarchingStepAmount = sdfShape.MarchingStepAmount,
                     Operation = (int) sdfShape.Operation,
-                    Roundness = sdfShape.Roundness,
                     BlendStrength = sdfShape.BlendStrength,
+                    Roundness = sdfShape.Roundness,
+                    WallThickness = sdfShape.WallThickness,
+                    
+                    // Sine Wave
+                    EnableSineWave = sdfShape.EnableSineWave ? 1 : 0,
+                    SineWaveDirection = sdfShape.SineWaveDirection,
+                    SineWaveFreq = sdfShape.SineWaveFrequency,
+                    SineWaveSpeed = sdfShape.SineWaveSpeed,
+                    SineWaveAmp = sdfShape.SineWaveAmplitude,
+                    
+                    // Num of Children
                     NumOfChildren = sdfShape.NumOfChildren
                 };
             }

@@ -20,6 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" afterDir="false" />
@@ -65,10 +66,14 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/InterpolationF.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/ShapeType.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/WSWMath.cginc" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/WaveDirection.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/WaveDirection.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/WaveDirectionVector.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/WaveDirectionVector.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/WSWMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
       </list>
     </option>
@@ -90,7 +95,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C++" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C#" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
@@ -126,6 +131,8 @@
       <workItem from="1606955196527" duration="5702000" />
       <workItem from="1607014197946" duration="20323000" />
       <workItem from="1607531436808" duration="24640000" />
+      <workItem from="1607595586718" duration="2639000" />
+      <workItem from="1607720754827" duration="12440000" />
     </task>
     <servers />
   </component>
@@ -150,17 +157,17 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="361" y="344" key="SettingsEditor" timestamp="1607541402915">
+    <state x="361" y="344" key="SettingsEditor" timestamp="1607727836445">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="361" y="344" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1607541402915" />
+    <state x="361" y="344" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1607727836445" />
     <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog" timestamp="1607033221456">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1607033221456" />
-    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1607040704449">
+    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1607730086708">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1607040704449" />
+    <state x="303" y="320" width="672" height="678" key="search.everywhere.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1607730086708" />
   </component>
 </project>

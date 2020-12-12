@@ -1,6 +1,4 @@
 ﻿#ifndef WSW_MATH_CGINC
-// Upgrade NOTE: excluded shader from DX11, OpenGL ES 2.0 because it uses unsized arrays
-#pragma exclude_renderers d3d11 gles
 #define WSW_MATH_CGINC
 
 // DEFINES
@@ -108,6 +106,8 @@ inline float3 Twist(float3 pos, float3 power)
     pos = TwistX(pos, power.x);
     pos = TwistY(pos, power.y);
     pos = TwistZ(pos, power.z);
+
+    return pos;
 }
 
 #endif

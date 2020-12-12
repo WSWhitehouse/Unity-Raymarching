@@ -1,7 +1,7 @@
 ﻿using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
-namespace WSWhitehouse.RayMarching.Structs
+namespace WSWhitehouse.RayMarching
 {
     public struct ShapeData
     {
@@ -15,11 +15,21 @@ namespace WSWhitehouse.RayMarching.Structs
         public int ShapeType;
         public Vector3 Modifier;
 
-        // Operation
+        // RayMarch
         public float MarchingStepAmount;
         public int Operation;
         public float BlendStrength;
         public float Roundness;
+        public float WallThickness;
+        
+        // Sine Wave
+        public int EnableSineWave;
+        public Vector3 SineWaveDirection;
+        public float SineWaveFreq;
+        public float SineWaveSpeed;
+        public float SineWaveAmp;
+        
+        // Num of Children
         public int NumOfChildren;
 
         public static int GetSize()
@@ -29,13 +39,13 @@ namespace WSWhitehouse.RayMarching.Structs
                 return GetSizeUnsafe();
             }
 
-            return GetSizeSafe();
+            //return GetSizeSafe();
         }
 
-        private static int GetSizeSafe()
-        {
-            return (sizeof(float) * 18) + (sizeof(int) * 3);
-        }
+        // private static int GetSizeSafe()
+        // {
+        //     return (sizeof(float) * 26) + (sizeof(int) * 3);
+        // }
         
         private static int GetSizeUnsafe()
         {

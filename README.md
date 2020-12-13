@@ -12,7 +12,7 @@ This project was developed using the following software:
 
 - Tested on Unity 2020.1
 
-## Sources
+## Sources & Useful Resources
 
 Here is a list of sources I used when developing this project:
 

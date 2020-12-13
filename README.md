@@ -37,6 +37,7 @@ Here is a list of sources I used when developing this project:
   - https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
   - https://gist.github.com/mattatz/86fff4b32d198d0928d0fa4ff32cf6fa
   - https://catlikecoding.com/unity/tutorials/rendering/part-1/
+  - https://ntrs.nasa.gov/citations/19770019231
 
 ## License
 

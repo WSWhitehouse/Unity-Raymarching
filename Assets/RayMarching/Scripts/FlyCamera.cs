@@ -218,6 +218,7 @@ namespace WSWhitehouse.RayMarching
             if (_keycodeDropdown)
             {
                 EditorGUI.indentLevel++;
+                EditorGUILayout.BeginVertical("box");
                 EditorGUILayout.PropertyField(_moveForward);
                 EditorGUILayout.PropertyField(_moveBackward);
                 EditorGUILayout.PropertyField(_moveLeft);
@@ -227,6 +228,7 @@ namespace WSWhitehouse.RayMarching
                 EditorGUILayout.PropertyField(_moveOnXZAxis);
                 EditorGUILayout.PropertyField(_fasterModifier);
                 EditorGUILayout.PropertyField(_buttonHeldToMove);
+                EditorGUILayout.EndVertical();
                 EditorGUI.indentLevel--;
             }
 

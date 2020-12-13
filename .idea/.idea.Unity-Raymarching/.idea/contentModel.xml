@@ -6,6 +6,7 @@
         <e p="RayMarching" t="Include">
           <e p="Scripts" t="Include">
             <e p="Enums" t="Include">
+              <e p="ColourType.cs" t="Include" />
               <e p="Operation.cs" t="Include" />
               <e p="ShapeType.cs" t="Include" />
               <e p="WaveDirection.cs" t="Include" />
@@ -26,7 +27,7 @@
           <e p="Shaders" t="Include">
             <e p="InterpolationF.cginc" t="Include" />
             <e p="RayMarcher.compute" t="Include" />
-            <e p="WSWMath.cginc" t="Include" />
+            <e p="RayMarchingMath.cginc" t="Include" />
           </e>
           <e p="WSW.Raymarching.asmdef" t="Include" />
         </e>

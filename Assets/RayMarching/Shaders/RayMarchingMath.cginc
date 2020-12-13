@@ -1,5 +1,5 @@
-﻿#ifndef WSW_MATH_CGINC
-#define WSW_MATH_CGINC
+﻿#ifndef RAY_MARCHING_MATH_CGINC
+#define RAY_MARCHING_MATH_CGINC
 
 // DEFINES
 #define PI 3.14159265358979
@@ -108,6 +108,27 @@ inline float3 Twist(float3 pos, float3 power)
     pos = TwistZ(pos, power.z);
 
     return pos;
+}
+
+// REPEAT
+float3 RepeatFinite(in float3 p, in float c, in float3 l)
+{
+    return p - c * clamp(round(p / c), -l, l);
+}
+
+inline float Repeat(float pos, float span)
+{
+    return mod(pos, span) - span * 0.5;
+}
+
+inline float2 Repeat(float2 pos, float2 span)
+{
+    return mod(pos, span) - span * 0.5;
+}
+
+inline float3 Repeat(float3 pos, float3 span)
+{
+    return mod(pos, span) - span * 0.5;
 }
 
 #endif

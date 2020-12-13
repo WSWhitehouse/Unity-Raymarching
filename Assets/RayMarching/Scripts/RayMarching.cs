@@ -1,13 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using WSWhitehouse.RayMarching;
+using WSWhitehouse.RayMarching.Enums;
+#if UNITY_EDITOR
+using UnityEditor;
+
+#endif
 
 namespace WSWhitehouse.RayMarching
 {
-    [ImageEffectAllowedInSceneView, RequireComponent(typeof(Camera)), ExecuteAlways, DisallowMultipleComponent]
+    [ImageEffectAllowedInSceneView, RequireComponent(typeof(Camera)),
+     ExecuteAlways, DisallowMultipleComponent]
     public class RayMarching : MonoBehaviour
     {
+        #region VARIABLES
+
         // Shader
         [SerializeField] private ComputeShader rayMarchingShader;
         private List<ComputeBuffer> _computeBuffer = new List<ComputeBuffer>();
@@ -16,12 +24,35 @@ namespace WSWhitehouse.RayMarching
         [SerializeField] private Light mainLight;
         private Camera _camera;
 
+        // Background
+        [SerializeField] private bool enableSkyBoxCol = false;
+
+        public bool EnableSkyBoxCol
+        {
+            get => enableSkyBoxCol;
+            set => enableSkyBoxCol = value;
+        }
+
+        [SerializeField] private ColourType skyBoxType = ColourType.Gradient;
+
+        public ColourType SkyBoxType
+        {
+            get => skyBoxType;
+            set => skyBoxType = value;
+        }
+
+        [SerializeField] private Color skyBoxCol = new Color(0.2f, 0.0117647059f, 0.0784313725f, 1);
+        [SerializeField] private Color skyBoxTopCol = new Color(0.2f, 0.0117647059f, 0.0784313725f, 1);
+        [SerializeField] private Color skyBoxBottomCol = new Color(0.0627450980f, 0.0235294118f, 0.1098039216f, 1);
+
         // Private Variables
         private RenderTexture _target;
 
         // Shape List
-        private List<SDFShape> _shapes = new List<SDFShape>();
-        public int NumOfShapes => _shapes.Count;
+        public List<SDFShape> Shapes { get; private set; } = new List<SDFShape>();
+        public int NumOfShapes => Shapes.Count;
+
+        #endregion VARIABLES
 
         private void Awake()
         {
@@ -30,7 +61,7 @@ namespace WSWhitehouse.RayMarching
 
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            if (rayMarchingShader == null || _camera == null || mainLight == null)
+            if (rayMarchingShader == null || mainLight == null)
             {
                 Graphics.Blit(src, dest);
                 return;
@@ -93,30 +124,57 @@ namespace WSWhitehouse.RayMarching
 
             // Time
             rayMarchingShader.SetFloat("_Time", Application.isPlaying ? Time.time : Time.realtimeSinceStartup);
+
+            // Background
+            int bgType;
+
+            switch (SkyBoxType)
+            {
+                case ColourType.Colour:
+                    bgType = 1;
+                    break;
+                case ColourType.Gradient:
+                    bgType = 2;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            rayMarchingShader.SetInt("_EnableSkyBoxCol", EnableSkyBoxCol ? bgType : 0);
+            rayMarchingShader.SetVector("_SkyBoxCol", skyBoxCol);
+            rayMarchingShader.SetVector("_SkyBoxTopCol", skyBoxTopCol);
+            rayMarchingShader.SetVector("_SkyBoxBottomCol", skyBoxBottomCol);
+        }
+
+        private void FindShapesInScene()
+        {
+            Shapes = FindObjectsOfType<SDFShape>().ToList();
+            Shapes.Sort((a, b) => a.Operation.CompareTo(b.Operation));
         }
 
         private void InitSceneShapes()
         {
-            _shapes = FindObjectsOfType<SDFShape>().ToList();
-
-            _shapes.Sort((a, b) => a.Operation.CompareTo(b.Operation));
+            FindShapesInScene();
 
             List<SDFShape> orderedShapes = new List<SDFShape>();
 
-            foreach (SDFShape shape in _shapes)
+            foreach (SDFShape shape in Shapes)
             {
-                if (shape.transform.parent != null)
-                {
-                    //orderedShapes.Add(shape);
-                    continue;
-                }
+                if (shape.transform.parent != null) continue;
 
                 Transform parentShape = shape.transform;
                 orderedShapes.Add(shape);
                 shape.NumOfChildren = parentShape.childCount;
 
-                SortChildShapes(parentShape, ref orderedShapes);
+                for (int j = 0; j < parentShape.childCount; j++)
+                {
+                    if (parentShape.GetChild(j).GetComponent<SDFShape>() == null) continue;
+
+                    orderedShapes.Add(parentShape.GetChild(j).GetComponent<SDFShape>());
+                    orderedShapes[orderedShapes.Count - 1].NumOfChildren = 0;
+                }
             }
+
 
             ShapeData[] shapeData = new ShapeData[NumOfShapes];
 
@@ -131,26 +189,26 @@ namespace WSWhitehouse.RayMarching
                     Position = sdfShape.Position,
                     Rotation = sdfShape.Rotation,
                     Scale = sdfShape.Scale,
-                    
+
                     // Object Properties
                     Colour = colour,
                     ShapeType = (int) sdfShape.ShapeType,
                     Modifier = sdfShape.Modifier,
-                    
+                    Roundness = sdfShape.Roundness,
+                    WallThickness = sdfShape.WallThickness,
+
                     // RayMarch
                     MarchingStepAmount = sdfShape.MarchingStepAmount,
                     Operation = (int) sdfShape.Operation,
                     BlendStrength = sdfShape.BlendStrength,
-                    Roundness = sdfShape.Roundness,
-                    WallThickness = sdfShape.WallThickness,
-                    
+
                     // Sine Wave
                     EnableSineWave = sdfShape.EnableSineWave ? 1 : 0,
                     SineWaveDirection = sdfShape.SineWaveDirection,
                     SineWaveFreq = sdfShape.SineWaveFrequency,
                     SineWaveSpeed = sdfShape.SineWaveSpeed,
                     SineWaveAmp = sdfShape.SineWaveAmplitude,
-                    
+
                     // Num of Children
                     NumOfChildren = sdfShape.NumOfChildren
                 };
@@ -164,25 +222,106 @@ namespace WSWhitehouse.RayMarching
 
             _computeBuffer.Add(shapeBuffer);
         }
+    }
 
-        private static void SortChildShapes(Transform parentShape, ref List<SDFShape> orderedShapes)
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(RayMarching))]
+    public class RayMarchingEditor : Editor
+    {
+        // Target
+        private RayMarching _rayMarching;
+
+        // Serialized Properties
+        private SerializedProperty _rayMarchingShader;
+        private SerializedProperty _mainLight;
+        private SerializedProperty _skyBoxCol;
+        private SerializedProperty _skyBoxTopCol;
+        private SerializedProperty _skyBoxBottomCol;
+
+        // Dropdown
+        private static bool _backgroundPropertiesDropdown = false;
+
+        private void OnEnable()
         {
-            for (int j = 0; j < parentShape.childCount; j++)
-            {
-                SDFShape childShape = parentShape.GetChild(j).GetComponent<SDFShape>();
+            // Target
+            _rayMarching = (RayMarching) target;
 
-                // Sort Nested Child Shapes
-                if (childShape.transform.childCount > 0)
+            // Serialized Properties
+            _rayMarchingShader = serializedObject.FindProperty("rayMarchingShader");
+            _mainLight = serializedObject.FindProperty("mainLight");
+            _skyBoxCol = serializedObject.FindProperty("skyBoxCol");
+            _skyBoxTopCol = serializedObject.FindProperty("skyBoxTopCol");
+            _skyBoxBottomCol = serializedObject.FindProperty("skyBoxCol");
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            EditorGUILayout.LabelField("Shader", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_rayMarchingShader);
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Components", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_mainLight);
+            EditorGUILayout.Space();
+            DrawBackgroundProperties();
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawBackgroundProperties()
+        {
+            _backgroundPropertiesDropdown = EditorGUILayout.BeginFoldoutHeaderGroup(_backgroundPropertiesDropdown,
+                "Background");
+
+            if (_backgroundPropertiesDropdown)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginVertical("box");
+                
+                string buttonText = _rayMarching.EnableSkyBoxCol
+                    ? "Disable Custom Sky Box"
+                    : "Enable Custom Sky Box";
+
+                if (GUILayout.Button(buttonText))
                 {
-                    // Currently not working
-                    //SortChildShapes(childShape.transform, ref orderedShapes);
+                    _rayMarching.EnableSkyBoxCol = !_rayMarching.EnableSkyBoxCol;
                 }
 
-                if (childShape == null) continue;
+                if (_rayMarching.EnableSkyBoxCol)
+                {
+                    EditorGUILayout.LabelField("Sky Box Properties", EditorStyles.boldLabel);
+                    _rayMarching.SkyBoxType =
+                        (ColourType) EditorGUILayout.EnumPopup("Sky Box Type", _rayMarching.SkyBoxType);
 
-                orderedShapes.Add(childShape);
-                orderedShapes[orderedShapes.Count - 1].NumOfChildren = 0;
+                    switch (_rayMarching.SkyBoxType)
+                    {
+                        case ColourType.Colour:
+                        {
+                            EditorGUILayout.PropertyField(_skyBoxCol);
+                            break;
+                        }
+                        case ColourType.Gradient:
+                        {
+                            EditorGUILayout.PropertyField(_skyBoxTopCol);
+                            EditorGUILayout.PropertyField(_skyBoxBottomCol);
+                            break;
+                        }
+                        default:
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                EditorGUILayout.EndVertical();
+                EditorGUI.indentLevel--;
             }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
         }
     }
+
+#endif
 }

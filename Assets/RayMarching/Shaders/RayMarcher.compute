@@ -1,7 +1,7 @@
 ﻿#pragma kernel CSMain
 
 // INCLUDES
-#include "WSWMath.cginc"
+#include "RayMarchingMath.cginc"
 #include "InterpolationF.cginc"
 
 // CONST VARIABLES
@@ -16,6 +16,12 @@ RWTexture2D<float4> Destination;
 // CAMERA VARIABLES
 float4x4 _CameraToWorld;
 float4x4 _CameraInverseProjection;
+
+// BACKGROUND COLOUR
+int _EnableSkyBoxCol;
+float4 _SkyBoxCol;
+float4 _SkyBoxTopCol;
+float4 _SkyBoxBottomCol;
 
 // LIGHT VARIABLES
 float3 _Light;
@@ -36,13 +42,13 @@ struct Shape
     float3 Colour;
     int ShapeType;
     float3 Modifier;
+    float Roundness;
+    float WallThickness;
 
     // RayMarch
     float MarchingStepAmount;
     int Operation;
     float BlendStrength;
-    float Roundness;
-    float WallThickness;
 
     // Sine Wave
     int EnableSineWave;
@@ -158,14 +164,84 @@ float SdfTorus(float3 origin, Shape shape)
     return length(q) - modifier;
 }
 
-// SHAPE DISTANCE
-void PrepSdfShape(inout float3 origin, inout Shape shape)
+float SdfMandelBulb(float3 origin, Shape shape)
 {
-    shape.Position = mul(RotateMatrix(shape.Rotation), shape.Position);
-    origin = mul(RotateMatrix(shape.Rotation), origin);
-    shape.Scale -= shape.Roundness;
+    float3 pos = origin - shape.Position;
+    float3 z = pos;
+    float dr = 1.0;
+    float r = 0.0;
+    int iterations = 15;
+    float power = 15;
+
+    for (int i = 0; i < iterations; i++)
+    {
+        r = length(z);
+
+        if (r > 2)
+        {
+            break;
+        }
+
+        // convert to polar coordinates
+        float theta = acos(z.z / r);
+        float phi = atan2(z.y, z.x);
+        dr = pow(r, power - 1.0) * power * dr + 1.0;
+
+        // scale and rotate the point
+        float zr = pow(r, power);
+        theta = theta * power;
+        phi = phi * power;
+
+        // convert back to cartesian coordinates
+        z = zr * float3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
+        z += pos;
+    }
+
+    float dst = 0.5 * log(r) * r / dr;
+    return dst;
 }
 
+// float SdfFractalTetrahedron(float3 origin, Shape shape)
+// {
+//     float3 pos = Repeat((origin - shape.Position), 1.0);
+//
+//     const float3 a1 = float3(1.0, 1.0, 1.0);
+//     const float3 a2 = float3(-1.0, -1.0, 1.0);
+//     const float3 a3 = float3(1.0, -1.0, -1.0);
+//     const float3 a4 = float3(-1.0, 1.0, -1.0);
+//
+//    const float scale = 2.0f;//min(shape.Scale);
+//     float d;
+//     int n = 0;
+//     for (n = 0; n < 7; ++n)
+//     {
+//         float3 c = a1;
+//         float minDist = length(pos - a1);
+//         d = length(pos - a2);
+//         if (d < minDist)
+//         {
+//             c = a2;
+//             minDist = d;
+//         }
+//         d = length(pos - a3);
+//         if (d < minDist)
+//         {
+//             c = a3;
+//             minDist = d;
+//         }
+//         d = length(pos - a4);
+//         if (d < minDist)
+//         {
+//             c = a4;
+//             minDist = d;
+//         }
+//         pos = scale * pos - c * (scale - 1.0);
+//     }
+//
+//     return length(pos) * pow(scale, float(-n));
+// }
+
+// SHAPE PREP
 float SineWave(float3 origin, Shape shape)
 {
     if (shape.EnableSineWave == 1)
@@ -212,11 +288,14 @@ float SdfShape(float dst, float3 origin, Shape shape)
         SineWave(origin, shape)) / shape.MarchingStepAmount;
 }
 
-float3 RepeatFinite(in float3 p, in float c, in float3 l)
+void PrepSdfShape(inout float3 origin, inout Shape shape)
 {
-    return p - c * clamp(round(p / c), -l, l);
+    shape.Position = mul(RotateMatrix(shape.Rotation), shape.Position);
+    origin = mul(RotateMatrix(shape.Rotation), origin);
+    shape.Scale -= shape.Roundness;
 }
 
+// SHAPE DISTANCE
 float GetShapeDistance(float3 origin, Shape shape)
 {
     PrepSdfShape(origin, shape);
@@ -225,38 +304,32 @@ float GetShapeDistance(float3 origin, Shape shape)
     // float shapeB = SdfShape(SdfSphere(origin, shape), shape);
     // return Lerp(shapeA, shapeB, sin(_Time) * 0.5 + 0.5);
 
-    float dst = MAX_DST;
-
     // origin = Twist(origin, float3(10,15,20));
     //origin = RepeatFinite(origin, 3, float3(2, 2, 2));
 
+    //return SdfShape(SdfMandelBulb(origin, shape), origin, shape);
+
     if (shape.ShapeType == 0) // Box
     {
-        dst = SdfBox(origin, shape);
-        //return SdfShape(SdfBox(origin, shape), shape);
+        return SdfShape(SdfBox(origin, shape), origin, shape);
     }
 
     if (shape.ShapeType == 1) // Bounding Box
     {
-        dst = SdfBoundingBox(origin, shape);
-        //return SdfShape(SdfBoundingBox(origin, shape), shape);
+        return SdfShape(SdfBoundingBox(origin, shape), origin, shape);
     }
 
     if (shape.ShapeType == 2) // Sphere
     {
-        dst = SdfSphere(origin, shape);
-        //return SdfShape(SdfSphere(origin, shape), shape);
+        return SdfShape(SdfSphere(origin, shape), origin, shape);
     }
 
     if (shape.ShapeType == 3) // Torus
     {
-        dst = SdfTorus(origin, shape);
-        //return SdfShape(SdfTorus(origin, shape), shape);
+        return SdfShape(SdfTorus(origin, shape), origin, shape);
     }
 
-
-    return SdfShape(dst, origin, shape);
-    //return MAX_DST;
+    return MAX_DST;
 }
 
 // RAY
@@ -354,16 +427,16 @@ float4 SceneInfo(float3 origin)
             Shape childShape = Shapes[i + j + 1];
             float childDst = GetShapeDistance(origin, childShape);
 
-            float4 combined = Combine(localDst, childDst, localColour, childShape.Colour, childShape.Operation,
-                                      childShape.BlendStrength);
+            float4 combined = Combine(localDst, childDst, localColour,
+                                      childShape.Colour, childShape.Operation, childShape.BlendStrength);
             localColour = combined.xyz;
             localDst = combined.w;
         }
 
         i += numChildren; // skip over children in outer loop
 
-        float4 globalCombined = Combine(globalDst, localDst, globalColour, localColour, shape.Operation,
-                                        shape.BlendStrength);
+        float4 globalCombined = Combine(globalDst, localDst, globalColour,
+                                        localColour, shape.Operation, shape.BlendStrength);
         globalColour = globalCombined.xyz;
         globalDst = globalCombined.w;
     }
@@ -415,9 +488,10 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     Destination[id.xy] = Source[id.xy];
 
     float2 uv = id.xy / float2(width, height) * 2 - 1;
-    float rayDst = 0;
 
+    // Ray Marching
     Ray ray = CreateCameraRay(uv);
+    float rayDst = 0;
     int marchSteps = 0;
 
     while (rayDst < MAX_DST)
@@ -447,6 +521,16 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             Destination[id.xy] = float4(col * lighting * shadow, 1);
 
             break;
+        }
+
+        if (_EnableSkyBoxCol == 1)
+        {
+            Destination[id.xy] = float4(_SkyBoxCol.rgb, 1);
+        }
+        else if (_EnableSkyBoxCol == 2)
+        {
+            Destination[id.xy] = float4(lerp(_SkyBoxTopCol.rgb, _SkyBoxBottomCol.rgb,
+                                             uv.y), 1);
         }
 
         ray.Origin += ray.Direction * dst;

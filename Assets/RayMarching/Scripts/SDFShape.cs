@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using WSWhitehouse.RayMarching.Enums;
 using Math = WSWhitehouse.Util.Math;
 #if UNITY_EDITOR
@@ -70,7 +69,7 @@ namespace WSWhitehouse.RayMarching
             set => roundness = Mathf.Clamp(value, 0f, 1f);
         }
 
-        [SerializeField] private bool hollow;
+        [SerializeField] private bool hollow = false;
 
         public bool Hollow
         {
@@ -176,14 +175,13 @@ namespace WSWhitehouse.RayMarching
         // Object Properties
         private SerializedProperty _shapeType;
         private SerializedProperty _colour;
+        private SerializedProperty _roundness;
+        private SerializedProperty _wallThickness;
 
         // RayMarch
         private SerializedProperty _marchingStepAmount;
         private SerializedProperty _operation;
         private SerializedProperty _blendStrength;
-        private SerializedProperty _roundness;
-        private SerializedProperty _hollow;
-        private SerializedProperty _wallThickness;
 
         // Sine Wave
         private SerializedProperty _sineWaveFreq;
@@ -191,9 +189,9 @@ namespace WSWhitehouse.RayMarching
         private SerializedProperty _sineWaveAmplitude;
 
         // Dropdowns
-        private bool _objectPropertiesDropdown = false;
-        private bool _rayMarchDropdown = false;
-        private bool _sineWaveDropdown = false;
+        private static bool _objectPropertiesDropdown = false;
+        private static bool _rayMarchDropdown = false;
+        private static bool _sineWaveDropdown = false;
 
         #endregion VARIABLES
 
@@ -207,7 +205,6 @@ namespace WSWhitehouse.RayMarching
             _shapeType = serializedObject.FindProperty("shapeType");
             _colour = serializedObject.FindProperty("colour");
             _roundness = serializedObject.FindProperty("roundness");
-            _hollow = serializedObject.FindProperty("hollow");
             _wallThickness = serializedObject.FindProperty("wallThickness");
 
             // RayMarch
@@ -240,6 +237,7 @@ namespace WSWhitehouse.RayMarching
             if (_objectPropertiesDropdown)
             {
                 EditorGUI.indentLevel++;
+                EditorGUILayout.BeginVertical("box");
 
                 EditorGUILayout.PropertyField(_shapeType);
                 EditorGUILayout.PropertyField(_colour);
@@ -289,6 +287,7 @@ namespace WSWhitehouse.RayMarching
                     EditorGUILayout.PropertyField(_wallThickness);
                 }
 
+                EditorGUILayout.EndVertical();
                 EditorGUI.indentLevel--;
             }
 
@@ -303,6 +302,7 @@ namespace WSWhitehouse.RayMarching
             if (_rayMarchDropdown)
             {
                 EditorGUI.indentLevel++;
+                EditorGUILayout.BeginVertical("box");
 
                 EditorGUILayout.PropertyField(_marchingStepAmount);
                 EditorGUILayout.Space();
@@ -313,6 +313,7 @@ namespace WSWhitehouse.RayMarching
                     EditorGUILayout.PropertyField(_blendStrength);
                 }
 
+                EditorGUILayout.EndVertical();
                 EditorGUI.indentLevel--;
             }
 
@@ -327,6 +328,7 @@ namespace WSWhitehouse.RayMarching
             if (_sineWaveDropdown)
             {
                 EditorGUI.indentLevel++;
+                EditorGUILayout.BeginVertical("box");
 
                 string buttonText = !_sdfShape.EnableSineWave ? "Enable a Sine Wave" : "Disable a Sine Wave";
 
@@ -361,9 +363,11 @@ namespace WSWhitehouse.RayMarching
                     EditorGUILayout.PropertyField(_sineWaveSpeed);
                     EditorGUILayout.PropertyField(_sineWaveAmplitude);
 
+
                     EditorGUI.indentLevel--;
                 }
 
+                EditorGUILayout.EndVertical();
                 EditorGUI.indentLevel--;
             }
 

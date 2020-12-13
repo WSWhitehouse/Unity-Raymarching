@@ -20,15 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/Structs/ShapeData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/WSWMath.cginc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/WSWMath.cginc.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity.meta" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +62,6 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Matrix2x2.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/InspectorAngles.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/Math.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/InterpolationF.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/ShapeType.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/WaveDirection.cs" />
@@ -81,6 +76,7 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/ColorExtensions.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
       </list>
     </option>
@@ -140,7 +136,7 @@
       <workItem from="1607531436808" duration="24640000" />
       <workItem from="1607595586718" duration="2639000" />
       <workItem from="1607720754827" duration="12440000" />
-      <workItem from="1607812588961" duration="10080000" />
+      <workItem from="1607812588961" duration="10578000" />
     </task>
     <servers />
   </component>

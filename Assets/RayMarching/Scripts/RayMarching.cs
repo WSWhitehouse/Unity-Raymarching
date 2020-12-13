@@ -273,7 +273,7 @@ namespace WSWhitehouse.RayMarching
         private void DrawBackgroundProperties()
         {
             _backgroundPropertiesDropdown = EditorGUILayout.BeginFoldoutHeaderGroup(_backgroundPropertiesDropdown,
-                "Background");
+                "Sky Box");
 
             if (_backgroundPropertiesDropdown)
             {

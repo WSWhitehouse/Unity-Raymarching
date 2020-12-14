@@ -19,7 +19,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="" />
+    <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/RayMarching.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/RayMarching.unity" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -66,15 +73,16 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/WSWMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/BackgroundType.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/ColorExtensions.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/Shape.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/SDFDistFunctions.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/SDFShape.cginc" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/Ray.cginc" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
       </list>
     </option>
   </component>
@@ -135,6 +143,7 @@
       <workItem from="1607720754827" duration="12440000" />
       <workItem from="1607812588961" duration="10578000" />
       <workItem from="1607902069952" duration="3925000" />
+      <workItem from="1607980551764" duration="3433000" />
     </task>
     <servers />
   </component>
@@ -163,10 +172,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="361" y="344" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1607727836445" />
-    <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog" timestamp="1607033221456">
+    <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog" timestamp="1607983405991">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1607033221456" />
+    <state x="93" y="101" width="1520" height="1206" key="VCS.FileHistoryDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1607983405991" />
     <state x="303" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1607730086708">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>

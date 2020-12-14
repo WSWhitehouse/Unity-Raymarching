@@ -568,7 +568,7 @@ MonoBehaviour:
   modifier: {x: 0.5, y: 0, z: 0}
   colour: {r: 1, g: 0, b: 0, a: 1}
   roundness: 0
-  hollow: 1
+  hollow: 0
   wallThickness: 0
   marchingStepAmount: 2
   operation: 0

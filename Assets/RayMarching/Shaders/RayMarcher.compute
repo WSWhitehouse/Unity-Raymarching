@@ -3,10 +3,10 @@
 // INCLUDES
 #include "RayMarchingMath.cginc"
 #include "SDFShape.cginc"
+#include "Ray.cginc"
 #include "InterpolationF.cginc"
 
 // CONST VARIABLES
-static const float EPSILON = 0.001f;
 static const float SHADOW_BIAS = EPSILON * 50;
 
 // RENDER VARIABLES
@@ -17,11 +17,15 @@ RWTexture2D<float4> Destination;
 float4x4 _CameraToWorld;
 float4x4 _CameraInverseProjection;
 
-// BACKGROUND COLOUR
-int _EnableSkyBoxCol;
+// SKYBOX
+#pragma multi_compile_local __ ENABLE_SKY_BOX
+
+#if ENABLE_SKY_BOX
+int _SkyBoxType;
 float4 _SkyBoxCol;
 float4 _SkyBoxTopCol;
 float4 _SkyBoxBottomCol;
+#endif
 
 // LIGHT VARIABLES
 float3 _Light;
@@ -305,30 +309,6 @@ float GetShapeDistance(in float3 origin, in Shape shape)
     return _MaxDst;
 }
 
-// RAY
-struct Ray
-{
-    float3 Origin;
-    float3 Direction;
-};
-
-Ray CreateRay(float3 origin, float3 direction)
-{
-    Ray ray;
-    ray.Origin = origin;
-    ray.Direction = direction;
-    return ray;
-}
-
-Ray CreateCameraRay(float2 uv)
-{
-    float3 origin = mul(_CameraToWorld, float4(0, 0, 0, 1)).xyz;
-    float3 direction = mul(_CameraInverseProjection, float4(uv, 0, 1)).xyz;
-    direction = mul(_CameraToWorld, float4(direction, 0)).xyz;
-    direction = normalize(direction);
-    return CreateRay(origin, direction);
-}
-
 // OPERATIONS
 // polynomial smooth min (k = 0.1);
 // from https://www.iquilezles.org/www/articles/smin/smin.htm
@@ -451,7 +431,6 @@ float CalculateShadow(Ray ray, float dstToShadePoint)
     return shadowIntensity + (1 - shadowIntensity) * brightness;
 }
 
-
 [numthreads(8,8,1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
@@ -463,7 +442,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float2 uv = id.xy / float2(width, height) * 2 - 1;
 
     // Ray Marching
-    Ray ray = CreateCameraRay(uv);
+    Ray ray = CreateCameraRay(uv, _CameraToWorld, _CameraInverseProjection);
     float rayDst = 0;
     int marchSteps = 0;
 
@@ -496,15 +475,17 @@ void CSMain(uint3 id : SV_DispatchThreadID)
             break;
         }
 
-        if (_EnableSkyBoxCol == 1)
+        #if ENABLE_SKY_BOX
+        if (_SkyBoxType == 1) // Colour
         {
             Destination[id.xy] = float4(_SkyBoxCol.rgb, 1);
         }
-        else if (_EnableSkyBoxCol == 2)
+        else if (_SkyBoxType == 2) // Gradient
         {
-            Destination[id.xy] = float4(lerp(_SkyBoxTopCol.rgb, _SkyBoxBottomCol.rgb,
-                                             uv.y), 1);
+            Destination[id.xy] = float4(lerp(_SkyBoxTopCol.rgb,
+                _SkyBoxBottomCol.rgb, uv.y), 1);
         }
+        #endif
 
         ray.Origin += ray.Direction * dst;
         rayDst += dst;

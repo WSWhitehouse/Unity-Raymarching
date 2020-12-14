@@ -145,25 +145,40 @@ namespace WSWhitehouse.RayMarching
             rayMarchingShader.SetFloat("_MaxDst", MaxDistance);
             rayMarchingShader.SetInt("_MaxStepCount", MaxStepCount);
 
-            // Background
-            int bgType;
-
-            switch (SkyBoxType)
+            // SkyBox
+            if (rayMarchingShader.IsKeywordEnabled("ENABLE_SKY_BOX") != EnableSkyBoxCol)
             {
-                case ColourType.Colour:
-                    bgType = 1;
-                    break;
-                case ColourType.Gradient:
-                    bgType = 2;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                if (EnableSkyBoxCol)
+                {
+                    rayMarchingShader.EnableKeyword("ENABLE_SKY_BOX");
+                }
+                else
+                {
+                    rayMarchingShader.DisableKeyword("ENABLE_SKY_BOX");
+                }
             }
 
-            rayMarchingShader.SetInt("_EnableSkyBoxCol", EnableSkyBoxCol ? bgType : 0);
-            rayMarchingShader.SetVector("_SkyBoxCol", skyBoxCol);
-            rayMarchingShader.SetVector("_SkyBoxTopCol", skyBoxTopCol);
-            rayMarchingShader.SetVector("_SkyBoxBottomCol", skyBoxBottomCol);
+            if (EnableSkyBoxCol)
+            {
+                int skyType;
+
+                switch (SkyBoxType)
+                {
+                    case ColourType.Colour:
+                        skyType = 1;
+                        break;
+                    case ColourType.Gradient:
+                        skyType = 2;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                rayMarchingShader.SetInt("_SkyBoxType", skyType);
+                rayMarchingShader.SetVector("_SkyBoxCol", skyBoxCol);
+                rayMarchingShader.SetVector("_SkyBoxTopCol", skyBoxTopCol);
+                rayMarchingShader.SetVector("_SkyBoxBottomCol", skyBoxBottomCol);
+            }
         }
 
         private void FindShapesInScene()

@@ -26,6 +26,7 @@
           </e>
           <e p="Shaders" t="Include">
             <e p="InterpolationF.cginc" t="Include" />
+            <e p="Ray.cginc" t="Include" />
             <e p="RayMarcher.compute" t="Include" />
             <e p="RayMarchingMath.cginc" t="Include" />
             <e p="SDFShape.cginc" t="Include" />

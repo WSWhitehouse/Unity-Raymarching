@@ -21,10 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,9 +72,12 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/ColorExtensions.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/Shape.cginc" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/SDFDistFunctions.cginc" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/SDFShape.cginc" />
       </list>
     </option>
   </component>
@@ -137,6 +137,7 @@
       <workItem from="1607595586718" duration="2639000" />
       <workItem from="1607720754827" duration="12440000" />
       <workItem from="1607812588961" duration="10578000" />
+      <workItem from="1607902069952" duration="3051000" />
     </task>
     <servers />
   </component>

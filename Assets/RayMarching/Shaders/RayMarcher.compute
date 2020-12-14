@@ -2,10 +2,12 @@
 
 // INCLUDES
 #include "RayMarchingMath.cginc"
+#include "SDFShape.cginc"
 #include "InterpolationF.cginc"
 
 // CONST VARIABLES
-static const float MAX_DST = 80;
+static const float MAX_DST = 200;
+static const int MAX_STEP_COUNT = 250;
 static const float EPSILON = 0.001f;
 static const float SHADOW_BIAS = EPSILON * 50;
 
@@ -31,44 +33,13 @@ bool _PositionLight;
 float _Time;
 
 // SHAPE VARIABLES
-struct Shape
-{
-    // Translation
-    float3 Position;
-    float3 Rotation;
-    float3 Scale;
-
-    // Object Properties
-    float3 Colour;
-    int ShapeType;
-    float3 Modifier;
-    float Roundness;
-    float WallThickness;
-
-    // RayMarch
-    float MarchingStepAmount;
-    int Operation;
-    float BlendStrength;
-
-    // Sine Wave
-    int EnableSineWave;
-    float3 SineWaveDirection;
-    float SineWaveFreq;
-    float SineWaveSpeed;
-    float SineWaveAmp;
-
-    // Num of Children
-    int NumOfChildren;
-};
-
 StructuredBuffer<Shape> Shapes;
 int NumShapes;
 
 // DISTANCE FUNCTIONS
 // Following distance functions from 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
-
-float SdfBox(float3 origin, Shape shape)
+float SdfBox(in float3 origin, in Shape shape)
 {
     float3 pos = shape.Position;
     float3 scale = shape.Scale;
@@ -80,7 +51,7 @@ float SdfBox(float3 origin, Shape shape)
 static const int arraySize = 12;
 float edges[arraySize];
 
-float SdfBoundingBox(float3 origin, Shape shape)
+float SdfBoundingBox(in float3 origin, in Shape shape)
 {
     float minScale = min(shape.Scale);
     float maxThickness = minScale / 2.0f;
@@ -144,7 +115,7 @@ float SdfBoundingBox(float3 origin, Shape shape)
     return dst;
 }
 
-float SdfSphere(float3 origin, Shape shape)
+float SdfSphere(in float3 origin, in Shape shape)
 {
     float3 pos = shape.Position;
     float radius = min(shape.Scale);
@@ -152,7 +123,7 @@ float SdfSphere(float3 origin, Shape shape)
     return distance(origin, pos) - radius;
 }
 
-float SdfTorus(float3 origin, Shape shape)
+float SdfTorus(in float3 origin, in Shape shape)
 {
     float3 pos = shape.Position;
     float minScale = min(shape.Scale);
@@ -164,7 +135,7 @@ float SdfTorus(float3 origin, Shape shape)
     return length(q) - modifier;
 }
 
-float SdfMandelBulb(float3 origin, Shape shape)
+float SdfMandelBulb(in float3 origin, in Shape shape)
 {
     float3 pos = origin - shape.Position;
     float3 z = pos;
@@ -242,7 +213,7 @@ float SdfMandelBulb(float3 origin, Shape shape)
 // }
 
 // SHAPE PREP
-float SineWave(float3 origin, Shape shape)
+float SineWave(in float3 origin, in Shape shape)
 {
     if (shape.EnableSineWave == 1)
     {
@@ -282,7 +253,7 @@ float SineWave(float3 origin, Shape shape)
     return 0;
 }
 
-float SdfShape(float dst, float3 origin, Shape shape)
+float SdfShape(in float dst, in float3 origin, in Shape shape)
 {
     return (abs(dst - shape.Roundness + shape.WallThickness) - shape.WallThickness -
         SineWave(origin, shape)) / shape.MarchingStepAmount;
@@ -296,7 +267,7 @@ void PrepSdfShape(inout float3 origin, inout Shape shape)
 }
 
 // SHAPE DISTANCE
-float GetShapeDistance(float3 origin, Shape shape)
+float GetShapeDistance(in float3 origin, in Shape shape)
 {
     PrepSdfShape(origin, shape);
 
@@ -494,7 +465,7 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float rayDst = 0;
     int marchSteps = 0;
 
-    while (rayDst < MAX_DST)
+    while (rayDst < MAX_DST && marchSteps < MAX_STEP_COUNT)
     {
         marchSteps ++;
         float4 sceneInfo = SceneInfo(ray.Origin);

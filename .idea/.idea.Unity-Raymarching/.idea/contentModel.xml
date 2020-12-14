@@ -28,6 +28,7 @@
             <e p="InterpolationF.cginc" t="Include" />
             <e p="RayMarcher.compute" t="Include" />
             <e p="RayMarchingMath.cginc" t="Include" />
+            <e p="SDFShape.cginc" t="Include" />
           </e>
           <e p="WSW.Raymarching.asmdef" t="Include" />
         </e>

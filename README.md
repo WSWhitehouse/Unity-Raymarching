@@ -10,7 +10,7 @@ This project was developed using the following software:
 
 ## Compatibility
 
-- Tested on Unity 2020.1
+This project was created using Unity 2020.1.13f1. It should be compatible on previous and newer versions of Unity, although the project may need downgrading / upgrading.
 
 ## Sources & Useful Resources
 

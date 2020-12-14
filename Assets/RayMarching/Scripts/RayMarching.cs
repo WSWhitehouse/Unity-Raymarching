@@ -20,6 +20,22 @@ namespace WSWhitehouse.RayMarching
         [SerializeField] private ComputeShader rayMarchingShader;
         private List<ComputeBuffer> _computeBuffer = new List<ComputeBuffer>();
 
+        // RayMarching
+        [SerializeField] private float maxDistance = 200f;
+        [SerializeField] private int maxStepCount = 250;
+
+        public float MaxDistance
+        {
+            get => maxDistance;
+            set => maxDistance = value;
+        }
+
+        public int MaxStepCount
+        {
+            get => maxStepCount;
+            set => maxStepCount = value;
+        }
+
         // Components
         [SerializeField] private Light mainLight;
         private Camera _camera;
@@ -124,6 +140,10 @@ namespace WSWhitehouse.RayMarching
 
             // Time
             rayMarchingShader.SetFloat("_Time", Application.isPlaying ? Time.time : Time.realtimeSinceStartup);
+
+            // RayMarching
+            rayMarchingShader.SetFloat("_MaxDst", MaxDistance);
+            rayMarchingShader.SetInt("_MaxStepCount", MaxStepCount);
 
             // Background
             int bgType;
@@ -234,12 +254,15 @@ namespace WSWhitehouse.RayMarching
 
         // Serialized Properties
         private SerializedProperty _rayMarchingShader;
+        private SerializedProperty _maxDistance;
+        private SerializedProperty _maxStepCount;
         private SerializedProperty _mainLight;
         private SerializedProperty _skyBoxCol;
         private SerializedProperty _skyBoxTopCol;
         private SerializedProperty _skyBoxBottomCol;
 
         // Dropdown
+        private static bool _rayMarchingDropdown = false;
         private static bool _backgroundPropertiesDropdown = false;
 
         private void OnEnable()
@@ -249,6 +272,8 @@ namespace WSWhitehouse.RayMarching
 
             // Serialized Properties
             _rayMarchingShader = serializedObject.FindProperty("rayMarchingShader");
+            _maxDistance = serializedObject.FindProperty("maxDistance");
+            _maxStepCount = serializedObject.FindProperty("maxStepCount");
             _mainLight = serializedObject.FindProperty("mainLight");
             _skyBoxCol = serializedObject.FindProperty("skyBoxCol");
             _skyBoxTopCol = serializedObject.FindProperty("skyBoxTopCol");
@@ -262,12 +287,29 @@ namespace WSWhitehouse.RayMarching
             EditorGUILayout.LabelField("Shader", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_rayMarchingShader);
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Components", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_mainLight);
-            EditorGUILayout.Space();
+            DrawRayMarchingProperties();
             DrawBackgroundProperties();
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawRayMarchingProperties()
+        {
+            _rayMarchingDropdown = EditorGUILayout.BeginFoldoutHeaderGroup(_rayMarchingDropdown, "Ray Marching");
+
+            if (_rayMarchingDropdown)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginVertical("box");
+                EditorGUILayout.PropertyField(_maxDistance);
+                EditorGUILayout.PropertyField(_maxStepCount);
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(_mainLight);
+                EditorGUILayout.EndVertical();
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
         }
 
         private void DrawBackgroundProperties()
@@ -279,7 +321,7 @@ namespace WSWhitehouse.RayMarching
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.BeginVertical("box");
-                
+
                 string buttonText = _rayMarching.EnableSkyBoxCol
                     ? "Disable Custom Sky Box"
                     : "Enable Custom Sky Box";

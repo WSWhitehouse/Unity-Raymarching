@@ -499,6 +499,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rayMarchingShader: {fileID: 7200000, guid: 75bbe5c2268f3ac408fcc00e33bf5209, type: 3}
+  maxDistance: 200
+  maxStepCount: 250
   mainLight: {fileID: 705507994}
   enableSkyBoxCol: 1
   skyBoxType: 1

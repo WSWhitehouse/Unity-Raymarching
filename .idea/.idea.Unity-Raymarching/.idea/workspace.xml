@@ -22,10 +22,8 @@
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/RayMarching.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/RayMarching.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/VersionControlSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/VersionControlSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,18 +34,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/57/e870adb1/Color.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/9f/657acba6/Texture.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/f0/5ee1463c/Mathf.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/83/a159e1ea/Texture2D.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/61/78c66b0e/ShimManager.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/cd/4ef5d2a6/Transform.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/a0/2ac5b04e/ExecuteAlways.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/78/6141d090/Gradient.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/54/d6301574/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E2BCE5D3-3E70-4A76-A5C9-576F4D43769B/7a/fc8b90a1/Screen.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -74,7 +62,6 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Enums/BackgroundType.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/Util/ColorExtensions.cs" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/FlyCamera.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/Shape.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/SDFDistFunctions.cginc" />
@@ -83,6 +70,7 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/Ray.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
       </list>
     </option>
   </component>
@@ -95,6 +83,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="Discover.Launch.Via.Unity" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -144,6 +133,7 @@
       <workItem from="1607812588961" duration="10578000" />
       <workItem from="1607902069952" duration="3925000" />
       <workItem from="1607980551764" duration="3433000" />
+      <workItem from="1608919313034" duration="1784000" />
     </task>
     <servers />
   </component>
@@ -151,7 +141,7 @@
     <option name="version" value="3" />
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
-  <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="EditMode" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>

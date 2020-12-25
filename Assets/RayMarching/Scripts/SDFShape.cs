@@ -12,7 +12,6 @@ namespace WSWhitehouse.RayMarching
     public class SDFShape : MonoBehaviour
     {
         #region TRANSLATION
-
         public Vector3 Position => transform.position;
         public Vector3 Rotation => -Math.QuaternionToEulerAngles(transform.rotation);
 
@@ -35,11 +34,9 @@ namespace WSWhitehouse.RayMarching
                 return Vector3.Scale(transform.localScale, parentScale);
             }
         }
-
         #endregion TRANSLATION
 
         #region OBJECT PROPERTIES
-
         [SerializeField] private ShapeType shapeType = ShapeType.Cube;
         public ShapeType ShapeType => shapeType;
 
@@ -96,11 +93,9 @@ namespace WSWhitehouse.RayMarching
             }
             set => wallThickness = Mathf.Clamp(value, 0f, 1f);
         }
-
         #endregion OBJECT PROPERTIES
 
         #region RAYMARCH
-
         [SerializeField] private float marchingStepAmount = 1;
         public float MarchingStepAmount => marchingStepAmount;
 
@@ -109,11 +104,9 @@ namespace WSWhitehouse.RayMarching
 
         [SerializeField, Range(0, 1)] private float blendStrength = 1;
         public float BlendStrength => blendStrength;
-
         #endregion RAYMARCH
 
         #region SINE WAVE
-
         [SerializeField] private bool enableSineWave = false;
 
         public bool EnableSineWave
@@ -154,7 +147,6 @@ namespace WSWhitehouse.RayMarching
             get => sineWaveAmplitude;
             set => sineWaveAmplitude = value;
         }
-
         #endregion SINE WAVE
 
         // Num of Children
@@ -167,13 +159,13 @@ namespace WSWhitehouse.RayMarching
     public class SDFShapeEditor : Editor
     {
         #region VARIABLES
-
         // Target
         private SDFShape _sdfShape;
 
         // Serialized Properties
         // Object Properties
         private SerializedProperty _shapeType;
+        private SerializedProperty _modifier;
         private SerializedProperty _colour;
         private SerializedProperty _roundness;
         private SerializedProperty _wallThickness;
@@ -192,7 +184,6 @@ namespace WSWhitehouse.RayMarching
         private static bool _objectPropertiesDropdown = false;
         private static bool _rayMarchDropdown = false;
         private static bool _sineWaveDropdown = false;
-
         #endregion VARIABLES
 
         private void OnEnable()
@@ -203,6 +194,7 @@ namespace WSWhitehouse.RayMarching
             // Serialized Properties
             // Object Properties
             _shapeType = serializedObject.FindProperty("shapeType");
+            _modifier = serializedObject.FindProperty("modifier");
             _colour = serializedObject.FindProperty("colour");
             _roundness = serializedObject.FindProperty("roundness");
             _wallThickness = serializedObject.FindProperty("wallThickness");
@@ -243,13 +235,15 @@ namespace WSWhitehouse.RayMarching
                 EditorGUILayout.PropertyField(_colour);
 
                 // Modifier
-                Vector3 modifier = _sdfShape.Modifier;
                 EditorGUI.BeginChangeCheck();
+                Vector3 modifier = _sdfShape.Modifier;
                 switch (_sdfShape.ShapeType)
                 {
                     case ShapeType.BoundingBox:
                     {
-                        modifier.x = EditorGUILayout.FloatField("Thickness", _sdfShape.Modifier.x);
+                        modifier.x = EditorGUILayout.Slider("Thickness", _sdfShape.Modifier.x,
+                            0.0f, 1.0f);
+                        // modifier.x = EditorGUILayout.FloatField("Thickness", _sdfShape.Modifier.x);
                         break;
                     }
                     case ShapeType.Torus:
@@ -267,7 +261,7 @@ namespace WSWhitehouse.RayMarching
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    _sdfShape.Modifier = modifier;
+                    _modifier.vector3Value = modifier;
                 }
 
                 EditorGUILayout.Space();

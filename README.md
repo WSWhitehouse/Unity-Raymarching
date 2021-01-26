@@ -33,6 +33,7 @@ Here is a list of sources I used when developing this project:
   - https://www.youtube.com/watch?v=Cp5WWtMoeKg&feature=youtu.be
   - https://medium.com/@shahriyarshahrabi/raymarching-in-unity-59c72664252a
   - http://i-saint.hatenablog.com/entry/2015/08/24/225254
+  - http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/
 - Unrelated, But Worth Reading:
   - https://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
   - https://gist.github.com/mattatz/86fff4b32d198d0928d0fa4ff32cf6fa

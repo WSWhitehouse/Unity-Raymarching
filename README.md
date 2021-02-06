@@ -28,13 +28,13 @@ Here is a list of sources I used when developing this project:
   
 - [The Art of Code:](https://www.youtube.com/c/TheArtofCodeIsCool/featured)
   - https://www.shadertoy.com/user/BigWIngs
-  - https://www.youtube.com/watch?v=S8AWd66hoCo
-  - https://www.youtube.com/watch?v=AfKGMUDWfuE
-  - https://www.youtube.com/watch?feature=youtu.be&v=Vmb7VGBVZJA
+  - [Writing a Ray Marcher in Unity - YouTube](https://www.youtube.com/watch?v=S8AWd66hoCo)
+  - [RayMarching: Basic Operators - YouTube](https://www.youtube.com/watch?v=AfKGMUDWfuE)
+  - [Shader Coding: Ray Marching Tips & Tricks - YouTube](https://www.youtube.com/watch?feature=youtu.be&v=Vmb7VGBVZJA)
   
 - Other Sources:
-  - https://www.youtube.com/watch?v=Cp5WWtMoeKg&feature=youtu.be
-  - https://www.youtube.com/watch?v=0jwkZKDOzfc
+  - [Coding Adventure: Ray Marching - YouTube](https://www.youtube.com/watch?v=Cp5WWtMoeKg&feature=youtu.be)
+  - [Making of Fractal Collector: A Unity Fractal Game - YouTube](https://www.youtube.com/watch?v=0jwkZKDOzfc)
   - https://medium.com/@shahriyarshahrabi/raymarching-in-unity-59c72664252a
   - http://i-saint.hatenablog.com/entry/2015/08/24/225254
   - http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/
@@ -52,7 +52,7 @@ Here is a list of sources I used when developing this project:
 - 4D Rendering - This is something I want to develop into the RayMarching project, but currently I dont have the time to do so.
   - https://marctenbosch.com/ndphysics/
   - https://4dtoys.com/
-  - https://www.youtube.com/watch?v=nUExziADzjc
+  - [Making a 4D Game - 4D Explorer - YouTube](https://www.youtube.com/watch?v=nUExziADzjc)
   - https://github.com/Jellevermandere/4D-Raymarching
 
 ## License

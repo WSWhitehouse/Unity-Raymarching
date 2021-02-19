@@ -22,8 +22,8 @@
     <list default="true" id="ea29eb30-e34b-4f33-9e8e-7a06ccc94dc3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity-Raymarching/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/VersionControlSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/VersionControlSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/RayMarching.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/RayMarching.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,8 +34,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -69,8 +69,8 @@
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/RayMarching.cs" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/Ray.cginc" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarchingMath.cginc" />
-        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
         <option value="$PROJECT_DIR$/Assets/RayMarching/Scripts/SDFShape.cs" />
+        <option value="$PROJECT_DIR$/Assets/RayMarching/Shaders/RayMarcher.compute" />
       </list>
     </option>
   </component>
@@ -134,6 +134,8 @@
       <workItem from="1607902069952" duration="3925000" />
       <workItem from="1607980551764" duration="3433000" />
       <workItem from="1608919313034" duration="1784000" />
+      <workItem from="1611682890204" duration="1939000" />
+      <workItem from="1612385074106" duration="1702000" />
     </task>
     <servers />
   </component>

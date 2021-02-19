@@ -178,6 +178,7 @@ float SdfMandelBulb(in float3 origin, in Shape shape)
     return dst;
 }
 
+
 // float SdfFractalTetrahedron(float3 origin, Shape shape)
 // {
 //     float3 pos = Repeat((origin - shape.Position), 1.0);

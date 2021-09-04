@@ -85,6 +85,14 @@ namespace WSWhitehouse.RayMarching
 
             _computeBuffer = new List<ComputeBuffer>();
 
+            FindShapesInScene();
+
+            if (Shapes.Count == 0)
+            {
+                Graphics.Blit(src, dest);
+                return; 
+            }
+            
             InitRenderTexture();
             InitSceneShapes();
             SetShaderParams();
@@ -189,8 +197,6 @@ namespace WSWhitehouse.RayMarching
 
         private void InitSceneShapes()
         {
-            FindShapesInScene();
-
             List<SDFShape> orderedShapes = new List<SDFShape>();
 
             foreach (SDFShape shape in Shapes)

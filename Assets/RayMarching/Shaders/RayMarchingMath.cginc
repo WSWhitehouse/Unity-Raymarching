@@ -12,6 +12,12 @@ inline float min(float3 a)
     return min(val, a.z);
 }
 
+inline float max(float3 a)
+{
+    float val = max(a.x, a.y);
+    return max(val, a.z);
+}
+
 float rand(float2 seed)
 {
     return frac(sin(dot(seed, float2(12.9898, 78.233))) * 43758.5453);

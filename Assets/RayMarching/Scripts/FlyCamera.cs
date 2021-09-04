@@ -10,7 +10,7 @@ namespace WSWhitehouse.RayMarching
     {
         // File adapted from:
         // https://gist.github.com/McFunkypants/5a9dad582461cb8d9de3
-        
+
         // Movement
         [SerializeField, Tooltip("Regular Movement Speed")]
         private float movementSpeed = 50.0f;
@@ -47,8 +47,11 @@ namespace WSWhitehouse.RayMarching
         private KeyCode moveOnXZAxis = KeyCode.Space;
 
         [SerializeField, Tooltip("Increases movement speed while this key code is held")]
-        private KeyCode fasterModifier = KeyCode.LeftShift;   
-        
+        private KeyCode fasterModifier = KeyCode.LeftShift;
+
+        [SerializeField, Tooltip("Decreases movement speed while this key code is held")]
+        private KeyCode slowerModifier = KeyCode.LeftShift;
+
         [SerializeField, Tooltip("This button must be held to move")]
         private KeyCode buttonHeldToMove = KeyCode.Mouse1;
 
@@ -81,6 +84,12 @@ namespace WSWhitehouse.RayMarching
             {
                 _totalRun += Time.deltaTime;
                 input *= _totalRun * modifySpeedAdd;
+                input = ClampVector3(input, -maxModifiedSpeed, maxModifiedSpeed);
+            }
+            else if (Input.GetKey(slowerModifier))
+            {
+                _totalRun += Time.deltaTime;
+                input *= _totalRun * 0.5f;
                 input = ClampVector3(input, -maxModifiedSpeed, maxModifiedSpeed);
             }
             else
@@ -175,6 +184,7 @@ namespace WSWhitehouse.RayMarching
         private SerializedProperty _moveDown;
         private SerializedProperty _moveOnXZAxis;
         private SerializedProperty _fasterModifier;
+        private SerializedProperty _slowerModifier;
         private SerializedProperty _buttonHeldToMove;
 
         // Private
@@ -199,6 +209,7 @@ namespace WSWhitehouse.RayMarching
             _moveDown = serializedObject.FindProperty("moveDown");
             _moveOnXZAxis = serializedObject.FindProperty("moveOnXZAxis");
             _fasterModifier = serializedObject.FindProperty("fasterModifier");
+            _slowerModifier = serializedObject.FindProperty("slowerModifier");
             _buttonHeldToMove = serializedObject.FindProperty("buttonHeldToMove");
         }
 
@@ -227,6 +238,7 @@ namespace WSWhitehouse.RayMarching
                 EditorGUILayout.PropertyField(_moveDown);
                 EditorGUILayout.PropertyField(_moveOnXZAxis);
                 EditorGUILayout.PropertyField(_fasterModifier);
+                EditorGUILayout.PropertyField(_slowerModifier);
                 EditorGUILayout.PropertyField(_buttonHeldToMove);
                 EditorGUILayout.EndVertical();
                 EditorGUI.indentLevel--;

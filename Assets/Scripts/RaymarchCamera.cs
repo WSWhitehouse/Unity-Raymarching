@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace WSWhitehouse
 {
-    [RequireComponent(typeof(Camera)), ExecuteInEditMode]
-    public class RaymarchCamera : SceneViewFilter
+    [RequireComponent(typeof(Camera)), ImageEffectAllowedInSceneView, ExecuteAlways, DisallowMultipleComponent]
+    public class RaymarchCamera : MonoBehaviour
     {
-        [SerializeField] private Shader shader;
+        // Shader
+        [SerializeField] private ComputeShader shader;
+        private int _kernelIndex = 0;
+        private RenderTexture _target;
 
+        // Lights
         [SerializeField] private Light directionalLight;
 
         [Header("Shader Variables")] [SerializeField]
@@ -20,24 +23,7 @@ namespace WSWhitehouse
         private List<RaymarchObject> _raymarchObjects = new List<RaymarchObject>();
         public List<RaymarchObject> RaymarchObjects => _raymarchObjects;
 
-        private Material _raymarchMaterial;
-
-        public Material RaymarchMaterial
-        {
-            get
-            {
-                if (_raymarchMaterial == null && shader != null)
-                {
-                    _raymarchMaterial = new Material(shader)
-                    {
-                        hideFlags = HideFlags.HideAndDontSave
-                    };
-                }
-
-                return _raymarchMaterial;
-            }
-        }
-
+        // Camera
         private Camera _camera;
 
         private Camera Camera
@@ -54,78 +40,74 @@ namespace WSWhitehouse
         }
 
         // Shader IDs
-        private static readonly int shader_MainTex = Shader.PropertyToID("_MainTex");
-        private static readonly int shader_CamFrustum = Shader.PropertyToID("_CamFrustum");
+        private static readonly int shader_Source = Shader.PropertyToID("_Source");
+        private static readonly int shader_Destination = Shader.PropertyToID("_Destination");
+        private static readonly int shader_CamDepthTexture = Shader.PropertyToID("_CamDepthTexture");
+        private static readonly int shader_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
+        private static readonly int shader_CamInverseProjection = Shader.PropertyToID("_CamInverseProjection");
         private static readonly int shader_CamToWorld = Shader.PropertyToID("_CamToWorld");
-        private static readonly int shader_MaxDistance = Shader.PropertyToID("_MaxDistance");
         private static readonly int shader_LightDirection = Shader.PropertyToID("_LightDirection");
+        private static readonly int shader_MaxDistance = Shader.PropertyToID("_MaxDistance");
+
 
         [ImageEffectUsesCommandBuffer]
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            if (RaymarchMaterial == null)
+            if (shader == null)
             {
                 Graphics.Blit(src, dest);
                 return;
             }
 
+            // Render Texture
+            InitRenderTexture();
+            // _kernelIndex = shader.FindKernel("CSMain");
+            shader.SetTexture(_kernelIndex, shader_Source, src);
+            shader.SetTexture(_kernelIndex, shader_Destination, _target);
+
+            // Shader Properties
             SetShaderProperties();
 
-            RenderTexture.active = dest;
-            _raymarchMaterial.SetTexture(shader_MainTex, src);
-            GL.PushMatrix();
-            GL.LoadOrtho();
-            RaymarchMaterial.SetPass(0);
-            GL.Begin(GL.QUADS);
+            int threadGroupsX = Mathf.CeilToInt(Camera.pixelWidth / 8.0f);
+            int threadGroupsY = Mathf.CeilToInt(Camera.pixelHeight / 8.0f);
+            shader.Dispatch(0, threadGroupsX, threadGroupsY, 1);
 
-            // Bottom Left
-            GL.MultiTexCoord2(0, 0.0f, 0.0f);
-            GL.Vertex3(0.0f, 0.0f, 3.0f);
+            Graphics.Blit(_target, dest);
+        }
 
-            // Bottom Right
-            GL.MultiTexCoord2(0, 1.0f, 0.0f);
-            GL.Vertex3(1.0f, 0.0f, 2.0f);
+        private void InitRenderTexture()
+        {
+            if (_target != null && _target.width == Camera.pixelWidth && _target.height == Camera.pixelHeight)
+            {
+                return;
+            }
 
-            // Top Right
-            GL.MultiTexCoord2(0, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
+            if (_target != null)
+            {
+                _target.Release();
+            }
 
-            // Top Left
-            GL.MultiTexCoord2(0, 0.0f, 1.0f);
-            GL.Vertex3(0.0f, 1.0f, 0.0f);
+            _target = new RenderTexture(Camera.pixelWidth, Camera.pixelHeight, 0,
+                RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear)
+            {
+                enableRandomWrite = true
+            };
 
-            GL.End();
-            GL.PopMatrix();
+            _target.Create();
         }
 
         private void SetShaderProperties()
         {
-            RaymarchMaterial.SetMatrix(shader_CamFrustum, CameraFrustum());
-            RaymarchMaterial.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
-            RaymarchMaterial.SetFloat(shader_MaxDistance, maxDistance);
-            RaymarchMaterial.SetVector(shader_LightDirection,
+            // Camera
+            shader.SetTextureFromGlobal(_kernelIndex, shader_CamDepthTexture, shader_CameraDepthTexture);
+            shader.SetMatrix(shader_CamInverseProjection, Camera.projectionMatrix.inverse);
+            shader.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
+
+            // Lighting
+            shader.SetVector(shader_LightDirection,
                 directionalLight != null ? directionalLight.transform.forward : Vector3.down);
-        }
-        
-        private Matrix4x4 CameraFrustum()
-        {
-            Matrix4x4 frustum = Matrix4x4.identity;
-            float fov = Mathf.Tan((Camera.fieldOfView * 0.5f) * Mathf.Deg2Rad);
 
-            Vector3 goUp = Vector3.up * fov;
-            Vector3 goRight = Vector3.right * fov * Camera.aspect;
-
-            Vector3 topLeft = (-Vector3.forward - goRight + goUp);
-            Vector3 topRight = (-Vector3.forward + goRight + goUp);
-            Vector3 bottomRight = (-Vector3.forward + goRight - goUp);
-            Vector3 bottomLeft = (-Vector3.forward - goRight - goUp);
-
-            frustum.SetRow(0, topLeft);
-            frustum.SetRow(1, topRight);
-            frustum.SetRow(2, bottomRight);
-            frustum.SetRow(3, bottomLeft);
-
-            return frustum;
+            shader.SetFloat(shader_MaxDistance, maxDistance);
         }
     }
 }

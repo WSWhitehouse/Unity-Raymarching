@@ -337,7 +337,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: -1
+  m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -356,7 +356,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: -0, y: 0.16663484, z: -0, w: 0.9860187}
-  m_LocalPosition: {x: -1.38, y: 0, z: -4.36}
+  m_LocalPosition: {x: -1.003, y: 0, z: -4.775}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -374,7 +374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae814e1296ed4434a2fdb86105c781eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shader: {fileID: 4800000, guid: b613aced08e26f84596d7eea7bb0d012, type: 3}
+  shader: {fileID: 7200000, guid: edc63164b284f844c8d6f275aee7c81a, type: 3}
   directionalLight: {fileID: 705507994}
   maxDistance: 100
 --- !u!114 &963194230
@@ -534,13 +534,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1458356614}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.88, y: 0, z: -0.09}
+  m_LocalRotation: {x: -0.016311701, y: -0.23087132, z: -0.11527593, w: 0.9659937}
+  m_LocalPosition: {x: 0.491, y: 0.0000000010066366, z: -0.368}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -4.861, y: -26.351, z: -12.472}
 --- !u!1 &2094004223
 GameObject:
   m_ObjectHideFlags: 0

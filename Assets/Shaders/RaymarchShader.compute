@@ -1,0 +1,100 @@
+#pragma kernel CSMain
+
+#include "UnityCG.cginc"
+#include "RaymarchObjectInfo.cginc"
+#include "Ray.cginc"
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> _Source;
+RWTexture2D<float4> _Destination;
+
+// Camera
+Texture2D<float4> _CamDepthTexture;
+float4x4 _CamInverseProjection;
+float4x4 _CamToWorld;
+
+// Lighting
+float3 _LightDirection;
+
+// Raymarch Object Info
+StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
+int _ObjectInfoCount;
+
+float _MaxDistance;
+
+float sdSphere(float3 pos, float radius)
+{
+    return length(pos) - radius;
+}
+
+float distanceField(float3 pos)
+{
+    float sphere1 = sdSphere(pos - float3(0, 0, 0), 1);
+    return sphere1;
+}
+
+float3 getNormal(float3 pos)
+{
+    const float2 offset = float2(0.01f, 0.0f);
+    const float3 normal = float3(
+        distanceField(pos + offset.xyy) - distanceField(pos - offset.xyy),
+        distanceField(pos + offset.yxy) - distanceField(pos - offset.yxy),
+        distanceField(pos + offset.yyx) - distanceField(pos - offset.yyx)
+    );
+
+    return normalize(normal);
+}
+
+fixed4 raymarching(Ray ray, float depth)
+{
+    fixed4 result = fixed4(1, 1, 1, 1);
+
+    const int maxIter = 164;
+    float distanceTraveled = 0;
+
+    for (int i = 0; i < maxIter; i++)
+    {
+        if (distanceTraveled > _MaxDistance || distanceTraveled >= depth)
+        {
+            // Environment
+            result = fixed4(ray.Direction, 0);
+            break;
+        }
+
+        const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
+        // Check for hit in distance field
+        const float distance = distanceField(pos);
+
+        if (distance < 0.01) // Hit something
+        {
+            // Object Shading
+            const float3 normal = getNormal(pos);
+            const float light = dot(-_LightDirection, normal);
+
+            result = fixed4(fixed3(1, 1, 1) * light, 1);
+            break;
+        }
+
+        distanceTraveled += distance;
+    }
+
+    return result;
+}
+
+[numthreads(8,8,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    uint width, height;
+    _Destination.GetDimensions(width, height);
+    const float2 uv = id.xy / float2(width, height) * 2 - 1;
+
+    Ray ray = CreateCameraRay(uv, _CamToWorld, _CamInverseProjection);
+    float depth = LinearEyeDepth(_CamDepthTexture[id.xy].r);
+    depth *= length(ray.Direction);
+
+    ray.Direction = normalize(ray.Direction);
+
+    fixed4 result = raymarching(ray, depth);
+    _Destination[id.xy] = fixed4(_Source[id.xy] * (1.0 - result.w) + result.xyz * result.w, 1.0);
+}

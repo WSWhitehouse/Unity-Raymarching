@@ -20,8 +20,6 @@ namespace WSWhitehouse
         private List<RaymarchObject> _raymarchObjects = new List<RaymarchObject>();
         public List<RaymarchObject> RaymarchObjects => _raymarchObjects;
 
-        private ComputeBuffer _objectInfoBuffer;
-
         private Material _raymarchMaterial;
 
         public Material RaymarchMaterial
@@ -61,20 +59,17 @@ namespace WSWhitehouse
         private static readonly int shader_CamToWorld = Shader.PropertyToID("_CamToWorld");
         private static readonly int shader_MaxDistance = Shader.PropertyToID("_MaxDistance");
         private static readonly int shader_LightDirection = Shader.PropertyToID("_LightDirection");
-        private static readonly int shader_ObjectInfoCount = Shader.PropertyToID("_ObjectInfoCount");
-        private static readonly int shader_ObjectInfo = Shader.PropertyToID("_ObjectInfo");
-        
+
         [ImageEffectUsesCommandBuffer]
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            if (RaymarchMaterial == null || RaymarchObjects.Count <= 0)
+            if (RaymarchMaterial == null)
             {
                 Graphics.Blit(src, dest);
                 return;
             }
 
             SetShaderProperties();
-            SetObjectInfoBuffer();
 
             RenderTexture.active = dest;
             _raymarchMaterial.SetTexture(shader_MainTex, src);
@@ -111,37 +106,7 @@ namespace WSWhitehouse
             RaymarchMaterial.SetVector(shader_LightDirection,
                 directionalLight != null ? directionalLight.transform.forward : Vector3.down);
         }
-
-        private void SetObjectInfoBuffer()
-        {
-            int objectInfoCount = RaymarchObjects.Count;
-
-            if (objectInfoCount <= 0)
-            {
-                RaymarchMaterial.SetInt(shader_ObjectInfoCount, 0);
-                return;
-            }
-
-            RaymarchObjectInfo[] objectInfo = new RaymarchObjectInfo[objectInfoCount];
-            for (int i = 0; i < objectInfoCount; i++)
-            {
-                objectInfo[i] = new RaymarchObjectInfo(RaymarchObjects[i]);
-                Debug.Log(objectInfo[i].Position);
-            }
-
-            _objectInfoBuffer =
-                new ComputeBuffer(objectInfoCount,
-                    RaymarchObjectInfo.GetSize(),
-                    ComputeBufferType.Default);
-            
-            _objectInfoBuffer.SetData(objectInfo);
-
-            RaymarchMaterial.SetBuffer(shader_ObjectInfo, _objectInfoBuffer);
-            RaymarchMaterial.SetInt(shader_ObjectInfoCount, objectInfoCount);
-
-            _objectInfoBuffer.Release();
-        }
-
+        
         private Matrix4x4 CameraFrustum()
         {
             Matrix4x4 frustum = Matrix4x4.identity;

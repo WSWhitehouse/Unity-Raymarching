@@ -31,8 +31,6 @@ Shader "WSWhitehouse/RaymarchShader"
             uniform float3 _LightDirection;
 
             // Raymarch Object Info
-            uniform StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
-            uniform int _ObjectInfoCount;
 
             uniform float _MaxDistance;
 
@@ -71,8 +69,7 @@ Shader "WSWhitehouse/RaymarchShader"
 
             float distanceField(float3 pos)
             {
-                RaymarchObjectInfo objectInfo = _ObjectInfo[0];
-                float sphere1 = sdSphere(pos - objectInfo.Position.xyz, 1);
+                float sphere1 = sdSphere(pos - float3(0,0,0), 1);
                 return sphere1;
             }
 
@@ -90,11 +87,6 @@ Shader "WSWhitehouse/RaymarchShader"
 
             fixed4 raymarching(float3 rayOrigin, float3 rayDir, float depth)
             {
-                if (_ObjectInfoCount <= 0)
-                {
-                    return fixed4(rayDir, 0);
-                }
-
                 fixed4 result = fixed4(1, 1, 1, 1);
 
                 const int maxIter = 164;
@@ -132,8 +124,6 @@ Shader "WSWhitehouse/RaymarchShader"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                return fixed4(_ObjectInfo[0].Position.xyz, 1);
-
                 float depth = LinearEyeDepth(tex2D(_CameraDepthTexture, i.uv).r);
                 depth *= length(i.ray);
 

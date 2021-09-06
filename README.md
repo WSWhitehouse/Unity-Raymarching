@@ -1,16 +1,8 @@
 # Unity Raymarching
-
-This project is heavily adapted from [Sebastian League's Ray Marching](https://github.com/SebLague/Ray-Marching) project.
-
 ## Software
 
 This project was developed using the following software:
-- Unity 2020.1.13f
-- JetBrians Rider 2020.2.4
-
-## Compatibility
-
-This project was created using Unity 2020.1.13f1. It should be compatible on previous and newer versions of Unity, although the project may need downgrading / upgrading.
+- Unity 2020.3
 
 ## Sources & Useful Resources
 

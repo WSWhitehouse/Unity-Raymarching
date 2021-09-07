@@ -18,13 +18,18 @@ namespace WSWhitehouse
         // Lights
         [SerializeField] private Light directionalLight;
 
-        [Header("Shader Variables")] [SerializeField]
-        private float renderDistance;
+        [Header("Raymarching")] [SerializeField]
+        private float renderDistance = 100.0f;
+
+        [SerializeField] private int maxIterations = 164;
+        
+        [SerializeField] private float hitResolution = 0.001f;
 
         // Raymarch Objects
         private List<RaymarchObjectInfo> _objectInfos = new List<RaymarchObjectInfo>();
-        
+
         private List<RaymarchObject> _raymarchObjects = new List<RaymarchObject>();
+
         public List<RaymarchObject> RaymarchObjects
         {
             get => _raymarchObjects;
@@ -50,6 +55,8 @@ namespace WSWhitehouse
         // Shader IDs
         private static readonly int shader_Source = Shader.PropertyToID("_Source");
         private static readonly int shader_Destination = Shader.PropertyToID("_Destination");
+        private static readonly int shader_MaxIterations = Shader.PropertyToID("_MaxIterations");
+        private static readonly int shader_HitResolution = Shader.PropertyToID("_HitResolution");
         private static readonly int shader_CamDepthTexture = Shader.PropertyToID("_CamDepthTexture");
         private static readonly int shader_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         private static readonly int shader_CamInverseProjection = Shader.PropertyToID("_CamInverseProjection");
@@ -121,6 +128,10 @@ namespace WSWhitehouse
             shader.SetMatrix(shader_CamInverseProjection, Camera.projectionMatrix.inverse);
             shader.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
             shader.SetFloat(shader_RenderDistance, renderDistance);
+            
+            // Raymarching
+            shader.SetInt(shader_MaxIterations, maxIterations);
+            shader.SetFloat(shader_HitResolution, hitResolution);
 
             // Lighting
             shader.SetVector(shader_LightDirection,
@@ -134,11 +145,13 @@ namespace WSWhitehouse
         private void CreateObjectInfoBuffer()
         {
             int count = RaymarchObjects.Count;
-            
+
             if (_objectInfos.Count != count)
             {
                 _objectInfos = new List<RaymarchObjectInfo>(count);
             }
+
+            RaymarchObjects.Sort((a, b) => a.Operation.CompareTo(b.Operation));
 
             for (int i = 0; i < count; i++)
             {
@@ -150,7 +163,6 @@ namespace WSWhitehouse
                 {
                     _objectInfos[i] = new RaymarchObjectInfo(RaymarchObjects[i]);
                 }
-                
             }
 
             _computeBuffer = new ComputeBuffer(count, RaymarchObjectInfo.GetSize(), ComputeBufferType.Default);

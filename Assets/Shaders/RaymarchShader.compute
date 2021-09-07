@@ -1,6 +1,7 @@
 #pragma kernel CSMain
 
 #include "UnityCG.cginc"
+#include "DistanceFunctions.cginc"
 #include "RaymarchObjectInfo.cginc"
 #include "Ray.cginc"
 
@@ -15,6 +16,10 @@ float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
 float _RenderDistance;
 
+// Raymarching
+int _MaxIterations;
+float _HitResolution;
+
 // Lighting
 float3 _LightDirection;
 
@@ -22,15 +27,45 @@ float3 _LightDirection;
 StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
 int _ObjectInfoCount;
 
-
-float sdf_Sphere(float3 origin, RaymarchObjectInfo object)
-{
-    return length(origin - object.Position) - object.Scale.x;
-}
-
 float PerformSDF(float3 origin, RaymarchObjectInfo object)
 {
-    return sdf_Sphere(origin, object);
+    // Position
+    object.Position = origin - object.Position;
+
+    // Rotation
+    object.Position.xz = mul(object.Position.xz,
+                             float2x2(cos(object.Rotation.y), sin(object.Rotation.y),
+                                      -sin(object.Rotation.y), cos(object.Rotation.y)));
+    object.Position.yz = mul(object.Position.yz,
+                             float2x2(cos(object.Rotation.x), -sin(object.Rotation.x),
+                                      sin(object.Rotation.x), cos(object.Rotation.x)));
+    object.Position.xy = mul(object.Position.xy,
+                             float2x2(cos(object.Rotation.z), -sin(object.Rotation.z),
+                                      sin(object.Rotation.z), cos(object.Rotation.z)));
+
+    // Scale
+    object.Scale *= 0.5;
+    // object.Roundness *= 0.5;
+    object.Scale -= object.Roundness;
+
+    float dist = _RenderDistance;
+
+    switch (object.SdfShape)
+    {
+    case 0:
+        {
+            dist = sdf_sphere(object);
+            break;
+        }
+    case 1:
+        {
+            dist = sdf_box(object);
+            break;
+        }
+    default: return _RenderDistance;
+    }
+    
+    return (abs(dist - object.Roundness + object.WallThickness) - object.WallThickness) / object.MarchingStepAmount;
 }
 
 float4 PerformOperation(float globalDistance, float3 globalColour, float objectDistance, RaymarchObjectInfo object)
@@ -38,11 +73,12 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
     float distance = globalDistance;
     float3 colour = globalColour;
 
+    // https://www.iquilezles.org/www/articles/smin/smin.htm
+
     switch (object.Operation)
     {
     case 1: // blend
         {
-            // https://www.iquilezles.org/www/articles/smin/smin.htm
             const float h = clamp(0.5 + 0.5 * (objectDistance - distance) / object.OperationMod, 0.0, 1.0);
             distance = lerp(objectDistance, distance, h) - object.OperationMod * h * (1.0 - h);
             colour = lerp(object.Colour.xyz, colour, h);
@@ -50,19 +86,31 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
         }
     case 2: // cut
         {
+            if (object.OperationSmooth)
+            {
+                const float h = clamp(0.5 - 0.5 * (distance + objectDistance) / object.OperationMod, 0.0, 1.0);
+                distance = lerp(distance, -objectDistance, h) + object.OperationMod * h * (1.0 - h);
+                break;
+            }
+
             if (-objectDistance > distance)
             {
                 distance = -objectDistance;
-                colour = object.Colour.xyz;
             }
             break;
         }
     case 3: // mask
         {
+            if (object.OperationSmooth)
+            {
+                const float h = clamp(0.5 - 0.5 * (distance - objectDistance) / object.OperationMod, 0.0, 1.0);
+                distance = lerp(distance, objectDistance, h) + object.OperationMod * h * (1.0 - h);
+                break;
+            }
+
             if (objectDistance > distance)
             {
                 distance = objectDistance;
-                colour = object.Colour.xyz;
             }
             break;
         }
@@ -77,7 +125,6 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
         }
     }
 
-
     return float4(colour.xyz, distance);
 }
 
@@ -90,7 +137,7 @@ float4 distanceField(float3 origin)
     {
         const float objectDistance = PerformSDF(origin, _ObjectInfo[i]);
         const float4 operation = PerformOperation(distance, colour, objectDistance, _ObjectInfo[i]);
-        
+
         distance = operation.w;
         colour = operation.xyz;
     }
@@ -114,10 +161,10 @@ fixed4 raymarching(Ray ray, float depth)
 {
     fixed4 result = fixed4(1, 1, 1, 1);
 
-    const int maxIter = 164;
+   // const int maxIter = 164;
     float distanceTraveled = 0;
 
-    for (int i = 0; i < maxIter; i++)
+    for (int i = 0; i < _MaxIterations; i++)
     {
         if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
         {
@@ -132,7 +179,7 @@ fixed4 raymarching(Ray ray, float depth)
         const float3 colour = combined.xyz;
         const float distance = combined.w;
 
-        if (distance < 0.01) // Hit something
+        if (distance < _HitResolution /*0.01*/) // Hit something
         {
             // Object Shading
             const float3 normal = getNormal(pos);

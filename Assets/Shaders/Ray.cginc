@@ -1,5 +1,5 @@
-﻿#ifndef WSWHITEHOUSE_RAYMARCH_RAY_CGINC
-#define WSWHITEHOUSE_RAYMARCH_RAY_CGINC
+﻿#ifndef WSWHITEHOUSE_RAY_CGINC
+#define WSWHITEHOUSE_RAY_CGINC
 
 struct Ray
 {
@@ -20,4 +20,4 @@ Ray CreateCameraRay(float2 uv, float4x4 camToWorld, float4x4 camInvProjection)
     return ray;
 }
 
-#endif // WSWHITEHOUSE_RAYMARCH_RAY_CGINC
+#endif // WSWHITEHOUSE_RAY_CGINC

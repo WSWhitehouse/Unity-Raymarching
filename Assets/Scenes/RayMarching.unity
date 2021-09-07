@@ -377,6 +377,8 @@ MonoBehaviour:
   shader: {fileID: 7200000, guid: edc63164b284f844c8d6f275aee7c81a, type: 3}
   directionalLight: {fileID: 705507994}
   renderDistance: 100
+  maxIterations: 164
+  hitResolution: 0.001
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -413,6 +415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1394492234}
   - component: {fileID: 1394492233}
+  - component: {fileID: 1394492235}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -432,9 +435,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sdfShape: 0
+  marchingStepAmount: 1
   colour: {r: 0.02180491, g: 0.9245283, b: 0.5196117, a: 1}
   operation: 0
+  operationSmooth: 1
   operationMod: 1
+  roundness: 0
+  hollow: 1
+  wallThickness: 0.033
 --- !u!4 &1394492234
 Transform:
   m_ObjectHideFlags: 0
@@ -447,8 +456,21 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &1394492235
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394492232}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1458356614
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,7 +489,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1458356615
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -538,7 +560,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1458356614}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.126, y: 0, z: -0.588}
+  m_LocalPosition: {x: -0.766, y: 0, z: -0.578}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -554,8 +576,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2094004225}
   - component: {fileID: 2094004224}
+  - component: {fileID: 2094004226}
   m_Layer: 0
-  m_Name: Sphere (1)
+  m_Name: cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -573,9 +596,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sdfShape: 1
+  marchingStepAmount: 1
   colour: {r: 1, g: 1, b: 0, a: 1}
-  operation: 0
-  operationMod: 1
+  operation: 2
+  operationSmooth: 0
+  operationMod: 0.1
+  roundness: 0
+  hollow: 0
+  wallThickness: 0
 --- !u!4 &2094004225
 Transform:
   m_ObjectHideFlags: 0
@@ -583,10 +612,23 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2094004223}
-  m_LocalRotation: {x: 0.008726558, y: 0, z: 0, w: 0.999962}
-  m_LocalPosition: {x: 3.47, y: -0.022, z: -0.35}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.566, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 1, y: 0, z: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2094004226
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2094004223}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

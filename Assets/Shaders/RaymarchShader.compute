@@ -28,6 +28,59 @@ float sdf_Sphere(float3 origin, RaymarchObjectInfo object)
     return length(origin - object.Position) - object.Scale.x;
 }
 
+float PerformSDF(float3 origin, RaymarchObjectInfo object)
+{
+    return sdf_Sphere(origin, object);
+}
+
+float4 PerformOperation(float globalDistance, float3 globalColour, float objectDistance, RaymarchObjectInfo object)
+{
+    float distance = globalDistance;
+    float3 colour = globalColour;
+
+    switch (object.Operation)
+    {
+    case 1: // blend
+        {
+            // https://www.iquilezles.org/www/articles/smin/smin.htm
+            const float h = clamp(0.5 + 0.5 * (objectDistance - distance) / object.OperationMod, 0.0, 1.0);
+            distance = lerp(objectDistance, distance, h) - object.OperationMod * h * (1.0 - h);
+            colour = lerp(object.Colour.xyz, colour, h);
+            break;
+        }
+    case 2: // cut
+        {
+            if (-objectDistance > distance)
+            {
+                distance = -objectDistance;
+                colour = object.Colour.xyz;
+            }
+            break;
+        }
+    case 3: // mask
+        {
+            if (objectDistance > distance)
+            {
+                distance = objectDistance;
+                colour = object.Colour.xyz;
+            }
+            break;
+        }
+    default:
+        {
+            if (objectDistance < distance)
+            {
+                distance = objectDistance;
+                colour = object.Colour.xyz;
+            }
+            break;
+        }
+    }
+
+
+    return float4(colour.xyz, distance);
+}
+
 float4 distanceField(float3 origin)
 {
     float distance = _RenderDistance;
@@ -35,16 +88,14 @@ float4 distanceField(float3 origin)
 
     for (int i = 0; i < _ObjectInfoCount; i++)
     {
-        const float shapeDistance = sdf_Sphere(origin, _ObjectInfo[i]);
-
-        if (shapeDistance < distance)
-        {
-            distance = shapeDistance;
-            colour = _ObjectInfo[i].Colour.xyz;
-        }
+        const float objectDistance = PerformSDF(origin, _ObjectInfo[i]);
+        const float4 operation = PerformOperation(distance, colour, objectDistance, _ObjectInfo[i]);
+        
+        distance = operation.w;
+        colour = operation.xyz;
     }
 
-    return float4(colour, distance);
+    return float4(colour.xyz, distance);
 }
 
 float3 getNormal(float3 pos)

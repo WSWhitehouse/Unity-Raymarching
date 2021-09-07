@@ -8,7 +8,11 @@ namespace WSWhitehouse
         public Vector3 Position;
         public Vector4 Rotation;
         public Vector3 Scale;
+
         public Vector4 Colour;
+
+        public int Operation;
+        public float OperationMod;
 
         public RaymarchObjectInfo(RaymarchObject _raymarchObject)
         {
@@ -17,6 +21,8 @@ namespace WSWhitehouse
             Rotation = _raymarchObject.Rotation;
             Scale = _raymarchObject.Scale;
             Colour = _raymarchObject.Colour;
+            Operation = (int)_raymarchObject.Operation;
+            OperationMod = _raymarchObject.OperationMod;
         }
 
         public static int GetSize()
@@ -24,7 +30,7 @@ namespace WSWhitehouse
             // https://stackoverflow.com/a/4956484 - size of struct in C#
             //return System.Runtime.InteropServices.Marshal.SizeOf(typeof(RaymarchObjectInfo));
 
-            return (sizeof(float) * 14);
+            return (sizeof(float) * 15) + (sizeof(int) * 1);
             // return sizeof(RaymarchObjectInfo);
         }
     }

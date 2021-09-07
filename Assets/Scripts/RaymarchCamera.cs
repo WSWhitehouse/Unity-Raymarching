@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace WSWhitehouse
@@ -12,16 +13,23 @@ namespace WSWhitehouse
         [SerializeField] private ComputeShader shader;
         private int _kernelIndex = 0;
         private RenderTexture _target;
+        private ComputeBuffer _computeBuffer;
 
         // Lights
         [SerializeField] private Light directionalLight;
 
         [Header("Shader Variables")] [SerializeField]
-        private float maxDistance;
+        private float renderDistance;
 
         // Raymarch Objects
+        private List<RaymarchObjectInfo> _objectInfos = new List<RaymarchObjectInfo>();
+        
         private List<RaymarchObject> _raymarchObjects = new List<RaymarchObject>();
-        public List<RaymarchObject> RaymarchObjects => _raymarchObjects;
+        public List<RaymarchObject> RaymarchObjects
+        {
+            get => _raymarchObjects;
+            private set => _raymarchObjects = value;
+        }
 
         // Camera
         private Camera _camera;
@@ -46,14 +54,22 @@ namespace WSWhitehouse
         private static readonly int shader_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         private static readonly int shader_CamInverseProjection = Shader.PropertyToID("_CamInverseProjection");
         private static readonly int shader_CamToWorld = Shader.PropertyToID("_CamToWorld");
+        private static readonly int shader_RenderDistance = Shader.PropertyToID("_RenderDistance");
         private static readonly int shader_LightDirection = Shader.PropertyToID("_LightDirection");
-        private static readonly int shader_MaxDistance = Shader.PropertyToID("_MaxDistance");
+        private static readonly int shader_ObjectInfo = Shader.PropertyToID("_ObjectInfo");
+        private static readonly int shader_ObjectInfoCount = Shader.PropertyToID("_ObjectInfoCount");
 
 
         [ImageEffectUsesCommandBuffer]
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            if (shader == null)
+#if UNITY_EDITOR
+            // Only find objects in editor. Objects will automatically add
+            // themselves to the list in play mode.
+            RaymarchObjects = FindObjectsOfType<RaymarchObject>().ToList();
+#endif
+
+            if (shader == null || RaymarchObjects.Count == 0)
             {
                 Graphics.Blit(src, dest);
                 return;
@@ -66,13 +82,15 @@ namespace WSWhitehouse
             shader.SetTexture(_kernelIndex, shader_Destination, _target);
 
             // Shader Properties
+            CreateObjectInfoBuffer();
             SetShaderProperties();
 
             int threadGroupsX = Mathf.CeilToInt(Camera.pixelWidth / 8.0f);
             int threadGroupsY = Mathf.CeilToInt(Camera.pixelHeight / 8.0f);
-            shader.Dispatch(0, threadGroupsX, threadGroupsY, 1);
+            shader.Dispatch(_kernelIndex, threadGroupsX, threadGroupsY, 1);
 
             Graphics.Blit(_target, dest);
+            _computeBuffer.Dispose();
         }
 
         private void InitRenderTexture()
@@ -102,12 +120,41 @@ namespace WSWhitehouse
             shader.SetTextureFromGlobal(_kernelIndex, shader_CamDepthTexture, shader_CameraDepthTexture);
             shader.SetMatrix(shader_CamInverseProjection, Camera.projectionMatrix.inverse);
             shader.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
+            shader.SetFloat(shader_RenderDistance, renderDistance);
 
             // Lighting
             shader.SetVector(shader_LightDirection,
                 directionalLight != null ? directionalLight.transform.forward : Vector3.down);
 
-            shader.SetFloat(shader_MaxDistance, maxDistance);
+            // Compute Buffer
+            shader.SetBuffer(_kernelIndex, shader_ObjectInfo, _computeBuffer);
+            shader.SetInt(shader_ObjectInfoCount, _computeBuffer.count);
+        }
+
+        private void CreateObjectInfoBuffer()
+        {
+            int count = RaymarchObjects.Count;
+            
+            if (_objectInfos.Count != count)
+            {
+                _objectInfos = new List<RaymarchObjectInfo>(count);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (_objectInfos.Count <= i)
+                {
+                    _objectInfos.Add(new RaymarchObjectInfo(RaymarchObjects[i]));
+                }
+                else
+                {
+                    _objectInfos[i] = new RaymarchObjectInfo(RaymarchObjects[i]);
+                }
+                
+            }
+
+            _computeBuffer = new ComputeBuffer(count, RaymarchObjectInfo.GetSize(), ComputeBufferType.Default);
+            _computeBuffer.SetData(_objectInfos);
         }
     }
 }

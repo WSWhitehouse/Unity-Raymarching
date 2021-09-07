@@ -2,7 +2,7 @@
 
 namespace WSWhitehouse
 {
-    [DisallowMultipleComponent, ExecuteInEditMode]
+    [DisallowMultipleComponent, ExecuteAlways]
     public class RaymarchObject : MonoBehaviour
     {
         public Vector3 Position => transform.position;
@@ -15,6 +15,9 @@ namespace WSWhitehouse
 
         public Vector3 Scale => transform.lossyScale;
 
+        [SerializeField] private Color colour = Color.white;
+        public Color Colour => colour;
+
         private void OnEnable()
         {
             // Add to RaymarchCamera object list
@@ -22,6 +25,7 @@ namespace WSWhitehouse
 
             foreach (var cam in raymarchCams)
             {
+                if (cam.RaymarchObjects.Contains(this)) continue;
                 cam.RaymarchObjects.Add(this);
             }
         }
@@ -33,6 +37,7 @@ namespace WSWhitehouse
             
             foreach (var cam in raymarchCams)
             {
+                if (!cam.RaymarchObjects.Contains(this)) continue;
                 cam.RaymarchObjects.Remove(this);
             }
         }

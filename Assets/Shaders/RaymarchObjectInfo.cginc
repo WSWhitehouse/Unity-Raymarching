@@ -6,6 +6,7 @@ struct RaymarchObjectInfo
     float3 Position;
     float4 Rotation;
     float3 Scale;
+    float4 Colour;
 };
 
 #endif // WSWHITEHOUSE_RAYMARCH_OBJECT_INFO_CGINC

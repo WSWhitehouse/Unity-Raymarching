@@ -13,6 +13,7 @@ RWTexture2D<float4> _Destination;
 Texture2D<float4> _CamDepthTexture;
 float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
+float _RenderDistance;
 
 // Lighting
 float3 _LightDirection;
@@ -21,26 +22,38 @@ float3 _LightDirection;
 StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
 int _ObjectInfoCount;
 
-float _MaxDistance;
 
-float sdSphere(float3 pos, float radius)
+float sdf_Sphere(float3 origin, RaymarchObjectInfo object)
 {
-    return length(pos) - radius;
+    return length(origin - object.Position) - object.Scale.x;
 }
 
-float distanceField(float3 pos)
+float4 distanceField(float3 origin)
 {
-    float sphere1 = sdSphere(pos - float3(0, 0, 0), 1);
-    return sphere1;
+    float distance = _RenderDistance;
+    float3 colour = float3(1, 1, 1);
+
+    for (int i = 0; i < _ObjectInfoCount; i++)
+    {
+        const float shapeDistance = sdf_Sphere(origin, _ObjectInfo[i]);
+
+        if (shapeDistance < distance)
+        {
+            distance = shapeDistance;
+            colour = _ObjectInfo[i].Colour.xyz;
+        }
+    }
+
+    return float4(colour, distance);
 }
 
 float3 getNormal(float3 pos)
 {
     const float2 offset = float2(0.01f, 0.0f);
     const float3 normal = float3(
-        distanceField(pos + offset.xyy) - distanceField(pos - offset.xyy),
-        distanceField(pos + offset.yxy) - distanceField(pos - offset.yxy),
-        distanceField(pos + offset.yyx) - distanceField(pos - offset.yyx)
+        distanceField(pos + offset.xyy).w - distanceField(pos - offset.xyy).w,
+        distanceField(pos + offset.yxy).w - distanceField(pos - offset.yxy).w,
+        distanceField(pos + offset.yyx).w - distanceField(pos - offset.yyx).w
     );
 
     return normalize(normal);
@@ -55,7 +68,7 @@ fixed4 raymarching(Ray ray, float depth)
 
     for (int i = 0; i < maxIter; i++)
     {
-        if (distanceTraveled > _MaxDistance || distanceTraveled >= depth)
+        if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
         {
             // Environment
             result = fixed4(ray.Direction, 0);
@@ -64,7 +77,9 @@ fixed4 raymarching(Ray ray, float depth)
 
         const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
         // Check for hit in distance field
-        const float distance = distanceField(pos);
+        const float4 combined = distanceField(pos);
+        const float3 colour = combined.xyz;
+        const float distance = combined.w;
 
         if (distance < 0.01) // Hit something
         {
@@ -72,7 +87,7 @@ fixed4 raymarching(Ray ray, float depth)
             const float3 normal = getNormal(pos);
             const float light = dot(-_LightDirection, normal);
 
-            result = fixed4(fixed3(1, 1, 1) * light, 1);
+            result = fixed4(colour * light, 1);
             break;
         }
 

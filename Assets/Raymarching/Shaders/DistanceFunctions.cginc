@@ -1,7 +1,7 @@
 ﻿#ifndef WSWHITEHOUSE_DISTANCE_FUNCTIONS_CGINC
 #define WSWHITEHOUSE_DISTANCE_FUNCTIONS_CGINC
 
-#include "RaymarchObjectInfo.cginc"
+#include "RaymarchInfoStructs.cginc"
 
 float sdf_sphere(in RaymarchObjectInfo object)
 {

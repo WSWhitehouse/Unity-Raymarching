@@ -17,6 +17,7 @@ namespace WSWhitehouse
         public int Operation;
         public int OperationSmooth;
         public float OperationMod;
+        public int Operationlayer;
 
         public float Roundness;
         public float WallThickness;
@@ -33,17 +34,14 @@ namespace WSWhitehouse
             Operation = (int) _raymarchObject.Operation;
             OperationSmooth = _raymarchObject.OperationSmooth ? 1 : 0;
             OperationMod = _raymarchObject.OperationMod;
+            Operationlayer = _raymarchObject.OperationLayer;
             Roundness = _raymarchObject.Roundness;
             WallThickness = _raymarchObject.WallThickness;
         }
 
         public static int GetSize()
         {
-            // https://stackoverflow.com/a/4956484 - size of struct in C#
-            //return System.Runtime.InteropServices.Marshal.SizeOf(typeof(RaymarchObjectInfo));
-
-            return (sizeof(float) * 18) + (sizeof(int) * 3);
-            // return sizeof(RaymarchObjectInfo);
+            return (sizeof(float) * 18) + (sizeof(int) * 4);
         }
     }
 }

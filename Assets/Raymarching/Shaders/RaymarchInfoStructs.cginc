@@ -1,5 +1,5 @@
-#ifndef WSWHITEHOUSE_RAYMARCH_OBJECT_INFO_CGINC
-#define WSWHITEHOUSE_RAYMARCH_OBJECT_INFO_CGINC
+#ifndef WSWHITEHOUSE_RAYMARCH_INFO_STRUCTS_CGINC
+#define WSWHITEHOUSE_RAYMARCH_INFO_STRUCTS_CGINC
 
 struct RaymarchObjectInfo
 {
@@ -15,9 +15,10 @@ struct RaymarchObjectInfo
     int Operation;
     int OperationSmooth;
     float OperationMod;
+    int OperationLayer;
 
     float Roundness;
     float WallThickness;
 };
 
-#endif // WSWHITEHOUSE_RAYMARCH_OBJECT_INFO_CGINC
+#endif // WSWHITEHOUSE_RAYMARCH_INFO_STRUCTS_CGINC

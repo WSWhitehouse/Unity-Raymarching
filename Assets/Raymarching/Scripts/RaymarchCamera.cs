@@ -22,7 +22,7 @@ namespace WSWhitehouse
         private float renderDistance = 100.0f;
 
         [SerializeField] private int maxIterations = 164;
-        
+
         [SerializeField] private float hitResolution = 0.001f;
 
         // Raymarch Objects
@@ -128,7 +128,7 @@ namespace WSWhitehouse
             shader.SetMatrix(shader_CamInverseProjection, Camera.projectionMatrix.inverse);
             shader.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
             shader.SetFloat(shader_RenderDistance, renderDistance);
-            
+
             // Raymarching
             shader.SetInt(shader_MaxIterations, maxIterations);
             shader.SetFloat(shader_HitResolution, hitResolution);
@@ -151,7 +151,12 @@ namespace WSWhitehouse
                 _objectInfos = new List<RaymarchObjectInfo>(count);
             }
 
-            RaymarchObjects.Sort((a, b) => a.Operation.CompareTo(b.Operation));
+            // RaymarchObjects.Sort((a, b) => a.OperationLayer.CompareTo(b.OperationLayer));
+
+            RaymarchObjects = RaymarchObjects
+                .OrderBy(x => x.OperationLayer)
+                .ThenBy(x => x.Operation)
+                .ToList();
 
             for (int i = 0; i < count; i++)
             {

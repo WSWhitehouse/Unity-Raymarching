@@ -41,6 +41,9 @@ namespace WSWhitehouse
         [SerializeField] private float operationMod = 1.0f;
         public float OperationMod => operationMod;
 
+        [SerializeField] private int operationLayer = 0;
+        public int OperationLayer => operationLayer;
+
         private void OnEnable()
         {
             // Add to RaymarchCamera object list

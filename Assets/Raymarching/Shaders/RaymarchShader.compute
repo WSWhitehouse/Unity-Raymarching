@@ -2,7 +2,7 @@
 
 #include "UnityCG.cginc"
 #include "DistanceFunctions.cginc"
-#include "RaymarchObjectInfo.cginc"
+#include "RaymarchInfoStructs.cginc"
 #include "Ray.cginc"
 
 // Create a RenderTexture with enableRandomWrite flag and set it

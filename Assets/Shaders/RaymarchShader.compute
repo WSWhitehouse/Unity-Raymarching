@@ -62,9 +62,9 @@ float PerformSDF(float3 origin, RaymarchObjectInfo object)
             dist = sdf_box(object);
             break;
         }
-    default: return _RenderDistance;
+    default: return dist;
     }
-    
+
     return (abs(dist - object.Roundness + object.WallThickness) - object.WallThickness) / object.MarchingStepAmount;
 }
 
@@ -160,8 +160,7 @@ float3 getNormal(float3 pos)
 fixed4 raymarching(Ray ray, float depth)
 {
     fixed4 result = fixed4(1, 1, 1, 1);
-
-   // const int maxIter = 164;
+    
     float distanceTraveled = 0;
 
     for (int i = 0; i < _MaxIterations; i++)
@@ -179,7 +178,7 @@ fixed4 raymarching(Ray ray, float depth)
         const float3 colour = combined.xyz;
         const float distance = combined.w;
 
-        if (distance < _HitResolution /*0.01*/) // Hit something
+        if (distance < _HitResolution) // Hit something
         {
             // Object Shading
             const float3 normal = getNormal(pos);

@@ -43,19 +43,7 @@ namespace WSWhitehouse
 
         [SerializeField] private int operationLayer = 0;
         public int OperationLayer => operationLayer;
-
-        private void OnEnable()
-        {
-            // Add to RaymarchCamera object list
-            RaymarchCamera[] raymarchCams = FindObjectsOfType<RaymarchCamera>();
-
-            foreach (var cam in raymarchCams)
-            {
-                if (cam.RaymarchObjects.Contains(this)) continue;
-                cam.RaymarchObjects.Add(this);
-            }
-        }
-
+        
         [SerializeField, Range(0, 1)] private float roundness = 0f;
 
         public float Roundness
@@ -92,10 +80,22 @@ namespace WSWhitehouse
 
                 float[] scales = {Scale.x, Scale.y, Scale.z};
                 float minScale = Mathf.Min(scales);
-                float maxThickness = minScale / 2.0f;
+                float maxThickness = minScale * 0.5f;
                 return thickness * maxThickness;
             }
             set => wallThickness = Mathf.Clamp(value, 0f, 1f);
+        }
+        
+        private void OnEnable()
+        {
+            // Add to RaymarchCamera object list
+            RaymarchCamera[] raymarchCams = FindObjectsOfType<RaymarchCamera>();
+
+            foreach (var cam in raymarchCams)
+            {
+                if (cam.RaymarchObjects.Contains(this)) continue;
+                cam.RaymarchObjects.Add(this);
+            }
         }
 
         private void OnDisable()

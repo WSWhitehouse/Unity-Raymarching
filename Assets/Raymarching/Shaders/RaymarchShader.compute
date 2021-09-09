@@ -14,18 +14,20 @@ RWTexture2D<float4> _Destination;
 Texture2D<float4> _CamDepthTexture;
 float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
+float _CamResolution;
 float _RenderDistance;
 
 // Raymarching
 int _MaxIterations;
 float _HitResolution;
 
-// Lighting
-float3 _LightDirection;
-
 // Raymarch Object Info
 StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
 int _ObjectInfoCount;
+
+// Raymarch Light Info
+StructuredBuffer<RaymarchLightInfo> _LightInfo;
+int _LightInfoCount;
 
 float PerformSDF(float3 origin, RaymarchObjectInfo object)
 {
@@ -81,7 +83,7 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
         {
             const float h = clamp(0.5 + 0.5 * (objectDistance - distance) / object.OperationMod, 0.0, 1.0);
             distance = lerp(objectDistance, distance, h) - object.OperationMod * h * (1.0 - h);
-            colour = lerp(object.Colour.xyz, colour, h);
+            colour = lerp(object.Colour, colour, h);
             break;
         }
     case 2: // cut
@@ -119,7 +121,7 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
             if (objectDistance < distance)
             {
                 distance = objectDistance;
-                colour = object.Colour.xyz;
+                colour = object.Colour;
             }
             break;
         }
@@ -128,7 +130,7 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
     return float4(colour.xyz, distance);
 }
 
-float4 distanceField(float3 origin)
+float4 GetDistanceFromObjects(float3 origin)
 {
     float distance = _RenderDistance;
     float3 colour = float3(1, 1, 1);
@@ -145,22 +147,54 @@ float4 distanceField(float3 origin)
     return float4(colour.xyz, distance);
 }
 
-float3 getNormal(float3 pos)
+float3 GetLight(float3 pos, float3 normal, float3 colour)
+{
+    float3 light = float3(0, 0, 0);
+
+    for (int i = 0; i < _LightInfoCount; i++)
+    {
+        switch (_LightInfo[i].LightType)
+        {
+        case 0: // directional
+            {
+                const float diffuse = max(0.0, dot(-normal, _LightInfo[i].Direction)) * _LightInfo[i].Intensity;
+                light += diffuse * (_LightInfo[i].Colour * colour);
+                break;
+            }
+        case 1: // point
+        default:
+            {
+                //http://forum.unity3d.com/threads/light-attentuation-equation.16006/
+                const float3 toLight = pos - _LightInfo[i].Position;
+                const float range = clamp(length(toLight) / _LightInfo[i].Range, 0., 1.);
+                const float attenuation = 1.0 / (1.0 + 256.0 * range * range);
+                const float diffuse = max(0.0, dot(-normal, normalize(toLight.xyz))) *
+                    _LightInfo[i].Intensity * attenuation;
+                light += diffuse * (_LightInfo[i].Colour * colour);
+                break;
+            }
+        }
+    }
+
+    return light;
+}
+
+float3 GetObjectNormal(float3 pos)
 {
     const float2 offset = float2(0.01f, 0.0f);
     const float3 normal = float3(
-        distanceField(pos + offset.xyy).w - distanceField(pos - offset.xyy).w,
-        distanceField(pos + offset.yxy).w - distanceField(pos - offset.yxy).w,
-        distanceField(pos + offset.yyx).w - distanceField(pos - offset.yyx).w
+        GetDistanceFromObjects(pos + offset.xyy).w - GetDistanceFromObjects(pos - offset.xyy).w,
+        GetDistanceFromObjects(pos + offset.yxy).w - GetDistanceFromObjects(pos - offset.yxy).w,
+        GetDistanceFromObjects(pos + offset.yyx).w - GetDistanceFromObjects(pos - offset.yyx).w
     );
 
     return normalize(normal);
 }
 
-fixed4 raymarching(Ray ray, float depth)
+fixed4 Raymarch(Ray ray, float depth)
 {
     fixed4 result = fixed4(1, 1, 1, 1);
-    
+
     float distanceTraveled = 0;
 
     for (int i = 0; i < _MaxIterations; i++)
@@ -174,17 +208,17 @@ fixed4 raymarching(Ray ray, float depth)
 
         const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
         // Check for hit in distance field
-        const float4 combined = distanceField(pos);
+        const float4 combined = GetDistanceFromObjects(pos);
         const float3 colour = combined.xyz;
         const float distance = combined.w;
 
         if (distance < _HitResolution) // Hit something
         {
             // Object Shading
-            const float3 normal = getNormal(pos);
-            const float light = dot(-_LightDirection, normal);
+            const float3 normal = GetObjectNormal(pos);
+            const float3 light = GetLight(pos, normal, colour);
 
-            result = fixed4(colour * light, 1);
+            result = fixed4(colour + light, 1);
             break;
         }
 
@@ -202,11 +236,11 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     const float2 uv = id.xy / float2(width, height) * 2 - 1;
 
     Ray ray = CreateCameraRay(uv, _CamToWorld, _CamInverseProjection);
-    float depth = LinearEyeDepth(_CamDepthTexture[id.xy].r);
+    float depth = LinearEyeDepth(_CamDepthTexture[id.xy / _CamResolution].r);
     depth *= length(ray.Direction);
 
     ray.Direction = normalize(ray.Direction);
 
-    fixed4 result = raymarching(ray, depth);
+    fixed4 result = Raymarch(ray, depth);
     _Destination[id.xy] = fixed4(_Source[id.xy] * (1.0 - result.w) + result.xyz * result.w, 1.0);
 }

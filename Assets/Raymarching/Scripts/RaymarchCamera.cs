@@ -9,32 +9,29 @@ namespace WSWhitehouse
     [RequireComponent(typeof(Camera)), ImageEffectAllowedInSceneView, ExecuteAlways, DisallowMultipleComponent]
     public class RaymarchCamera : MonoBehaviour
     {
-        // Shader
+        // Compute Shader
         [SerializeField] private ComputeShader shader;
         private int _kernelIndex = 0;
-        private RenderTexture _target;
-        private ComputeBuffer _computeBuffer;
+        private RenderTexture _source;
+        private RenderTexture _destination;
+        private int _rtResX;
+        private int _rtResY;
 
-        // Lights
-        [SerializeField] private Light directionalLight;
-
-        [Header("Raymarching")] [SerializeField]
-        private float renderDistance = 100.0f;
-
+        // Raymarching
+        [SerializeField] private float renderDistance = 100.0f;
+        [SerializeField] [Range(0.1f, 1f)] private float imageResolution = 0.7f;
         [SerializeField] private int maxIterations = 164;
-
         [SerializeField] private float hitResolution = 0.001f;
 
         // Raymarch Objects
+        public List<RaymarchObject> RaymarchObjects { get; private set; } = new List<RaymarchObject>();
         private List<RaymarchObjectInfo> _objectInfos = new List<RaymarchObjectInfo>();
+        private ComputeBuffer _objectsBuffer;
 
-        private List<RaymarchObject> _raymarchObjects = new List<RaymarchObject>();
-
-        public List<RaymarchObject> RaymarchObjects
-        {
-            get => _raymarchObjects;
-            private set => _raymarchObjects = value;
-        }
+        // RaymarchLights
+        public List<RaymarchLight> RaymarchLights { get; private set; } = new List<RaymarchLight>();
+        private List<RaymarchLightInfo> _lightInfos = new List<RaymarchLightInfo>();
+        private ComputeBuffer _lightsBuffer;
 
         // Camera
         private Camera _camera;
@@ -61,10 +58,12 @@ namespace WSWhitehouse
         private static readonly int shader_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         private static readonly int shader_CamInverseProjection = Shader.PropertyToID("_CamInverseProjection");
         private static readonly int shader_CamToWorld = Shader.PropertyToID("_CamToWorld");
+        private static readonly int shader_CamResolution = Shader.PropertyToID("_CamResolution");
         private static readonly int shader_RenderDistance = Shader.PropertyToID("_RenderDistance");
-        private static readonly int shader_LightDirection = Shader.PropertyToID("_LightDirection");
         private static readonly int shader_ObjectInfo = Shader.PropertyToID("_ObjectInfo");
         private static readonly int shader_ObjectInfoCount = Shader.PropertyToID("_ObjectInfoCount");
+        private static readonly int shader_LightInfo = Shader.PropertyToID("_LightInfo");
+        private static readonly int shader_LightInfoCount = Shader.PropertyToID("_LightInfoCount");
 
 
         [ImageEffectUsesCommandBuffer]
@@ -74,9 +73,10 @@ namespace WSWhitehouse
             // Only find objects in editor. Objects will automatically add
             // themselves to the list in play mode.
             RaymarchObjects = FindObjectsOfType<RaymarchObject>().ToList();
+            RaymarchLights = FindObjectsOfType<RaymarchLight>().ToList();
 #endif
 
-            if (shader == null || RaymarchObjects.Count == 0)
+            if (shader == null || RaymarchObjects.Count == 0 || RaymarchLights.Count == 0)
             {
                 Graphics.Blit(src, dest);
                 return;
@@ -85,40 +85,51 @@ namespace WSWhitehouse
             // Render Texture
             InitRenderTexture();
             // _kernelIndex = shader.FindKernel("CSMain");
-            shader.SetTexture(_kernelIndex, shader_Source, src);
-            shader.SetTexture(_kernelIndex, shader_Destination, _target);
+            Graphics.Blit(src, _source);
+            shader.SetTexture(_kernelIndex, shader_Source, _source);
+            shader.SetTexture(_kernelIndex, shader_Destination, _destination);
 
             // Shader Properties
             CreateObjectInfoBuffer();
+            CreateLightInfoBuffer();
             SetShaderProperties();
 
             int threadGroupsX = Mathf.CeilToInt(Camera.pixelWidth / 8.0f);
             int threadGroupsY = Mathf.CeilToInt(Camera.pixelHeight / 8.0f);
             shader.Dispatch(_kernelIndex, threadGroupsX, threadGroupsY, 1);
 
-            Graphics.Blit(_target, dest);
-            _computeBuffer.Dispose();
+            Graphics.Blit(_destination, dest);
+            DisposeBuffers();
         }
 
         private void InitRenderTexture()
         {
-            if (_target != null && _target.width == Camera.pixelWidth && _target.height == Camera.pixelHeight)
+            _rtResX = (int) (Camera.pixelWidth * imageResolution);
+            _rtResY = (int) (Camera.pixelHeight * imageResolution);
+
+            CreateRenderTexture(ref _source);
+            CreateRenderTexture(ref _destination);
+        }
+
+        private void CreateRenderTexture(ref RenderTexture renderTexture)
+        {
+            if (renderTexture != null && renderTexture.width == _rtResX && renderTexture.height == _rtResY)
             {
                 return;
             }
 
-            if (_target != null)
+            if (renderTexture != null)
             {
-                _target.Release();
+                renderTexture.Release();
             }
 
-            _target = new RenderTexture(Camera.pixelWidth, Camera.pixelHeight, 0,
+            renderTexture = new RenderTexture(_rtResX, _rtResY, 0,
                 RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear)
             {
                 enableRandomWrite = true
             };
 
-            _target.Create();
+            renderTexture.Create();
         }
 
         private void SetShaderProperties()
@@ -127,19 +138,19 @@ namespace WSWhitehouse
             shader.SetTextureFromGlobal(_kernelIndex, shader_CamDepthTexture, shader_CameraDepthTexture);
             shader.SetMatrix(shader_CamInverseProjection, Camera.projectionMatrix.inverse);
             shader.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
+            shader.SetFloat(shader_CamResolution, imageResolution);
             shader.SetFloat(shader_RenderDistance, renderDistance);
 
             // Raymarching
             shader.SetInt(shader_MaxIterations, maxIterations);
             shader.SetFloat(shader_HitResolution, hitResolution);
 
-            // Lighting
-            shader.SetVector(shader_LightDirection,
-                directionalLight != null ? directionalLight.transform.forward : Vector3.down);
-
             // Compute Buffer
-            shader.SetBuffer(_kernelIndex, shader_ObjectInfo, _computeBuffer);
-            shader.SetInt(shader_ObjectInfoCount, _computeBuffer.count);
+            shader.SetBuffer(_kernelIndex, shader_ObjectInfo, _objectsBuffer);
+            shader.SetInt(shader_ObjectInfoCount, _objectsBuffer.count);
+
+            shader.SetBuffer(_kernelIndex, shader_LightInfo, _lightsBuffer);
+            shader.SetInt(shader_LightInfoCount, _lightsBuffer.count);
         }
 
         private void CreateObjectInfoBuffer()
@@ -170,8 +181,39 @@ namespace WSWhitehouse
                 }
             }
 
-            _computeBuffer = new ComputeBuffer(count, RaymarchObjectInfo.GetSize(), ComputeBufferType.Default);
-            _computeBuffer.SetData(_objectInfos);
+            _objectsBuffer = new ComputeBuffer(count, RaymarchObjectInfo.GetSize(), ComputeBufferType.Default);
+            _objectsBuffer.SetData(_objectInfos);
+        }
+
+        private void CreateLightInfoBuffer()
+        {
+            int count = RaymarchLights.Count;
+
+            if (_lightInfos.Count != count)
+            {
+                _lightInfos = new List<RaymarchLightInfo>(count);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (_lightInfos.Count <= i)
+                {
+                    _lightInfos.Add(new RaymarchLightInfo(RaymarchLights[i]));
+                }
+                else
+                {
+                    _lightInfos[i] = new RaymarchLightInfo(RaymarchLights[i]);
+                }
+            }
+
+            _lightsBuffer = new ComputeBuffer(count, RaymarchLightInfo.GetSize(), ComputeBufferType.Default);
+            _lightsBuffer.SetData(_lightInfos);
+        }
+
+        private void DisposeBuffers()
+        {
+            _objectsBuffer.Dispose();
+            _lightsBuffer.Dispose();
         }
     }
 }

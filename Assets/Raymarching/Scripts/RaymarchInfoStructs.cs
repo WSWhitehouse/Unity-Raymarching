@@ -12,7 +12,7 @@ namespace WSWhitehouse
         public Vector4 Rotation;
         public Vector3 Scale;
 
-        public Vector4 Colour;
+        public Vector3 Colour;
 
         public int Operation;
         public int OperationSmooth;
@@ -30,7 +30,7 @@ namespace WSWhitehouse
             Position = _raymarchObject.Position;
             Rotation = _raymarchObject.Rotation;
             Scale = _raymarchObject.Scale;
-            Colour = _raymarchObject.Colour;
+            Colour = new Vector3(_raymarchObject.Colour.r, _raymarchObject.Colour.g, _raymarchObject.Colour.b);
             Operation = (int) _raymarchObject.Operation;
             OperationSmooth = _raymarchObject.OperationSmooth ? 1 : 0;
             OperationMod = _raymarchObject.OperationMod;
@@ -41,7 +41,35 @@ namespace WSWhitehouse
 
         public static int GetSize()
         {
-            return (sizeof(float) * 18) + (sizeof(int) * 4);
+            return (sizeof(float) * 17) + (sizeof(int) * 4);
+        }
+    }
+
+    struct RaymarchLightInfo
+    {
+        int LightType;
+
+        Vector3 Position;
+        Vector3 Direction;
+
+        Vector3 Colour;
+        float Range;
+        float Intensity;
+
+        public RaymarchLightInfo(RaymarchLight _raymarchLight)
+        {
+            // Fill in Info Struct
+            LightType = (int) _raymarchLight.LightType;
+            Position = _raymarchLight.Position;
+            Direction = _raymarchLight.Direction;
+            Colour = new Vector3(_raymarchLight.Colour.r, _raymarchLight.Colour.g, _raymarchLight.Colour.b);
+            Range = _raymarchLight.Range;
+            Intensity = _raymarchLight.Intensity;
+        }
+
+        public static int GetSize()
+        {
+            return (sizeof(float) * 11) + (sizeof(int) * 1);
         }
     }
 }

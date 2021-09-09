@@ -23,6 +23,21 @@ namespace WSWhitehouse
         [SerializeField] private int maxIterations = 164;
         [SerializeField] private float hitResolution = 0.001f;
 
+        // Lighting & Shadows
+        [SerializeField] private Color ambientColour = new Color(54, 58, 66, 255);
+        [SerializeField] private ShadowType shadowType = ShadowType.SoftShadows;
+        [SerializeField] private float shadowIntensity = 1.0f;
+        [SerializeField] private int shadowSteps = 10;
+        [SerializeField] private Vector2 shadowDistance = new Vector2(0.05f, 50.0f);
+        [SerializeField] private float shadowPenumbra;
+
+        private enum ShadowType
+        {
+            NoShadows,
+            HardShadows,
+            SoftShadows
+        }
+
         // Raymarch Objects
         public List<RaymarchObject> RaymarchObjects { get; private set; } = new List<RaymarchObject>();
         private List<RaymarchObjectInfo> _objectInfos = new List<RaymarchObjectInfo>();
@@ -52,16 +67,29 @@ namespace WSWhitehouse
         // Shader IDs
         private static readonly int shader_Source = Shader.PropertyToID("_Source");
         private static readonly int shader_Destination = Shader.PropertyToID("_Destination");
-        private static readonly int shader_MaxIterations = Shader.PropertyToID("_MaxIterations");
-        private static readonly int shader_HitResolution = Shader.PropertyToID("_HitResolution");
+
         private static readonly int shader_CamDepthTexture = Shader.PropertyToID("_CamDepthTexture");
         private static readonly int shader_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         private static readonly int shader_CamInverseProjection = Shader.PropertyToID("_CamInverseProjection");
         private static readonly int shader_CamToWorld = Shader.PropertyToID("_CamToWorld");
         private static readonly int shader_CamResolution = Shader.PropertyToID("_CamResolution");
         private static readonly int shader_RenderDistance = Shader.PropertyToID("_RenderDistance");
+
+        private static readonly int shader_MaxIterations = Shader.PropertyToID("_MaxIterations");
+        private static readonly int shader_HitResolution = Shader.PropertyToID("_HitResolution");
+
+        private static readonly int shader_AmbientColour = Shader.PropertyToID("_AmbientColour");
+        private static readonly string shader_NO_SHADOWS = "NO_SHADOWS";
+        private static readonly string shader_HARD_SHADOWS = "HARD_SHADOWS";
+        private static readonly string shader_SOFT_SHADOWS = "SOFT_SHADOWS";
+        private static readonly int shader_ShadowIntensity = Shader.PropertyToID("_ShadowIntensity");
+        private static readonly int shader_ShadowSteps = Shader.PropertyToID("_ShadowSteps");
+        private static readonly int shader_ShadowDistance = Shader.PropertyToID("_ShadowDistance");
+        private static readonly int shader_ShadowPenumbra = Shader.PropertyToID("_ShadowPenumbra");
+
         private static readonly int shader_ObjectInfo = Shader.PropertyToID("_ObjectInfo");
         private static readonly int shader_ObjectInfoCount = Shader.PropertyToID("_ObjectInfoCount");
+
         private static readonly int shader_LightInfo = Shader.PropertyToID("_LightInfo");
         private static readonly int shader_LightInfoCount = Shader.PropertyToID("_LightInfoCount");
 
@@ -140,6 +168,38 @@ namespace WSWhitehouse
             shader.SetMatrix(shader_CamToWorld, Camera.cameraToWorldMatrix);
             shader.SetFloat(shader_CamResolution, imageResolution);
             shader.SetFloat(shader_RenderDistance, renderDistance);
+
+            // Lighting & Shadows
+            shader.SetVector(shader_AmbientColour, ambientColour);
+
+            shader.DisableKeyword(shader_HARD_SHADOWS);
+            shader.DisableKeyword(shader_SOFT_SHADOWS);
+            shader.DisableKeyword(shader_NO_SHADOWS);
+
+            switch (shadowType)
+            {
+                case ShadowType.HardShadows:
+                    shader.EnableKeyword(shader_HARD_SHADOWS);
+                    break;
+                case ShadowType.SoftShadows:
+                    shader.EnableKeyword(shader_SOFT_SHADOWS);
+                    break;
+                default:
+                    shader.EnableKeyword(shader_NO_SHADOWS);
+                    break;
+            }
+
+            if (shadowType != ShadowType.NoShadows)
+            {
+                shader.SetFloat(shader_ShadowIntensity, shadowIntensity);
+                shader.SetInt(shader_ShadowSteps, shadowSteps);
+                shader.SetVector(shader_ShadowDistance, shadowDistance);
+
+                if (shadowType == ShadowType.SoftShadows)
+                {
+                    shader.SetFloat(shader_ShadowPenumbra, shadowPenumbra);
+                }
+            }
 
             // Raymarching
             shader.SetInt(shader_MaxIterations, maxIterations);

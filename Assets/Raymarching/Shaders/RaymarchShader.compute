@@ -5,17 +5,13 @@
 #include "RaymarchInfoStructs.cginc"
 #include "Ray.cginc"
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
 Texture2D<float4> _Source;
 RWTexture2D<float4> _Destination;
 
 // Camera
-Texture2D<float4> _CamDepthTexture;
+Texture2D<float4> _DepthTexture;
 float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
-float _CamResolution;
-float _RenderDistance;
 
 // Lighting & Shadows
 float3 _AmbientColour;
@@ -33,15 +29,16 @@ float _ShadowPenumbra;
 #endif
 
 // Raymarching
-int _MaxIterations;
+float _RenderDistance;
 float _HitResolution;
+int _MaxIterations;
 
 // Raymarch Object Info
-StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
+RWStructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
 int _ObjectInfoCount;
 
 // Raymarch Light Info
-StructuredBuffer<RaymarchLightInfo> _LightInfo;
+RWStructuredBuffer<RaymarchLightInfo> _LightInfo;
 int _LightInfoCount;
 
 float PerformSDF(float3 origin, RaymarchObjectInfo object)
@@ -226,7 +223,7 @@ float3 GetLight(float3 pos, float3 normal, float3 colour)
                 const float shadow = max(0.0, pow(SoftShadow(pos, -_LightInfo[i].Direction, _ShadowPenumbra) * 0.5 + 0.5, _ShadowIntensity));
                 light *= shadow;
                 #endif
-                
+
                 break;
             }
         case 1: // point
@@ -243,7 +240,6 @@ float3 GetLight(float3 pos, float3 normal, float3 colour)
             }
         }
     }
-
 
     return light;
 }
@@ -304,16 +300,21 @@ fixed4 Raymarch(Ray ray, float depth)
 [numthreads(8,8,1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
+    const uint2 xy = id.xy;
+
+    //_Destination[xy] = _Source[xy];
+   // return;
+
     uint width, height;
     _Destination.GetDimensions(width, height);
-    const float2 uv = id.xy / float2(width, height) * 2 - 1;
+    const float2 uv = xy / float2(width, height) * 2 - 1;
 
     Ray ray = CreateCameraRay(uv, _CamToWorld, _CamInverseProjection);
-    float depth = LinearEyeDepth(_CamDepthTexture[id.xy / _CamResolution].r);
+    float depth = LinearEyeDepth(_DepthTexture[xy].r);
     depth *= length(ray.Direction);
 
     ray.Direction = normalize(ray.Direction);
 
     fixed4 result = Raymarch(ray, depth);
-    _Destination[id.xy] = fixed4(_Source[id.xy] * (1.0 - result.w) + result.xyz * result.w, 1.0);
+    _Destination[xy] = fixed4(_Source[xy] * (1.0 - result.w) + result.xyz * result.w, 1.0);
 }

@@ -3,6 +3,12 @@ using UnityEngine;
 
 namespace WSWhitehouse
 {
+    public enum LightType
+    {
+        Directional = 0,
+        Point = 1,
+    }
+
     [DisallowMultipleComponent, ExecuteAlways, RequireComponent(typeof(Light))]
     public class RaymarchLight : MonoBehaviour
     {
@@ -20,7 +26,7 @@ namespace WSWhitehouse
                 return _light;
             }
         }
-        
+
         public LightType LightType =>
             Light.type == UnityEngine.LightType.Directional ? LightType.Directional : LightType.Point;
 
@@ -33,25 +39,17 @@ namespace WSWhitehouse
 
         private void OnEnable()
         {
-            // Add to RaymarchCamera light list
-            RaymarchCamera[] raymarchCams = FindObjectsOfType<RaymarchCamera>();
-
-            foreach (var cam in raymarchCams)
+            if (!Raymarch.Lights.Contains(this))
             {
-                if (cam.RaymarchLights.Contains(this)) continue;
-                cam.RaymarchLights.Add(this);
+                Raymarch.Lights.Add(this);
             }
         }
 
         private void OnDisable()
         {
-            // Remove from RaymarchCamera light list
-            RaymarchCamera[] raymarchCams = FindObjectsOfType<RaymarchCamera>();
-
-            foreach (var cam in raymarchCams)
+            if (Raymarch.Lights.Contains(this))
             {
-                if (!cam.RaymarchLights.Contains(this)) continue;
-                cam.RaymarchLights.Remove(this);
+                Raymarch.Lights.Remove(this);
             }
         }
     }

@@ -2,12 +2,18 @@
 
 namespace WSWhitehouse
 {
+    public enum SdfShape
+    {
+        Sphere = 0,
+        Cube = 1,
+    }
+
     [DisallowMultipleComponent, ExecuteAlways]
     public class RaymarchObject : MonoBehaviour
     {
         [SerializeField] private SdfShape sdfShape;
         public SdfShape SdfShape => sdfShape;
-        
+
         [SerializeField] private float marchingStepAmount = 1;
         public float MarchingStepAmount => marchingStepAmount;
 
@@ -43,7 +49,7 @@ namespace WSWhitehouse
 
         [SerializeField] private int operationLayer = 0;
         public int OperationLayer => operationLayer;
-        
+
         [SerializeField, Range(0, 1)] private float roundness = 0f;
 
         public float Roundness
@@ -85,28 +91,20 @@ namespace WSWhitehouse
             }
             set => wallThickness = Mathf.Clamp(value, 0f, 1f);
         }
-        
+
         private void OnEnable()
         {
-            // Add to RaymarchCamera object list
-            RaymarchCamera[] raymarchCams = FindObjectsOfType<RaymarchCamera>();
-
-            foreach (var cam in raymarchCams)
+            if (!Raymarch.Objects.Contains(this))
             {
-                if (cam.RaymarchObjects.Contains(this)) continue;
-                cam.RaymarchObjects.Add(this);
+                Raymarch.Objects.Add(this);
             }
         }
 
         private void OnDisable()
         {
-            // Remove from RaymarchCamera object list
-            RaymarchCamera[] raymarchCams = FindObjectsOfType<RaymarchCamera>();
-
-            foreach (var cam in raymarchCams)
+            if (Raymarch.Objects.Contains(this))
             {
-                if (!cam.RaymarchObjects.Contains(this)) continue;
-                cam.RaymarchObjects.Remove(this);
+                Raymarch.Objects.Remove(this);
             }
         }
     }

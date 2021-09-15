@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Runtime.InteropServices; // Struct layout attribute
+using UnityEngine;
 
 namespace WSWhitehouse
 {
-    [System.Serializable]
+    [Serializable, StructLayout(LayoutKind.Sequential)]
     public struct RaymarchObjectInfo
     {
         public int SdfShape;
@@ -45,6 +47,7 @@ namespace WSWhitehouse
         }
     }
 
+    [Serializable, StructLayout(LayoutKind.Sequential)]
     struct RaymarchLightInfo
     {
         int LightType;

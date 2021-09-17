@@ -258,10 +258,22 @@ float3 GetObjectNormal(float3 pos)
     return normalize(normal);
 }
 
+float3 CalculateLighting(Ray ray, float3 colour, float distance)
+{
+    // Object Shading
+    const float3 pos = ray.Origin + ray.Direction * distance;
+    const float3 normal = GetObjectNormal(pos);
+    const float3 light = GetLight(pos, normal, colour);
+
+    // Adding Light
+    float3 combinedColour = colour * _AmbientColour;
+    combinedColour += light;
+
+    return combinedColour;
+}
+
 fixed4 RaymarchSimple(Ray ray, float depth)
 {
-    fixed4 result = fixed4(1, 1, 1, 1);
-
     float distanceTraveled = _CamNearClipPlane;
 
     [loop]
@@ -270,8 +282,7 @@ fixed4 RaymarchSimple(Ray ray, float depth)
         if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
         {
             // Environment
-            result = fixed4(ray.Direction, 0);
-            break;
+            return fixed4(ray.Direction, 0);
         }
 
         const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
@@ -281,22 +292,13 @@ fixed4 RaymarchSimple(Ray ray, float depth)
 
         if (distance < _HitResolution) // Hit something
         {
-            // Object Shading
-            const float3 normal = GetObjectNormal(pos);
-            const float3 light = GetLight(pos, normal, colour);
-
-            // Adding Light
-            float3 combinedColour = colour * _AmbientColour;
-            combinedColour += light;
-
-            result = fixed4(combinedColour, 1);
-            break;
+            return fixed4(CalculateLighting(ray, colour, distance), 1);
         }
 
         distanceTraveled += distance;
     }
 
-    return result;
+    return fixed4(ray.Direction, 0);
 }
 
 fixed4 Raymarch(Ray ray, float depth)
@@ -343,14 +345,14 @@ fixed4 Raymarch(Ray ray, float depth)
             distanceTraveled += stepLength;
             continue;
         }
-        
-        if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
+
+        if (distanceTraveled > _RenderDistance || distanceTraveled >= depth) // Environment
         {
             return fixed4(ray.Direction, 0);
         }
 
         const float error = radius / distanceTraveled;
-        
+
         if (error < candidateError)
         {
             candidateDistanceTraveled = distanceTraveled;
@@ -363,16 +365,7 @@ fixed4 Raymarch(Ray ray, float depth)
         distanceTraveled += stepLength;
     }
 
-    // Object Shading
-    const float3 pos = ray.Origin + ray.Direction * candidateDistanceTraveled;
-    const float3 normal = GetObjectNormal(pos);
-    const float3 light = GetLight(pos, normal, candidateColour);
-
-    // Adding Light
-    float3 combinedColour = candidateColour * _AmbientColour;
-    combinedColour += light;
-
-    return fixed4(combinedColour, 1);
+    return fixed4(CalculateLighting(ray, candidateColour, candidateDistanceTraveled), 1);
 }
 
 [numthreads(8,8,1)]

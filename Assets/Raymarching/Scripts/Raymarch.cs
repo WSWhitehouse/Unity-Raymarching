@@ -20,6 +20,7 @@ namespace WSWhitehouse
         {
             if (settings.shader == null || Objects.Count == 0 || Lights.Count == 0)
             {
+                Graphics.Blit(src, dest);
                 return;
             }
 
@@ -74,11 +75,13 @@ namespace WSWhitehouse
             // Camera
             settings.shader.SetMatrix(ShaderID.CamInverseProjection, camera.projectionMatrix.inverse);
             settings.shader.SetMatrix(ShaderID.CamToWorld, camera.cameraToWorldMatrix);
-            settings.shader.SetFloat(ShaderID.RenderDistance, settings.renderDistance);
+            settings.shader.SetFloat(ShaderID.CamNearClipPlane, camera.nearClipPlane);
 
             // Raymarching
-            settings.shader.SetInt(ShaderID.MaxIterations, settings.maxIterations);
+            settings.shader.SetFloat(ShaderID.RenderDistance, settings.renderDistance - camera.nearClipPlane);
             settings.shader.SetFloat(ShaderID.HitResolution, settings.hitResolution);
+            settings.shader.SetFloat(ShaderID.Relaxation, settings.relaxation);
+            settings.shader.SetInt(ShaderID.MaxIterations, settings.maxIterations);
 
             // Lighting & Shadows
             settings.shader.SetVector(ShaderID.AmbientColour, settings.ambientColour);

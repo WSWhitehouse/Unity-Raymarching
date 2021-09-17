@@ -21,10 +21,10 @@ namespace WSWhitehouse
                 return _camera;
             }
         }
-        
+
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            Raymarch.Compute(src,dest, Camera, settings, null);
+            Raymarch.Compute(src, dest, Camera, settings, null);
         }
     }
 }

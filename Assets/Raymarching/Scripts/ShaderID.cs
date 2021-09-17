@@ -11,10 +11,12 @@ namespace WSWhitehouse
         public static readonly int CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         public static readonly int CamInverseProjection = Shader.PropertyToID("_CamInverseProjection");
         public static readonly int CamToWorld = Shader.PropertyToID("_CamToWorld");
-        public static readonly int RenderDistance = Shader.PropertyToID("_RenderDistance");
+        public static readonly int CamNearClipPlane = Shader.PropertyToID("_CamNearClipPlane");
 
-        public static readonly int MaxIterations = Shader.PropertyToID("_MaxIterations");
+        public static readonly int RenderDistance = Shader.PropertyToID("_RenderDistance");
         public static readonly int HitResolution = Shader.PropertyToID("_HitResolution");
+        public static readonly int Relaxation = Shader.PropertyToID("_Relaxation");
+        public static readonly int MaxIterations = Shader.PropertyToID("_MaxIterations");
 
         public static readonly int AmbientColour = Shader.PropertyToID("_AmbientColour");
         public static readonly string NoShadows = "NO_SHADOWS";

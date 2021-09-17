@@ -12,6 +12,13 @@ RWTexture2D<float4> _Destination;
 Texture2D<float4> _DepthTexture;
 float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
+float _CamNearClipPlane;
+
+// Raymarching
+float _RenderDistance;
+float _HitResolution;
+float _Relaxation;
+int _MaxIterations;
 
 // Lighting & Shadows
 float3 _AmbientColour;
@@ -27,11 +34,6 @@ float2 _ShadowDistance;
 #if SOFT_SHADOWS
 float _ShadowPenumbra;
 #endif
-
-// Raymarching
-float _RenderDistance;
-float _HitResolution;
-int _MaxIterations;
 
 // Raymarch Object Info
 RWStructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
@@ -256,12 +258,13 @@ float3 GetObjectNormal(float3 pos)
     return normalize(normal);
 }
 
-fixed4 Raymarch(Ray ray, float depth)
+fixed4 RaymarchSimple(Ray ray, float depth)
 {
     fixed4 result = fixed4(1, 1, 1, 1);
 
-    float distanceTraveled = 0;
+    float distanceTraveled = _CamNearClipPlane;
 
+    [loop]
     for (int i = 0; i < _MaxIterations; i++)
     {
         if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
@@ -272,9 +275,8 @@ fixed4 Raymarch(Ray ray, float depth)
         }
 
         const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
-        // Check for hit in distance field
         const float4 combined = GetDistanceFromObjects(pos);
-        float3 colour = combined.xyz;
+        const float3 colour = combined.xyz;
         const float distance = combined.w;
 
         if (distance < _HitResolution) // Hit something
@@ -284,10 +286,10 @@ fixed4 Raymarch(Ray ray, float depth)
             const float3 light = GetLight(pos, normal, colour);
 
             // Adding Light
-            colour *= _AmbientColour;
-            colour += light;
+            float3 combinedColour = colour * _AmbientColour;
+            combinedColour += light;
 
-            result = fixed4(colour, 1);
+            result = fixed4(combinedColour, 1);
             break;
         }
 
@@ -297,13 +299,86 @@ fixed4 Raymarch(Ray ray, float depth)
     return result;
 }
 
+fixed4 Raymarch(Ray ray, float depth)
+{
+    float relaxOmega = _Relaxation;
+    float distanceTraveled = _CamNearClipPlane;
+    float candidateError = _RenderDistance;
+    float candidateDistanceTraveled = distanceTraveled;
+    float3 candidateColour = float3(0, 0, 0);
+    float prevRadius = 0;
+    float stepLength = 0;
+
+    const float funcSign = GetDistanceFromObjects(ray.Origin).w < 0 ? -1 : +1;
+
+    [loop]
+    for (int i = 0; i < _MaxIterations; i++)
+    {
+        const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
+        const float4 combined = GetDistanceFromObjects(pos);
+        const float3 colour = combined.xyz;
+        const float distance = combined.w;
+
+        const float signedRadius = funcSign * distance;
+        const float radius = abs(signedRadius);
+
+        const bool sorFail = relaxOmega > 1 && (radius + prevRadius) < stepLength;
+
+        [branch]
+        if (sorFail)
+        {
+            stepLength -= relaxOmega * stepLength;
+            relaxOmega = 1;
+        }
+        else
+        {
+            stepLength = signedRadius * relaxOmega;
+        }
+
+        prevRadius = radius;
+
+        [branch]
+        if (sorFail)
+        {
+            distanceTraveled += stepLength;
+            continue;
+        }
+        
+        if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
+        {
+            return fixed4(ray.Direction, 0);
+        }
+
+        const float error = radius / distanceTraveled;
+        
+        if (error < candidateError)
+        {
+            candidateDistanceTraveled = distanceTraveled;
+            candidateColour = colour;
+            candidateError = error;
+
+            if (error < _HitResolution) break; // Hit Something
+        }
+
+        distanceTraveled += stepLength;
+    }
+
+    // Object Shading
+    const float3 pos = ray.Origin + ray.Direction * candidateDistanceTraveled;
+    const float3 normal = GetObjectNormal(pos);
+    const float3 light = GetLight(pos, normal, candidateColour);
+
+    // Adding Light
+    float3 combinedColour = candidateColour * _AmbientColour;
+    combinedColour += light;
+
+    return fixed4(combinedColour, 1);
+}
+
 [numthreads(8,8,1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     const uint2 xy = id.xy;
-
-    //_Destination[xy] = _Source[xy];
-   // return;
 
     uint width, height;
     _Destination.GetDimensions(width, height);

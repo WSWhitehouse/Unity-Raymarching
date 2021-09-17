@@ -14,9 +14,9 @@ namespace WSWhitehouse
 
         // Raymarching
         public float renderDistance = 100.0f;
-
-        public int maxIterations = 164;
         public float hitResolution = 0.001f;
+        public float relaxation = 1.0f;
+        public int maxIterations = 164;
 
         [Space]
 

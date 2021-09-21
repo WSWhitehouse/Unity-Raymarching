@@ -29,7 +29,7 @@ namespace WSWhitehouse
   [Serializable]
   public class RaymarchRenderSettings
   {
-    public RenderPassEvent PassEvent = RenderPassEvent.AfterRenderingOpaques;
+    public RenderPassEvent PassEvent = RenderPassEvent.AfterRenderingSkybox;
     public RaymarchSettings RaymarchSettings;
   }
 

@@ -5,11 +5,11 @@
 #include "RaymarchInfoStructs.cginc"
 #include "Ray.cginc"
 
-Texture2D<float4> _Source;
+Texture2DMS<float4> _Source;
 RWTexture2D<float4> _Destination;
 
 // Camera
-Texture2D<float4> _DepthTexture;
+Texture2DMS<float4> _DepthTexture;
 float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
 float _CamNearClipPlane;
@@ -22,18 +22,6 @@ int _MaxIterations;
 
 // Lighting & Shadows
 float3 _AmbientColour;
-#pragma multi_compile NO_SHADOWS HARD_SHADOWS SOFT_SHADOWS
-
-#if NO_SHADOWS
-#else
-float _ShadowIntensity;
-int _ShadowSteps;
-float2 _ShadowDistance;
-#endif
-
-#if SOFT_SHADOWS
-float _ShadowPenumbra;
-#endif
 
 // Raymarch Object Info
 RWStructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
@@ -78,7 +66,7 @@ float PerformSDF(float3 origin, RaymarchObjectInfo object)
             dist = sdf_box(object);
             break;
         }
-    default: return dist;
+    default: return _RenderDistance;
     }
 
     return (abs(dist - object.Roundness + object.WallThickness) - object.WallThickness) / object.MarchingStepAmount;
@@ -146,6 +134,8 @@ float4 PerformOperation(float globalDistance, float3 globalColour, float objectD
 
 float4 GetDistanceFromObjects(float3 origin)
 {
+    // return length(float3(0,0,0)) - 1;
+
     float distance = _RenderDistance;
     float3 colour = float3(1, 1, 1);
 
@@ -161,48 +151,6 @@ float4 GetDistanceFromObjects(float3 origin)
     return float4(colour.xyz, distance);
 }
 
-#if HARD_SHADOWS
-float HardShadow(float3 pos, float3 dir)
-{
-    float t = _ShadowDistance.x;
-
-    for (int i = 0; i < _ShadowSteps; i++)
-    {
-        if (t >= _ShadowDistance.y) break;
-
-        const float h = GetDistanceFromObjects(pos + dir * t);
-        if (h < _HitResolution)
-        {
-            return 0.0;
-        }
-        t += h;
-    }
-    return 1.0;
-}
-#endif
-
-#if SOFT_SHADOWS
-float SoftShadow(float3 pos, float3 dir, float k)
-{
-    float res = 1.0;
-    float t = _ShadowDistance.x;
-    for (int i = 0; i < _ShadowSteps; ++i)
-    {
-        if (t >= _ShadowDistance.y) break;
-
-        const float h = GetDistanceFromObjects(pos + dir * t);
-        if (h < _HitResolution)
-        {
-            return 0.0;
-        }
-
-        res = min(res, k * h / t);
-        t += h;
-    }
-    return res;
-}
-#endif
-
 float3 GetLight(float3 pos, float3 normal, float3 colour)
 {
     float3 light = float3(0, 0, 0);
@@ -215,16 +163,6 @@ float3 GetLight(float3 pos, float3 normal, float3 colour)
             {
                 const float diffuse = max(0.0, dot(-normal, _LightInfo[i].Direction)) * _LightInfo[i].Intensity;
                 light += diffuse * (_LightInfo[i].Colour * colour);
-
-                #if HARD_SHADOWS
-                const float shadow = max(0.0, pow(HardShadow(pos, -_LightInfo[i].Direction) * 0.5 + 0.5, _ShadowIntensity));
-                light *= shadow;
-                #endif
-
-                #if SOFT_SHADOWS
-                const float shadow = max(0.0, pow(SoftShadow(pos, -_LightInfo[i].Direction, _ShadowPenumbra) * 0.5 + 0.5, _ShadowIntensity));
-                light *= shadow;
-                #endif
 
                 break;
             }

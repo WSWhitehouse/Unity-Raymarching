@@ -1,7 +1,7 @@
-﻿#ifndef WSWHITEHOUSE_DISTANCE_FUNCTIONS_CGINC
-#define WSWHITEHOUSE_DISTANCE_FUNCTIONS_CGINC
+﻿#ifndef RAYMARCHING_DISTANCE_FUNCTIONS_HLSL
+#define RAYMARCHING_DISTANCE_FUNCTIONS_HLSL
 
-#include "RaymarchInfoStructs.cginc"
+#include "InfoStructs.hlsl"
 
 float sdf_sphere(in RaymarchObjectInfo object)
 {
@@ -14,4 +14,4 @@ float sdf_box(in RaymarchObjectInfo object)
     return length(max(o, 0.0)) + min(max(o.x, max(o.y, o.z)), 0.0);
 }
 
-#endif // WSWHITEHOUSE_DISTANCE_FUNCTIONS_CGINC
+#endif // RAYMARCHING_DISTANCE_FUNCTIONS_HLSL

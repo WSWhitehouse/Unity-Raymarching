@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0913a1cfd9e7404f863f7f127878f477, type: 3}
   m_Name: RaymarchingSettings
   m_EditorClassIdentifier: 
-  shader: {fileID: 7200000, guid: edc63164b284f844c8d6f275aee7c81a, type: 3}
-  kernelName: CSMain
+  shader: {fileID: 4800000, guid: e744aa4f8ec32f94aab6762ef6ad97b0, type: 3}
   renderDistance: 50
   hitResolution: 0.001
   relaxation: 1.2

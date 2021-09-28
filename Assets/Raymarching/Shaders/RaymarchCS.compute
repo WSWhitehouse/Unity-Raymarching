@@ -1,15 +1,15 @@
 #pragma kernel CSMain
 
-#include "UnityCG.cginc"
-#include "DistanceFunctions.cginc"
-#include "RaymarchInfoStructs.cginc"
-#include "Ray.cginc"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "DistanceFunctions.hlsl"
+#include "InfoStructs.hlsl"
+#include "Ray.hlsl"
 
-Texture2DMS<float4> _Source;
+Texture2D<float4> _Source;
 RWTexture2D<float4> _Destination;
 
 // Camera
-Texture2DMS<float4> _DepthTexture;
+Texture2D<float4> _DepthTexture;
 float4x4 _CamInverseProjection;
 float4x4 _CamToWorld;
 float _CamNearClipPlane;
@@ -210,7 +210,7 @@ float3 CalculateLighting(Ray ray, float3 colour, float distance)
     return combinedColour;
 }
 
-fixed4 RaymarchSimple(Ray ray, float depth)
+half4 RaymarchSimple(Ray ray, float depth)
 {
     float distanceTraveled = _CamNearClipPlane;
 
@@ -220,7 +220,7 @@ fixed4 RaymarchSimple(Ray ray, float depth)
         if (distanceTraveled > _RenderDistance || distanceTraveled >= depth)
         {
             // Environment
-            return fixed4(ray.Direction, 0);
+            return half4(ray.Direction, 0);
         }
 
         const float3 pos = ray.Origin + ray.Direction * distanceTraveled;
@@ -230,16 +230,16 @@ fixed4 RaymarchSimple(Ray ray, float depth)
 
         if (distance < _HitResolution) // Hit something
         {
-            return fixed4(CalculateLighting(ray, colour, distance), 1);
+            return half4(CalculateLighting(ray, colour, distance), 1);
         }
 
         distanceTraveled += distance;
     }
 
-    return fixed4(ray.Direction, 0);
+    return half4(ray.Direction, 0);
 }
 
-fixed4 Raymarch(Ray ray, float depth)
+half4 Raymarch(Ray ray, float depth)
 {
     float relaxOmega = _Relaxation;
     float distanceTraveled = _CamNearClipPlane;
@@ -286,7 +286,7 @@ fixed4 Raymarch(Ray ray, float depth)
 
         if (distanceTraveled > _RenderDistance || distanceTraveled >= depth) // Environment
         {
-            return fixed4(ray.Direction, 0);
+            return half4(ray.Direction, 0);
         }
 
         const float error = radius / distanceTraveled;
@@ -303,7 +303,7 @@ fixed4 Raymarch(Ray ray, float depth)
         distanceTraveled += stepLength;
     }
 
-    return fixed4(CalculateLighting(ray, candidateColour, candidateDistanceTraveled), 1);
+    return half4(CalculateLighting(ray, candidateColour, candidateDistanceTraveled), 1);
 }
 
 [numthreads(8,8,1)]
@@ -315,12 +315,12 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     _Destination.GetDimensions(width, height);
     const float2 uv = xy / float2(width, height) * 2 - 1;
 
-    Ray ray = CreateCameraRay(uv, _CamToWorld, _CamInverseProjection);
-    float depth = LinearEyeDepth(_DepthTexture[xy].r);
+    Ray ray = CreateCameraRay(uv, unity_MatrixInvV);
+    float depth = LinearEyeDepth(_DepthTexture[xy].r, _ZBufferParams);
     depth *= length(ray.Direction);
 
     ray.Direction = normalize(ray.Direction);
 
-    fixed4 result = Raymarch(ray, depth);
-    _Destination[xy] = fixed4(_Source[xy] * (1.0 - result.w) + result.xyz * result.w, 1.0);
+    half4 result = Raymarch(ray, depth);
+    _Destination[xy] = half4(_Source[xy] * (1.0 - result.w) + result.xyz * result.w, 1.0);
 }

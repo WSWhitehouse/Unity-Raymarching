@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace WSWhitehouse
 {
@@ -7,8 +6,7 @@ namespace WSWhitehouse
     public class RaymarchSettings : ScriptableObject
     {
         // Compute Shader
-        public ComputeShader shader;
-        [SerializeField] private string kernelName = "CSMain";
+        public Shader shader;
 
         [Space]
 
@@ -34,16 +32,6 @@ namespace WSWhitehouse
             NoShadows,
             HardShadows,
             SoftShadows
-        }
-
-        private int? _kernelIndex = null;
-        public int KernelIndex
-        {
-            get
-            {
-                _kernelIndex ??= shader.FindKernel(kernelName);
-                return _kernelIndex.Value;
-            }
         }
     }
 }

@@ -18,8 +18,11 @@ MonoBehaviour:
   relaxation: 1.2
   maxIterations: 164
   ambientColour: {r: 0.2117, g: 0.2274, b: 0.2588, a: 1}
-  shadowType: 0
-  shadowIntensity: 1
-  shadowSteps: 10
+  aoStepSize: 0.01
+  aoIterations: 3
+  aoIntensity: 0
+  shadowType: 2
+  shadowIntensity: 0.75
+  shadowSteps: 5
   shadowDistance: {x: 0.05, y: 50}
-  shadowPenumbra: 0
+  shadowPenumbra: 1

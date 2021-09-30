@@ -3,6 +3,8 @@
 
 struct RaymarchObjectInfo
 {
+    int IsVisible;
+    
     int SdfShape;
     float MarchingStepAmount;
 

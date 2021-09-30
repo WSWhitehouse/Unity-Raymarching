@@ -35,7 +35,7 @@ Shader "Raymarch/RaymarchShader"
         };
 
         // Camera
-        uniform float4x4 _CamToWorld;
+        uniform float4x4 _CamToWorldMatrix;
 
         // Raymarching
         uniform float _RenderDistance;
@@ -45,6 +45,25 @@ Shader "Raymarch/RaymarchShader"
 
         // Lighting & Shadows
         uniform float3 _AmbientColour;
+
+        // Ambient Occlusion
+        uniform float _AoStepSize;
+        uniform float _AoIntensity;
+        uniform int _AoIterations;
+
+        // Shadows
+        #pragma multi_compile NO_SHADOWS HARD_SHADOWS SOFT_SHADOWS
+
+        #if NO_SHADOWS
+        #else
+        uniform float _ShadowIntensity;
+        uniform int _ShadowSteps;
+        uniform float2 _ShadowDistance;
+        #endif
+
+        #if SOFT_SHADOWS
+        uniform float _ShadowPenumbra;
+        #endif
 
         // Raymarch Object Info
         uniform StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
@@ -160,13 +179,16 @@ Shader "Raymarch/RaymarchShader"
 
         float4 GetDistanceFromObjects(float3 origin)
         {
-            // return length(origin) - 1;
-
             float distance = _RenderDistance;
             float3 colour = float3(1, 1, 1);
 
             for (int i = 0; i < _ObjectInfoCount; i++)
             {
+                if (_ObjectInfo[i].IsVisible == 0)
+                {
+                    continue;
+                }
+
                 float objectDistance = PerformSDF(origin, _ObjectInfo[i]);
                 float4 operation = PerformOperation(distance, colour, objectDistance, _ObjectInfo[i]);
 
@@ -177,7 +199,49 @@ Shader "Raymarch/RaymarchShader"
             return float4(colour.xyz, distance);
         }
 
-        float3 GetLight(float3 pos, float3 normal, float3 colour)
+        #if HARD_SHADOWS
+        float HardShadow(float3 pos, float3 dir)
+        {
+            float t = _ShadowDistance.x;
+
+            for (int i = 0; i < _ShadowSteps; i++)
+            {
+                if (t >= _ShadowDistance.y) break;
+
+                const float h = GetDistanceFromObjects(pos + dir * t);
+                if (h < _HitResolution)
+                {
+                    return 0.0;
+                }
+                t += h;
+            }
+            return 1.0;
+        }
+        #endif
+
+        #if SOFT_SHADOWS
+        float SoftShadow(float3 pos, float3 dir, float k)
+        {
+            float res = 1.0;
+            float t = _ShadowDistance.x;
+            for (int i = 0; i < _ShadowSteps; ++i)
+            {
+                if (t >= _ShadowDistance.y) break;
+
+                const float h = GetDistanceFromObjects(pos + dir * t);
+                if (h < _HitResolution)
+                {
+                    return 0.0;
+                }
+
+                res = min(res, k * h / t);
+                t += h;
+            }
+            return res;
+        }
+        #endif
+
+        float3 GetLight(float3 pos, float3 normal)
         {
             float3 light = float3(0, 0, 0);
 
@@ -187,8 +251,16 @@ Shader "Raymarch/RaymarchShader"
                 {
                 case 0: // directional
                     {
-                        float diffuse = max(0.0, dot(-normal, _LightInfo[i].Direction)) * _LightInfo[i].Intensity;
-                        light += diffuse * (_LightInfo[i].Colour * colour);
+                        light += _LightInfo[i].Colour * max(0.0, dot(-normal, _LightInfo[i].Direction)) * _LightInfo[i].
+                            Intensity;
+
+                        #if HARD_SHADOWS
+                        light *= max(0.0, pow(HardShadow(pos, -_LightInfo[i].Direction) * 0.5 + 0.5, _ShadowIntensity));
+                        #endif
+
+                        #if SOFT_SHADOWS
+                        light *= max(0.0, pow(SoftShadow(pos, -_LightInfo[i].Direction, _ShadowPenumbra) * 0.5 + 0.5, _ShadowIntensity));
+                        #endif
 
                         break;
                     }
@@ -199,15 +271,30 @@ Shader "Raymarch/RaymarchShader"
                         float3 toLight = pos - _LightInfo[i].Position;
                         float range = clamp(length(toLight) / _LightInfo[i].Range, 0., 1.);
                         float attenuation = 1.0 / (1.0 + 256.0 * range * range);
-                        float diffuse = max(0.0, dot(-normal, normalize(toLight.xyz))) *
+
+                        light += max(0.0, _LightInfo[i].Colour * dot(-normal, normalize(toLight.xyz))) *
                             _LightInfo[i].Intensity * attenuation;
-                        light += diffuse * (_LightInfo[i].Colour * colour);
                         break;
                     }
                 }
             }
 
             return light;
+        }
+
+        float GetAmbientOcclusion(float3 pos, float3 normal)
+        {
+            float step = _AoStepSize;
+            float ao = 0.0;
+            float dist;
+
+            for (int i = 1; i <= _AoIterations; i++)
+            {
+                dist = step * i;
+                ao += max(0.0, (dist - GetDistanceFromObjects(pos + normal * dist)) / dist);
+            }
+
+            return 1.0 - ao * _AoIntensity;
         }
 
         float3 GetObjectNormal(float3 pos)
@@ -227,11 +314,11 @@ Shader "Raymarch/RaymarchShader"
             // Object Shading
             float3 pos = ray.Origin + ray.Direction * distance;
             float3 normal = GetObjectNormal(pos);
-            float3 light = GetLight(pos, normal, colour);
 
             // Adding Light
             float3 combinedColour = colour * _AmbientColour;
-            combinedColour += light;
+            combinedColour *= GetAmbientOcclusion(pos, normal);
+            combinedColour += GetLight(pos, normal) * colour;
 
             return combinedColour;
         }
@@ -256,7 +343,7 @@ Shader "Raymarch/RaymarchShader"
 
                 if (distance < _HitResolution) // Hit something
                 {
-                    return half4(CalculateLighting(ray, colour, distance), 1);
+                    return half4(CalculateLighting(ray, colour, distanceTraveled), 1);
                 }
 
                 distanceTraveled += distance;
@@ -341,24 +428,19 @@ Shader "Raymarch/RaymarchShader"
 
             v2f vert(appdata v)
             {
-                v2f o;
-                o.vertex = TransformObjectToHClip(v.vertex.xyz);
-
                 #ifdef UNITY_UV_STARTS_AT_TOP
                 // v.uv.y = 1 - v.uv.y;
                 #endif
 
+                v2f o;
+                o.vertex = TransformObjectToHClip(v.vertex.xyz);
                 o.uv = UnityStereoTransformScreenSpaceTex(v.uv);
-
                 return o;
             }
 
             half4 frag(v2f i) : SV_Target0
             {
-                // return half4(1, 1, 1, 1);
-
-
-                Ray ray = CreateCameraRay(i.uv, _CamToWorld);
+                Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
 
                 #if UNITY_REVERSED_Z
                 float depth = SampleSceneDepth(i.uv);
@@ -368,8 +450,6 @@ Shader "Raymarch/RaymarchShader"
                 #endif
 
                 depth = LinearEyeDepth(depth, _ZBufferParams) * ray.Length;
-
-                // return half4(ray.Direction, 1);
 
                 half4 result = Raymarch(ray, depth);
                 return half4(tex2D(_MainTex, i.uv).xyz * (1.0 - result.w) + result.xyz * result.w, 1.0);

@@ -27,6 +27,9 @@ public static class ShaderPropertyID
 
   public static readonly int ObjectInfo = Shader.PropertyToID("_ObjectInfo");
   public static readonly int ObjectInfoCount = Shader.PropertyToID("_ObjectInfoCount");
+  
+  public static readonly int ModifierInfo = Shader.PropertyToID("_ModifierInfo");
+  public static readonly int ModifierInfoCount = Shader.PropertyToID("_ModifierInfoCount");
 
   public static readonly int LightInfo = Shader.PropertyToID("_LightInfo");
   public static readonly int LightInfoCount = Shader.PropertyToID("_LightInfoCount");

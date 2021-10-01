@@ -69,10 +69,13 @@ Shader "Raymarch/RaymarchShader"
         uniform StructuredBuffer<RaymarchObjectInfo> _ObjectInfo;
         uniform int _ObjectInfoCount;
 
+        // Raymarch Modifier Info
+        uniform StructuredBuffer<RaymarchModifierInfo> _ModifierInfo;
+        uniform int _ModifierInfoCount;
+
         // Raymarch Light Info
         uniform StructuredBuffer<RaymarchLightInfo> _LightInfo;
         uniform int _LightInfoCount;
-
 
         float PerformSDF(float3 origin, RaymarchObjectInfo object)
         {
@@ -116,29 +119,29 @@ Shader "Raymarch/RaymarchShader"
                 MarchingStepAmount;
         }
 
-        float4 PerformOperation(float globalDistance, float3 globalColour, float objectDistance,
-                                RaymarchObjectInfo object)
+        float4 PerformModifier(float globalDistance, float3 globalColour, float objectDistance,
+                               RaymarchObjectInfo object, RaymarchModifierInfo modifier)
         {
             float distance = globalDistance;
             float3 colour = globalColour;
 
             // https://www.iquilezles.org/www/articles/smin/smin.htm
 
-            switch (object.Operation)
+            switch (modifier.Operation)
             {
             case 1: // blend
                 {
-                    float h = clamp(0.5 + 0.5 * (objectDistance - distance) / object.OperationMod, 0.0, 1.0);
-                    distance = lerp(objectDistance, distance, h) - object.OperationMod * h * (1.0 - h);
+                    float h = clamp(0.5 + 0.5 * (objectDistance - distance) / modifier.OperationMod, 0.0, 1.0);
+                    distance = lerp(objectDistance, distance, h) - modifier.OperationMod * h * (1.0 - h);
                     colour = lerp(object.Colour, colour, h);
                     break;
                 }
             case 2: // cut
                 {
-                    if (object.OperationSmooth)
+                    if (modifier.OperationSmooth)
                     {
-                        float h = clamp(0.5 - 0.5 * (distance + objectDistance) / object.OperationMod, 0.0, 1.0);
-                        distance = lerp(distance, -objectDistance, h) + object.OperationMod * h * (1.0 - h);
+                        float h = clamp(0.5 - 0.5 * (distance + objectDistance) / modifier.OperationMod, 0.0, 1.0);
+                        distance = lerp(distance, -objectDistance, h) + modifier.OperationMod * h * (1.0 - h);
                         break;
                     }
 
@@ -150,10 +153,10 @@ Shader "Raymarch/RaymarchShader"
                 }
             case 3: // mask
                 {
-                    if (object.OperationSmooth)
+                    if (modifier.OperationSmooth)
                     {
-                        float h = clamp(0.5 - 0.5 * (distance - objectDistance) / object.OperationMod, 0.0, 1.0);
-                        distance = lerp(distance, objectDistance, h) + object.OperationMod * h * (1.0 - h);
+                        float h = clamp(0.5 - 0.5 * (distance - objectDistance) / modifier.OperationMod, 0.0, 1.0);
+                        distance = lerp(distance, objectDistance, h) + modifier.OperationMod * h * (1.0 - h);
                         break;
                     }
 
@@ -177,26 +180,55 @@ Shader "Raymarch/RaymarchShader"
             return float4(colour.xyz, distance);
         }
 
+
         float4 GetDistanceFromObjects(float3 origin)
         {
-            float distance = _RenderDistance;
-            float3 colour = float3(1, 1, 1);
+            float resultDistance = _RenderDistance;
+            float3 resultColour = float3(1, 1, 1);
 
             for (int i = 0; i < _ObjectInfoCount; i++)
             {
-                if (_ObjectInfo[i].IsVisible == 0)
+                float distance = _RenderDistance;
+                float3 colour = float3(1, 1, 1);
+
+                if (_ObjectInfo[i].ModifierIndex < 0) // no modifier
                 {
-                    continue;
+                    if (_ObjectInfo[i].IsVisible == 0) continue;
+
+                    distance = PerformSDF(origin, _ObjectInfo[i]);
+                    colour = _ObjectInfo[i].Colour;
+                }
+                else
+                {
+                    int modIndex = _ObjectInfo[i].ModifierIndex;
+                    int endIndex = i + _ModifierInfo[modIndex].NumOfObjects;
+
+                    distance = PerformSDF(origin, _ObjectInfo[i]);
+                    colour = _ObjectInfo[i].Colour;
+
+                    for (int j = i + 1; j < endIndex && j < _ObjectInfoCount; j++)
+                    {
+                        if (_ObjectInfo[j].IsVisible == 0) continue;
+
+                        float objectDistance = PerformSDF(origin, _ObjectInfo[j]);
+                        float4 modifier = PerformModifier(distance, colour, objectDistance, _ObjectInfo[j],
+                                                          _ModifierInfo[modIndex]);
+
+                        distance = modifier.w;
+                        colour = modifier.xyz;
+                    }
+
+                    i = endIndex - 1;
                 }
 
-                float objectDistance = PerformSDF(origin, _ObjectInfo[i]);
-                float4 operation = PerformOperation(distance, colour, objectDistance, _ObjectInfo[i]);
-
-                distance = operation.w;
-                colour = operation.xyz;
+                if (distance < resultDistance)
+                {
+                    resultDistance = distance;
+                    resultColour = colour;
+                }
             }
 
-            return float4(colour.xyz, distance);
+            return float4(resultColour.xyz, resultDistance);
         }
 
         #if HARD_SHADOWS

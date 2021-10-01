@@ -14,13 +14,19 @@ struct RaymarchObjectInfo
 
     float3 Colour;
 
+    float Roundness;
+    float WallThickness;
+
+    int ModifierIndex;
+};
+
+struct RaymarchModifierInfo
+{
+    int NumOfObjects;
+
     int Operation;
     int OperationSmooth;
     float OperationMod;
-    int OperationLayer;
-
-    float Roundness;
-    float WallThickness;
 };
 
 struct RaymarchLightInfo

@@ -8,42 +8,31 @@ public static class Raymarch
   private static List<RaymarchObject> _objects = new List<RaymarchObject>();
   private static List<RaymarchObjectInfo> _objectInfos = new List<RaymarchObjectInfo>();
   private static ComputeBuffer _objectComputeBuffer;
-  private static bool _objectListDirty = true;
+  private static bool _objectsDirty = true;
 
   public static ComputeBuffer ObjectComputeBuffer
   {
     get
     {
-      if (_objectComputeBuffer == null || _objectListDirty ||
-          _objects.Any(x => x.IsDirty))
+      if (_objectComputeBuffer == null || _objectsDirty ||
+          _objects.Any(x => x.DirtyFlag.IsDirty))
       {
         _objectComputeBuffer?.Release();
         _objectComputeBuffer = CreateObjectComputeBuffer();
 
         // Reset dirty flags
-        _objectListDirty = false;
+        _objectsDirty = false;
       }
 
       return _objectComputeBuffer;
     }
   }
 
-  public static void AddObject(RaymarchObject obj)
+  public static void SetObjects(List<RaymarchObject> _raymarchObjects)
   {
-    if (_objects.Contains(obj)) return;
-
-    _objects.Add(obj);
-    _objectListDirty = true;
-  }
-
-  public static void RemoveObject(RaymarchObject obj)
-  {
-    if (!_objects.Contains(obj)) return;
-
-    _objects.Remove(obj);
-    _objectListDirty = true;
-
-    if (_objects.Count == 0) _objectComputeBuffer?.Dispose();
+    _objects = _raymarchObjects;
+    _objectsDirty = true;
+    _modifiersDirty = true;
   }
 
   private static ComputeBuffer CreateObjectComputeBuffer()
@@ -52,31 +41,33 @@ public static class Raymarch
 
     CheckListCapacity(ref _objectInfos, count);
 
-    // Sort objects
-    _objects = _objects
-      .OrderBy(x => x.OperationLayer)
-      .ThenBy(x => x.Operation)
-      .ToList();
-
     for (int i = 0; i < count; i++)
     {
-      if (!_objectListDirty && !_objects[i].IsDirty)
+      if (!_objectsDirty && !_objects[i].DirtyFlag.IsDirty)
       {
         continue;
+      }
+
+      int modifierIndex = -1;
+
+      RaymarchModifier modifier;
+      if (_modifiers.TryGetValue(i, out modifier))
+      {
+        modifierIndex = modifier.Index;
       }
 
       // Set Object Info
       if (_objectInfos.Count <= i)
       {
-        _objectInfos.Add(new RaymarchObjectInfo(_objects[i]));
+        _objectInfos.Add(new RaymarchObjectInfo(_objects[i], modifierIndex));
       }
       else
       {
-        _objectInfos[i] = new RaymarchObjectInfo(_objects[i]);
+        _objectInfos[i] = new RaymarchObjectInfo(_objects[i], modifierIndex);
       }
 
       // Reset object dirty flag
-      _objects[i].ResetDirtyFlag();
+      _objects[i].DirtyFlag.ResetDirtyFlag();
     }
 
     var buffer = new ComputeBuffer(count, RaymarchObjectInfo.GetSize(), ComputeBufferType.Default);
@@ -85,24 +76,100 @@ public static class Raymarch
     return buffer;
   }
 
+  // Raymarch Modifiers
+  private static Dictionary<int, RaymarchModifier> _modifiers = new Dictionary<int, RaymarchModifier>();
+  private static List<RaymarchModifierInfo> _modifierInfos = new List<RaymarchModifierInfo>();
+  private static ComputeBuffer _modifierComputeBuffer;
+  private static bool _modifiersDirty = true;
+
+  public static ComputeBuffer ModifierComputeBuffer
+  {
+    get
+    {
+#if UNITY_EDITOR
+      if (_modifiers.Any(x => x.Value == null))
+      {
+        if (Application.isPlaying)
+        {
+          Debug.LogError("A Raymarch Modifier has been deleted during play mode!");
+        }
+      }
+#endif
+
+      if (_modifierComputeBuffer == null || _modifiersDirty ||
+          _modifiers.Any(x => x.Value.DirtyFlag.IsDirty))
+      {
+        _modifierComputeBuffer?.Release();
+        _modifierComputeBuffer = CreateModifierComputeBuffer();
+
+        // Reset dirty flags
+        _modifiersDirty = false;
+      }
+
+      return _modifierComputeBuffer;
+    }
+  }
+
+  public static void SetModifiers(Dictionary<int, RaymarchModifier> modifiers)
+  {
+    _modifiers = modifiers;
+    _objectsDirty = true;
+    _modifiersDirty = true;
+  }
+
+  private static ComputeBuffer CreateModifierComputeBuffer()
+  {
+    int count = _modifiers.Count;
+
+    CheckListCapacity(ref _modifierInfos, count);
+
+    var modifiers = _modifiers.Values.ToList();
+
+    for (int i = 0; i < count; i++)
+    {
+      if (!_modifiersDirty && !modifiers[i].DirtyFlag.IsDirty)
+      {
+        continue;
+      }
+
+      // Set Object Info
+      if (_modifierInfos.Count <= i)
+      {
+        _modifierInfos.Add(new RaymarchModifierInfo(modifiers[i]));
+      }
+      else
+      {
+        _modifierInfos[i] = new RaymarchModifierInfo(modifiers[i]);
+      }
+
+      // Reset object dirty flag
+      modifiers[i].DirtyFlag.ResetDirtyFlag();
+    }
+
+    var buffer = new ComputeBuffer(count, RaymarchModifierInfo.GetSize(), ComputeBufferType.Default);
+    buffer.SetData(_modifierInfos);
+
+    return buffer;
+  }
+
   // Raymarch Lights
   private static List<RaymarchLight> _lights = new List<RaymarchLight>();
   private static List<RaymarchLightInfo> _lightInfos = new List<RaymarchLightInfo>();
   private static ComputeBuffer _lightComputeBuffer;
-  private static bool _lightListDirty = true;
+  private static bool _lightsDirty = true;
 
   public static ComputeBuffer LightComputeBuffer
   {
     get
     {
-      if (_lightComputeBuffer == null || _lightListDirty ||
-          _lights.Any(x => x.IsDirty))
+      if (_lightComputeBuffer == null || _lightsDirty ||
+          _lights.Any(x => x.DirtyFlag.IsDirty))
       {
         _lightComputeBuffer?.Release();
         _lightComputeBuffer = CreateLightComputeBuffer();
 
         // Reset dirty flags
-        _lightListDirty = false;
+        _lightsDirty = false;
       }
 
       return _lightComputeBuffer;
@@ -112,18 +179,18 @@ public static class Raymarch
   public static void AddLight(RaymarchLight light)
   {
     if (_lights.Contains(light)) return;
-    
+
     _lights.Add(light);
-    _lightListDirty = true;
+    _lightsDirty = true;
   }
 
   public static void RemoveLight(RaymarchLight light)
   {
     if (!_lights.Contains(light)) return;
-    
+
     _lights.Remove(light);
-    _lightListDirty = true; 
-      
+    _lightsDirty = true;
+
     if (_lights.Count == 0) _lightComputeBuffer?.Dispose();
   }
 
@@ -135,7 +202,7 @@ public static class Raymarch
 
     for (int i = 0; i < count; i++)
     {
-      if (!_lightListDirty && !_lights[i].IsDirty)
+      if (!_lightsDirty && !_lights[i].DirtyFlag.IsDirty)
       {
         continue;
       }
@@ -151,7 +218,7 @@ public static class Raymarch
       }
 
       // Reset object dirty flag
-      _lights[i].ResetDirtyFlag();
+      _lights[i].DirtyFlag.ResetDirtyFlag();
     }
 
     var buffer = new ComputeBuffer(count, RaymarchLightInfo.GetSize(), ComputeBufferType.Default);
@@ -163,7 +230,11 @@ public static class Raymarch
   // Util
   public static bool ShouldRender()
   {
-    return _lights.Count != 0 && _objects.Count != 0;
+    return _lights.Count != 0 && _objects.Count != 0
+# if UNITY_EDITOR
+                              && _objects.All(x => x != null) && _modifiers.All(x => x.Value != null)
+#endif
+      ;
   }
 
   private static void CheckListCapacity<T>(ref List<T> list, int count)

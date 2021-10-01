@@ -16,15 +16,12 @@ public struct RaymarchObjectInfo
 
   public Vector3 Colour;
 
-  public int Operation;
-  public int OperationSmooth;
-  public float OperationMod;
-  public int Operationlayer;
-
   public float Roundness;
   public float WallThickness;
 
-  public RaymarchObjectInfo(RaymarchObject _raymarchObject)
+  public int ModifierIndex;
+
+  public RaymarchObjectInfo(RaymarchObject _raymarchObject, int modifierIndex)
   {
     // Fill in Info Struct
     IsVisible = _raymarchObject.isActiveAndEnabled ? 1 : 0;
@@ -34,17 +31,38 @@ public struct RaymarchObjectInfo
     Rotation = _raymarchObject.Rotation;
     Scale = _raymarchObject.Scale;
     Colour = new Vector3(_raymarchObject.Colour.r, _raymarchObject.Colour.g, _raymarchObject.Colour.b);
-    Operation = (int) _raymarchObject.Operation;
-    OperationSmooth = _raymarchObject.OperationSmooth ? 1 : 0;
-    OperationMod = _raymarchObject.OperationMod;
-    Operationlayer = _raymarchObject.OperationLayer;
     Roundness = _raymarchObject.Roundness;
     WallThickness = _raymarchObject.WallThickness;
+
+    ModifierIndex = modifierIndex;
   }
 
   public static int GetSize()
   {
-    return (sizeof(float) * 17) + (sizeof(int) * 5);
+    return (sizeof(float) * 16) + (sizeof(int) * 3);
+  }
+}
+
+[Serializable, StructLayout(LayoutKind.Sequential)]
+public struct RaymarchModifierInfo
+{
+  public int NumOfObjects;
+
+  public int Operation;
+  public int OperationSmooth;
+  public float OperationMod;
+
+  public RaymarchModifierInfo(RaymarchModifier _raymarchModifier)
+  {
+    NumOfObjects = _raymarchModifier.NumOfObjects;
+    Operation = _raymarchModifier.isActiveAndEnabled ? (int) _raymarchModifier.Operation : (int) _Operation.None;
+    OperationSmooth = _raymarchModifier.OperationSmooth ? 1 : 0;
+    OperationMod = _raymarchModifier.OperationMod;
+  }
+
+  public static int GetSize()
+  {
+    return (sizeof(float) * 1) + (sizeof(int) * 3);
   }
 }
 

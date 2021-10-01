@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,46 +10,31 @@ public enum SdfShape
   Cube = 1,
 }
 
-public enum _Operation
-{
-  None = 0,
-  Blend = 1,
-  Cut = 2,
-  Mask = 3
-}
-
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchObject : MonoBehaviour
 {
   // Dirty Flag
-  private bool _objectDirty = true;
-  public bool IsDirty => _objectDirty || transform.hasChanged;
+  private DirtyFlag _dirtyFlag;
 
-  public void SetDirty()
+  public DirtyFlag DirtyFlag
   {
-    _objectDirty = true;
+    get
+    {
+      if (_dirtyFlag == null)
+      {
+        _dirtyFlag = new DirtyFlag(transform);
+      }
+
+      return _dirtyFlag;
+    }
   }
-
-  public void ResetDirtyFlag()
-  {
-    _objectDirty = false;
-    transform.hasChanged = false;
-  }
-
-  private void SetField<T>(ref T field, T value)
-  {
-    if (EqualityComparer<T>.Default.Equals(field, value)) return;
-
-    field = value;
-    SetDirty();
-  }
-
+  
   [SerializeField] private SdfShape sdfShape;
 
   public SdfShape SdfShape
   {
     get => sdfShape;
-    set => SetField(ref sdfShape, value);
+    set => DirtyFlag.SetField(ref sdfShape, value);
   }
 
   [SerializeField] private float marchingStepAmount = 1;
@@ -58,7 +42,7 @@ public class RaymarchObject : MonoBehaviour
   public float MarchingStepAmount
   {
     get => marchingStepAmount;
-    set => SetField(ref marchingStepAmount, value);
+    set => DirtyFlag.SetField(ref marchingStepAmount, value);
   }
 
   public Vector3 Position => transform.position;
@@ -76,39 +60,7 @@ public class RaymarchObject : MonoBehaviour
   public Color Colour
   {
     get => colour;
-    set => SetField(ref colour, value);
-  }
-
-  [SerializeField] private _Operation operation = _Operation.None;
-
-  public _Operation Operation
-  {
-    get => operation;
-    set => SetField(ref operation, value);
-  }
-
-  [SerializeField] private bool operationSmooth = true;
-
-  public bool OperationSmooth
-  {
-    get => operationSmooth;
-    set => SetField(ref operationSmooth, value);
-  }
-
-  [SerializeField] private float operationMod = 1.0f;
-
-  public float OperationMod
-  {
-    get => operationMod;
-    set => SetField(ref operationMod, value);
-  }
-
-  [SerializeField] private int operationLayer = 0;
-
-  public int OperationLayer
-  {
-    get => operationLayer;
-    set => SetField(ref operationLayer, value);
+    set => DirtyFlag.SetField(ref colour, value);
   }
 
   [SerializeField, Range(0, 1)] private float roundness = 0f;
@@ -121,7 +73,7 @@ public class RaymarchObject : MonoBehaviour
       float maxRoundness = minScale * 0.5f;
       return roundness * maxRoundness;
     }
-    set => SetField(ref roundness, Mathf.Clamp(value, 0f, 1f));
+    set => DirtyFlag.SetField(ref roundness, Mathf.Clamp(value, 0f, 1f));
   }
 
   [SerializeField] private bool hollow = false;
@@ -129,7 +81,7 @@ public class RaymarchObject : MonoBehaviour
   public bool Hollow
   {
     get => hollow;
-    set => SetField(ref hollow, value);
+    set => DirtyFlag.SetField(ref hollow, value);
   }
 
   [SerializeField, Range(0, 1)] private float wallThickness;
@@ -143,27 +95,18 @@ public class RaymarchObject : MonoBehaviour
       float maxThickness = minScale * 0.5f;
       return thickness * maxThickness;
     }
-    set => SetField(ref wallThickness, Mathf.Clamp(value, 0f, 1f));
+    set => DirtyFlag.SetField(ref wallThickness, Mathf.Clamp(value, 0f, 1f));
   }
 
-
-  private void Awake()
+  private void OnEnable()
   {
-    Raymarch.AddObject(this);
+    DirtyFlag.SetDirty();
   }
 
-  private void OnDestroy()
+  private void OnDisable()
   {
-    Raymarch.RemoveObject(this);
+    DirtyFlag.SetDirty();
   }
-
-#if UNITY_EDITOR
-  // Allows objects to be added to list while not playing or in scene view
-  private void OnValidate()
-  {
-    Awake();
-  }
-#endif
 }
 
 #if UNITY_EDITOR
@@ -180,7 +123,7 @@ public class RaymarchObjectEditor : Editor
 
     if (EditorGUI.EndChangeCheck())
     {
-      Target.SetDirty();
+      Target.DirtyFlag.SetDirty();
     }
   }
 }

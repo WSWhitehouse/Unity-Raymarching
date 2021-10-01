@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,26 +14,19 @@ public enum LightType
 public class RaymarchLight : MonoBehaviour
 {
   // Dirty Flag
-  private bool _lightDirty = true;
-  public bool IsDirty => _lightDirty || transform.hasChanged;
+  private DirtyFlag _dirtyFlag;
 
-  public void SetDirty()
+  public DirtyFlag DirtyFlag
   {
-    _lightDirty = true;
-  }
+    get
+    {
+      if (_dirtyFlag == null)
+      {
+        _dirtyFlag = new DirtyFlag(transform);
+      }
 
-  public void ResetDirtyFlag()
-  {
-    _lightDirty = false;
-    transform.hasChanged = false;
-  }
-
-  private void SetField<T>(ref T field, T value)
-  {
-    if (EqualityComparer<T>.Default.Equals(field, value)) return;
-
-    field = value;
-    SetDirty();
+      return _dirtyFlag;
+    }
   }
   
   private Light _light;
@@ -61,7 +53,17 @@ public class RaymarchLight : MonoBehaviour
   public Color Colour => Light.color;
   public float Range => Light.range;
   public float Intensity => Light.intensity;
+  
+  private void OnEnable()
+  {
+    DirtyFlag.SetDirty();
+  }
 
+  private void OnDisable()
+  {
+    DirtyFlag.SetDirty();
+  }
+  
   private void Awake()
   {
     Raymarch.AddLight(this);
@@ -95,7 +97,7 @@ public class RaymarchLightEditor : Editor
 
     if (EditorGUI.EndChangeCheck())
     {
-      Target.SetDirty();
+      Target.DirtyFlag.SetDirty();
     }
   }
 }

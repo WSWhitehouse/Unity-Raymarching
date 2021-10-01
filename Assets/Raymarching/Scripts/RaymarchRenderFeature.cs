@@ -153,7 +153,10 @@ public class RaymarchRenderPass : ScriptableRenderPass
 
     // Compute Buffer
     Material.SetBuffer(ShaderPropertyID.ObjectInfo, Raymarch.ObjectComputeBuffer);
-    Material.SetInt(ShaderPropertyID.ObjectInfoCount, Raymarch.ObjectComputeBuffer.count);
+    Material.SetInt(ShaderPropertyID.ObjectInfoCount, Raymarch.ObjectComputeBuffer.count); 
+    
+    Material.SetBuffer(ShaderPropertyID.ModifierInfo, Raymarch.ModifierComputeBuffer);
+    Material.SetInt(ShaderPropertyID.ModifierInfoCount, Raymarch.ModifierComputeBuffer.count);
 
     Material.SetBuffer(ShaderPropertyID.LightInfo, Raymarch.LightComputeBuffer);
     Material.SetInt(ShaderPropertyID.LightInfoCount, Raymarch.LightComputeBuffer.count);

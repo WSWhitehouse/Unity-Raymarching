@@ -86,16 +86,6 @@ public static class Raymarch
   {
     get
     {
-#if UNITY_EDITOR
-      if (_modifiers.Any(x => x.Value == null))
-      {
-        if (Application.isPlaying)
-        {
-          Debug.LogError("A Raymarch Modifier has been deleted during play mode!");
-        }
-      }
-#endif
-
       if (_modifierComputeBuffer == null || _modifiersDirty ||
           _modifiers.Any(x => x.Value.DirtyFlag.IsDirty))
       {

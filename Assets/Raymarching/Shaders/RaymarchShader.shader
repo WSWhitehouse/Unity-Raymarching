@@ -180,7 +180,6 @@ Shader "Raymarch/RaymarchShader"
             return float4(colour.xyz, distance);
         }
 
-
         float4 GetDistanceFromObjects(float3 origin)
         {
             float resultDistance = _RenderDistance;
@@ -202,20 +201,27 @@ Shader "Raymarch/RaymarchShader"
                 {
                     int modIndex = _ObjectInfo[i].ModifierIndex;
                     int endIndex = i + _ModifierInfo[modIndex].NumOfObjects;
+                    bool performedFirstSDF = false;
 
-                    distance = PerformSDF(origin, _ObjectInfo[i]);
-                    colour = _ObjectInfo[i].Colour;
-
-                    for (int j = i + 1; j < endIndex && j < _ObjectInfoCount; j++)
+                    for (int j = i; j < endIndex && j < _ObjectInfoCount; j++)
                     {
                         if (_ObjectInfo[j].IsVisible == 0) continue;
 
                         float objectDistance = PerformSDF(origin, _ObjectInfo[j]);
-                        float4 modifier = PerformModifier(distance, colour, objectDistance, _ObjectInfo[j],
-                                                          _ModifierInfo[modIndex]);
 
-                        distance = modifier.w;
-                        colour = modifier.xyz;
+                        if (performedFirstSDF)
+                        {
+                            float4 modifier = PerformModifier(distance, colour, objectDistance, _ObjectInfo[j],
+                                                              _ModifierInfo[modIndex]);
+                            distance = modifier.w;
+                            colour = modifier.xyz;
+                        }
+                        else
+                        {
+                            performedFirstSDF = true;
+                            distance = objectDistance;
+                            colour = _ObjectInfo[j].Colour;
+                        }
                     }
 
                     i = endIndex - 1;

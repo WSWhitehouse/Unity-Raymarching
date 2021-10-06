@@ -5,62 +5,33 @@ using UnityEngine.Rendering.Universal;
 
 public class RaymarchRenderFeature : ScriptableRendererFeature
 {
-  [SerializeField] private RaymarchRenderSettings settings = new RaymarchRenderSettings();
+  [SerializeField] private RenderPassEvent passEvent = RenderPassEvent.AfterRenderingSkybox;
 
   private RaymarchRenderPass _renderPass;
 
   public override void Create()
   {
-    if (settings.RaymarchSettings == null) return;
-
-    _renderPass = new RaymarchRenderPass(name, settings);
+    _renderPass = new RaymarchRenderPass(name)
+    {
+      renderPassEvent = passEvent
+    };
   }
 
   public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
   {
-    if (settings.RaymarchSettings == null) return;
-
     renderer.EnqueuePass(_renderPass);
   }
-}
-
-[Serializable]
-public class RaymarchRenderSettings
-{
-  public RenderPassEvent PassEvent = RenderPassEvent.AfterRenderingSkybox;
-  public RaymarchSettings RaymarchSettings;
 }
 
 public class RaymarchRenderPass : ScriptableRenderPass
 {
   private readonly string _profilerTag;
-  private RaymarchSettings _settings;
 
   private RenderTargetIdentifier _destination;
 
-  private Material _material;
-
-  private Material Material
-  {
-    get
-    {
-      if (_material == null && _settings.shader != null)
-      {
-        _material = new Material(_settings.shader)
-        {
-          hideFlags = HideFlags.HideAndDontSave
-        };
-      }
-
-      return _material;
-    }
-  }
-
-  public RaymarchRenderPass(string profilerTag, RaymarchRenderSettings settings)
+  public RaymarchRenderPass(string profilerTag)
   {
     _profilerTag = profilerTag;
-    _settings = settings.RaymarchSettings;
-    renderPassEvent = settings.PassEvent;
   }
 
   public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -68,8 +39,8 @@ public class RaymarchRenderPass : ScriptableRenderPass
     RenderTextureDescriptor descriptor = cameraTextureDescriptor;
     descriptor.enableRandomWrite = true;
 
-    cmd.GetTemporaryRT(ShaderPropertyID.Destination, descriptor);
-    _destination = new RenderTargetIdentifier(ShaderPropertyID.Destination);
+    cmd.GetTemporaryRT(Shader.PropertyToID("_Destination"), descriptor);
+    _destination = new RenderTargetIdentifier("_Destination");
   }
 
   public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -84,81 +55,22 @@ public class RaymarchRenderPass : ScriptableRenderPass
     }
 #endif
 
-    if (_settings.shader == null || Material == null || !Raymarch.ShouldRender())
+    if (Raymarch.Material == null || Raymarch.Settings == null)
     {
       return;
     }
 
     CommandBuffer cmd = CommandBufferPool.Get(_profilerTag);
 
-    SetShaderProperties(camera);
+    Raymarch.Material.SetMatrix(Shader.PropertyToID("_CamToWorldMatrix"), camera.cameraToWorldMatrix);
+    Raymarch.InvokeUploadShaderData();
 
-    cmd.Blit(cameraColourTexture, _destination, Material);
+    cmd.Blit(cameraColourTexture, _destination, Raymarch.Material);
     cmd.Blit(_destination, cameraColourTexture);
 
     context.ExecuteCommandBuffer(cmd);
     cmd.Clear();
     context.Submit();
     CommandBufferPool.Release(cmd);
-  }
-
-  private void SetShaderProperties(Camera camera)
-  {
-    // Camera
-    Material.SetMatrix(ShaderPropertyID.CamToWorldMatrix, camera.cameraToWorldMatrix);
-
-    // Raymarching
-    Material.SetFloat(ShaderPropertyID.RenderDistance, _settings.renderDistance - camera.nearClipPlane);
-    Material.SetFloat(ShaderPropertyID.HitResolution, _settings.hitResolution);
-    Material.SetFloat(ShaderPropertyID.Relaxation, _settings.relaxation);
-    Material.SetInt(ShaderPropertyID.MaxIterations, _settings.maxIterations);
-
-    // Lighting
-    Material.SetVector(ShaderPropertyID.AmbientColour, _settings.ambientColour);
-
-    // Ambient Occlusion
-    Material.SetFloat(ShaderPropertyID.AoStepSize, _settings.aoStepSize);
-    Material.SetFloat(ShaderPropertyID.AoIntensity, _settings.aoIntensity);
-    Material.SetInt(ShaderPropertyID.AoIterations, _settings.aoIterations);
-
-    // Shadows
-    Material.DisableKeyword(ShaderPropertyID.HardShadows);
-    Material.DisableKeyword(ShaderPropertyID.SoftShadows);
-    Material.DisableKeyword(ShaderPropertyID.NoShadows);
-
-    switch (_settings.shadowType)
-    {
-      case RaymarchSettings.ShadowType.HardShadows:
-        Material.EnableKeyword(ShaderPropertyID.HardShadows);
-        break;
-      case RaymarchSettings.ShadowType.SoftShadows:
-        Material.EnableKeyword(ShaderPropertyID.SoftShadows);
-        break;
-      default:
-        Material.EnableKeyword(ShaderPropertyID.NoShadows);
-        break;
-    }
-
-    if (_settings.shadowType != RaymarchSettings.ShadowType.NoShadows)
-    {
-      Material.SetFloat(ShaderPropertyID.ShadowIntensity, _settings.shadowIntensity);
-      Material.SetInt(ShaderPropertyID.ShadowSteps, _settings.shadowSteps);
-      Material.SetVector(ShaderPropertyID.ShadowDistance, _settings.shadowDistance);
-
-      if (_settings.shadowType == RaymarchSettings.ShadowType.SoftShadows)
-      {
-        Material.SetFloat(ShaderPropertyID.ShadowPenumbra, _settings.shadowPenumbra);
-      }
-    }
-
-    // Compute Buffer
-    Material.SetBuffer(ShaderPropertyID.ObjectInfo, Raymarch.ObjectComputeBuffer);
-    Material.SetInt(ShaderPropertyID.ObjectInfoCount, Raymarch.ObjectComputeBuffer.count); 
-    
-    Material.SetBuffer(ShaderPropertyID.ModifierInfo, Raymarch.ModifierComputeBuffer);
-    Material.SetInt(ShaderPropertyID.ModifierInfoCount, Raymarch.ModifierComputeBuffer.count);
-
-    Material.SetBuffer(ShaderPropertyID.LightInfo, Raymarch.LightComputeBuffer);
-    Material.SetInt(ShaderPropertyID.LightInfoCount, Raymarch.LightComputeBuffer.count);
   }
 }

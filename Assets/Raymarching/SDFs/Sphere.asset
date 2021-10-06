@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0913a1cfd9e7404f863f7f127878f477, type: 3}
-  m_Name: RaymarchingSettings
+  m_Script: {fileID: 11500000, guid: 1d47c79d4ab4cc64692a822c84963803, type: 3}
+  m_Name: Sphere
   m_EditorClassIdentifier: 
-  renderDistance: 50
-  hitResolution: 0.001
-  relaxation: 1.2
-  maxIterations: 164
-  ambientColour: {r: 0.2117, g: 0.2274, b: 0.2588, a: 1}
+  guid:
+    serializedGuid: 0d935c5a93ece247970ec043d92e6116
+  _functionBody: ' return length(pos) - min(scale.x,min(scale.y, scale.z));'
+  shaderValues:
+    _keys: []
+    _values: []

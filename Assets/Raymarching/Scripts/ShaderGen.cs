@@ -1,0 +1,214 @@
+﻿#if UNITY_EDITOR
+
+using System;
+using System.Globalization;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class ShaderGen
+{
+  #region Common Shader Code
+
+  public const string SquigglyBracketOpen = "{";
+  public const string SquigglyBracketClose = "}";
+  public const string SemiColon = ";";
+
+  public const string Comment = "// ";
+  public const string NewLine = "\r\n";
+
+  public const string IfnDef = "#ifndef ";
+  public const string Define = "#define ";
+  public const string EndIf = "#endif ";
+
+  private static string HeaderGuardStart(string name)
+  {
+    var nameUpper = name.ToUpper().Replace(' ', '_');
+    return string.Concat(IfnDef, nameUpper, NewLine, Define, nameUpper, NewLine);
+  }
+
+  private static string HeaderGuardEnd(string name)
+  {
+    var nameUpper = name.ToUpper();
+    return string.Concat(EndIf, Comment, nameUpper, NewLine);
+  }
+
+  #endregion // Common Shader Code
+
+  #region Distance Functions
+
+  private const string DistanceFunctionShaderName = "DistanceFunctions";
+
+  public static void GenerateDistanceFunctionsShader()
+  {
+    string[] guids = AssetDatabase.FindAssets(string.Concat("t:", nameof(RaymarchSDF)), null);
+
+    List<RaymarchSDF> sdfAssets = new List<RaymarchSDF>(guids.Length);
+    sdfAssets.AddRange(guids.Select(guid =>
+      AssetDatabase.LoadAssetAtPath<RaymarchSDF>(AssetDatabase.GUIDToAssetPath(guid))));
+
+    var functions = sdfAssets.Aggregate(String.Empty,
+      (current, sdf) => string.Concat(current, NewLine, sdf.FunctionPrototypeWithGUID, NewLine, SquigglyBracketOpen,
+        NewLine, sdf.FunctionBody, NewLine, SquigglyBracketClose, NewLine));
+
+    GenerateUtilShader(DistanceFunctionShaderName, functions);
+
+    // maybe detect what assets have already been generated and skip them?
+    // instead of regenerating the entire shader every time one is created/destroyed
+  }
+
+  #endregion // Distance Functions
+
+  #region Scene Raymarch Shader
+
+  private const string RaymarchTemplateShaderTitle = "RaymarchTemplateShader";
+  private const string RaymarchVars = "// RAYMARCH VARS //";
+  private const string RaymarchCalcDistance = "// RAYMARCH CALC DISTANCE //";
+
+  private static string CalculateRotationString(string positionName, string rotationName)
+  {
+    return string.Format("{0}.xz = mul({0}.xz, float2x2(cos({1}.y), sin({1}.y), -sin({1}.y), cos({1}.y)));" + NewLine +
+                         "{0}.yz = mul({0}.yz, float2x2(cos({1}.x), -sin({1}.x), sin({1}.x), cos({1}.x)));" + NewLine +
+                         "{0}.xy = mul({0}.xy, float2x2(cos({1}.z), -sin({1}.z), sin({1}.z), cos({1}.z)));" + NewLine,
+      positionName, rotationName);
+  }
+
+  public static Shader GenerateSceneRaymarchShader(Scene scene, Shader template, List<RaymarchBase> raymarchBase)
+  {
+    string currentDir = Directory.GetCurrentDirectory();
+
+    // Finding path of template
+    string templatePath = string.Concat(currentDir, "/", AssetDatabase.GetAssetPath(template));
+
+    // Find/Create path for Generated Shader
+    string scenePath = string.Concat(currentDir, "/", scene.path);
+    string sceneName = Path.GetFileNameWithoutExtension(scenePath);
+    scenePath = string.Concat(Path.GetDirectoryName(scenePath), "/");
+
+    string shaderName = string.Concat(sceneName, "_RaymarchShader");
+
+    string filePath = string.Concat(scenePath, sceneName);
+    Directory.CreateDirectory(filePath);
+    filePath = string.Concat(filePath, "/", shaderName, ".shader");
+
+    if (File.Exists(filePath))
+    {
+      File.Delete(filePath);
+    }
+
+    string raymarchVars = raymarchBase.Aggregate(string.Empty,
+      (current, rmBase) => string.Concat(current, rmBase.GetShaderVariablesCode(), NewLine));
+
+    string raymarchDistance = string.Empty; /*raymarchBase.Aggregate(string.Empty,
+      (current, rmBase) => string.Concat(current, rmBase.GetShaderDistanceCode(), NewLine));*/
+
+    foreach (var rmBase in raymarchBase)
+    {
+      string positionName = string.Concat("_Position", rmBase.GUID.ToShaderSafeString());
+      string rotationName = string.Concat("_Rotation", rmBase.GUID.ToShaderSafeString());
+      string distanceName = string.Concat("distance", rmBase.GUID.ToShaderSafeString());
+      string colourName = string.Concat("_Colour", rmBase.GUID.ToShaderSafeString());
+
+      string localPosName = string.Concat("position", rmBase.GUID.ToShaderSafeString());
+
+      raymarchDistance = string.Concat(raymarchDistance, NewLine, "float3 ", localPosName, " = origin - ", positionName,
+        SemiColon,
+        NewLine);
+      raymarchDistance = string.Concat(raymarchDistance, NewLine, CalculateRotationString(localPosName, rotationName),
+        NewLine);
+      raymarchDistance = string.Concat(raymarchDistance, rmBase.GetShaderDistanceCode(), NewLine);
+
+      raymarchDistance = string.Concat(raymarchDistance, NewLine, "if (", distanceName, " < resultDistance)",
+        NewLine, SquigglyBracketOpen,
+        NewLine, "resultDistance = ", distanceName, SemiColon,
+        NewLine, "resultColour = ", colourName, ".xyz", SemiColon,
+        NewLine, SquigglyBracketClose, NewLine);
+    }
+
+
+    // Read template shader and replace placeholders
+    string shader = File.ReadAllText(templatePath);
+    shader = shader.Replace(RaymarchTemplateShaderTitle, shaderName)
+      .Replace(RaymarchVars, raymarchVars)
+      .Replace(RaymarchCalcDistance, raymarchDistance);
+
+    // Create shader
+    FileStream file = File.Open(filePath, FileMode.OpenOrCreate);
+
+    file.Write(Encoding.ASCII.GetBytes(AutoGeneratedComment()));
+    file.Write(Encoding.ASCII.GetBytes(shader));
+
+    file.Close();
+    AssetDatabase.Refresh();
+
+    int assetsIndex = filePath.IndexOf("\\Assets\\", StringComparison.Ordinal);
+    filePath = filePath.Remove(0, assetsIndex + 1);
+
+    return AssetDatabase.LoadAssetAtPath<Shader>(filePath);
+  }
+
+  #endregion // Scene Raymarch Shader
+
+  #region Util Shader
+
+  private const string UtilShaderPath = "Assets/Raymarching/Shaders/Generated/";
+  private const string UtilShaderExtension = "hlsl";
+
+  private static void GenerateUtilShader(string shaderName, string shaderContents)
+  {
+    GenerateUtilShader(shaderName, Encoding.ASCII.GetBytes(shaderContents));
+  }
+
+  private static void GenerateUtilShader(string shaderName, byte[] shaderContents)
+  {
+    string filePath = string.Concat(UtilShaderPath, shaderName, ".", UtilShaderExtension);
+    string headerGuardName = string.Concat(shaderName.ToUpper().Replace(' ', '_'), "_", UtilShaderExtension.ToUpper());
+
+    // Should use AssetDatabase functions here, but they don't work reliably
+    Directory.CreateDirectory(UtilShaderPath);
+
+    if (File.Exists(filePath))
+    {
+      File.Delete(filePath);
+    }
+
+    FileStream file = File.Open(filePath, FileMode.OpenOrCreate);
+
+    file.Write(Encoding.ASCII.GetBytes(AutoGeneratedComment()));
+    file.Write(Encoding.ASCII.GetBytes(HeaderGuardStart(headerGuardName)));
+
+    file.Write(shaderContents);
+
+    file.Write(Encoding.ASCII.GetBytes(NewLine));
+    file.Write(Encoding.ASCII.GetBytes(HeaderGuardEnd(headerGuardName)));
+
+    file.Close();
+    AssetDatabase.Refresh();
+  }
+
+  private static string AutoGeneratedComment()
+  {
+    DateTime now = DateTime.Now;
+
+    string result = string.Empty;
+    result = string.Concat(result, "//---------------------------------------------------------------------", NewLine);
+    result = string.Concat(result, "//    This code was generated by a tool.                               ", NewLine);
+    result = string.Concat(result, "//                                                                     ", NewLine);
+    result = string.Concat(result, "//    Changes to this file may cause incorrect behavior and will be    ", NewLine);
+    result = string.Concat(result, "//    lost if the code is regenerated.                                 ", NewLine);
+    result = string.Concat(result, "//                                                                     ", NewLine);
+    result = string.Concat(result, "//    Time Generated: ", now.ToString(CultureInfo.InvariantCulture), NewLine);
+    result = string.Concat(result, "//---------------------------------------------------------------------", NewLine,
+      NewLine);
+
+    return result;
+  }
+
+  #endregion
+}
+
+#endif

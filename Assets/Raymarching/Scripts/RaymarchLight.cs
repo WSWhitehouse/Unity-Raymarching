@@ -63,24 +63,6 @@ public class RaymarchLight : MonoBehaviour
   {
     DirtyFlag.SetDirty();
   }
-  
-  private void Awake()
-  {
-    Raymarch.AddLight(this);
-  }
-
-  private void OnDestroy()
-  {
-    Raymarch.RemoveLight(this);
-  }
-
-#if UNITY_EDITOR
-  // Allows lights to be added to list while not playing or in scene view
-  private void OnValidate()
-  {
-    Awake();
-  }
-#endif
 }
 
 #if UNITY_EDITOR

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
-// Mathematics
-using Unity.Mathematics;
-using static Unity.Mathematics.math;
-using float3 = Unity.Mathematics.float3;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -14,12 +8,12 @@ using UnityEditor;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchObject : RaymarchBase
 {
-  protected override void Awake()
+  public override void Awake()
   {
 #if UNITY_EDITOR
-    if (sdf != null)
+    if (raymarchSDF != null)
     {
-      sdf.OnShaderValuesChanged += OnShaderValuesChanged;
+      raymarchSDF.OnShaderValuesChanged += OnShaderValuesChanged;
     }
 #endif
 
@@ -30,9 +24,9 @@ public class RaymarchObject : RaymarchBase
   protected override void OnDestroy()
   {
 #if UNITY_EDITOR
-    if (sdf != null)
+    if (raymarchSDF != null)
     {
-      sdf.OnShaderValuesChanged -= OnShaderValuesChanged;
+      raymarchSDF.OnShaderValuesChanged -= OnShaderValuesChanged;
     }
 #endif
 
@@ -42,50 +36,69 @@ public class RaymarchObject : RaymarchBase
 #if UNITY_EDITOR
   private void OnShaderValuesChanged()
   {
-    sdfValues.InitValues(sdf.shaderValues);
+    int count = raymarchSDF.shaderVariables.Count;
+
+    var newVariables = new List<ShaderVariable>(count);
+
+    for (int i = 0; i < count; i++)
+    {
+      int index = sdfVariables.FindIndex(x =>
+        x.GetVariableName() == raymarchSDF.shaderVariables[i].GetVariableName());
+
+      if (index < 0) // variable not found
+      {
+        newVariables.Add(raymarchSDF.shaderVariables[i]);
+        continue;
+      }
+
+      newVariables.Add(sdfVariables[index].GetVariableType() != raymarchSDF.shaderVariables[i].GetVariableType()
+        ? raymarchSDF.shaderVariables[i]
+        : sdfVariables[index]);
+    }
+
+    sdfVariables = newVariables;
   }
 #endif
 
-  [SerializeField] private RaymarchSDF sdf;
+  [SerializeField] private RaymarchSDF raymarchSDF;
 
-  public RaymarchSDF SDF
+  public RaymarchSDF RaymarchSDF
   {
-    get => sdf;
+    get => raymarchSDF;
+#if UNITY_EDITOR
     set
     {
-      if (EqualityComparer<RaymarchSDF>.Default.Equals(sdf, value)) return;
+      if (EqualityComparer<RaymarchSDF>.Default.Equals(raymarchSDF, value)) return;
 
-#if UNITY_EDITOR
-      if (sdf != null)
+
+      if (raymarchSDF != null)
       {
-        sdf.OnShaderValuesChanged -= OnShaderValuesChanged;
+        raymarchSDF.OnShaderValuesChanged -= OnShaderValuesChanged;
       }
-#endif
 
       if (value == null)
       {
-        sdf = null;
-        sdfValues.ClearValues();
+        raymarchSDF = null;
+        sdfVariables.Clear();
       }
       else
       {
-        sdf = value;
-        sdfValues.InitValues(sdf.shaderValues);
+        raymarchSDF = value;
+        OnShaderValuesChanged();
       }
 
-#if UNITY_EDITOR
-      if (sdf != null)
+      if (raymarchSDF != null)
       {
-        sdf.OnShaderValuesChanged += OnShaderValuesChanged;
+        raymarchSDF.OnShaderValuesChanged += OnShaderValuesChanged;
       }
 
       if (Application.isPlaying) return;
       EditorUtility.SetDirty(this);
-#endif
     }
+#endif
   }
 
-  [SerializeField] public ShaderValues sdfValues;
+  [SerializeField] public List<ShaderVariable> sdfVariables;
 
   private struct ShaderIDs
   {
@@ -108,16 +121,16 @@ public class RaymarchObject : RaymarchBase
     shaderIDs.Scale = Shader.PropertyToID(string.Concat("_Scale", guid));
     shaderIDs.Colour = Shader.PropertyToID(string.Concat("_Colour", guid));
 
-    shaderIDs.SdfValues = new int[sdfValues.Count];
+    shaderIDs.SdfValues = new int[sdfVariables.Count];
     for (int i = 0; i < shaderIDs.SdfValues.Length; i++)
     {
-      shaderIDs.SdfValues[i] = Shader.PropertyToID(string.Concat("_", sdfValues._keys[i], guid));
+      shaderIDs.SdfValues[i] = Shader.PropertyToID(sdfVariables[i].GetShaderName(GUID));
     }
   }
 
   public override bool IsValid()
   {
-    return sdf != null;
+    return raymarchSDF != null;
   }
 
   public Vector3 Position => transform.position;
@@ -175,7 +188,7 @@ public class RaymarchObject : RaymarchBase
 
 #if UNITY_EDITOR
   // Shader
-  public override string GetShaderVariablesCode()
+  public override string GetShaderCode_Variables()
   {
     string guid = GUID.ToShaderSafeString();
 
@@ -184,22 +197,19 @@ public class RaymarchObject : RaymarchBase
     code = string.Concat(code, "uniform float3 _Scale", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
     code = string.Concat(code, "uniform float4 _Colour", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
 
-    for (int i = 0; i < sdfValues.Count; i++)
+    for (int i = 0; i < sdfVariables.Count; i++)
     {
-      code = string.Concat(code,
-        "uniform ", sdfValues._values[i].TypeToShaderType(),
-        " _", sdfValues._keys[i], guid,
-        ShaderGen.SemiColon, ShaderGen.NewLine);
+      code = string.Concat(code, sdfVariables[i].ToShaderVariable(GUID), ShaderGen.NewLine);
     }
 
     return code;
   }
 
-  public override string GetShaderDistanceCode()
+  public string GetShaderCode_CalcDistance()
   {
     string guid = GUID.ToShaderSafeString();
 
-    return string.Concat("float distance", guid, " = ", sdf.FunctionNameWithGUID,
+    return string.Concat("float distance", guid, " = ", raymarchSDF.FunctionNameWithGUID,
       "(", GetShaderDistanceParameters(), ")", ShaderGen.SemiColon);
   }
 
@@ -208,10 +218,9 @@ public class RaymarchObject : RaymarchBase
     string guid = GUID.ToShaderSafeString();
     string parameters = string.Concat("position", guid, ", ", "_Scale", guid);
 
-    for (int i = 0; i < sdfValues.Count; i++)
+    for (int i = 0; i < sdfVariables.Count; i++)
     {
-      parameters = string.Concat(parameters,
-        ", _", sdfValues._keys[i], guid);
+      parameters = string.Concat(parameters, ", ", sdfVariables[i].GetShaderName(GUID));
     }
 
     return parameters;
@@ -226,28 +235,9 @@ public class RaymarchObject : RaymarchBase
     material.SetVector(shaderIDs.Scale, Scale);
     material.SetVector(shaderIDs.Colour, Colour);
 
-    for (int i = 0; i < sdfValues.Count; i++)
+    for (int i = 0; i < sdfVariables.Count; i++)
     {
-      int shaderID = shaderIDs.SdfValues[i];
-
-      switch (sdfValues._values[i].type)
-      {
-        case AnyValue.Type.Float:
-          material.SetFloat(shaderID, sdfValues._values[i].floatValue);
-          break;
-        case AnyValue.Type.Int:
-        case AnyValue.Type.Bool:
-          material.SetInt(shaderID, sdfValues._values[i].intValue);
-          break;
-        case AnyValue.Type.Vector2:
-        case AnyValue.Type.Vector3:
-        case AnyValue.Type.Vector4:
-        case AnyValue.Type.Colour:
-          material.SetVector(shaderID, sdfValues._values[i].vectorValue);
-          break;
-        default:
-          throw new ArgumentOutOfRangeException();
-      }
+      sdfVariables[i].UploadToShader(material, shaderIDs.SdfValues[i]);
     }
   }
 }
@@ -279,29 +269,26 @@ public class RaymarchObjectEditor : Editor
     serializedObject.Update();
 
     EditorGUILayout.LabelField("Signed Distance Function", boldStyle);
-    Target.SDF = (RaymarchSDF) EditorGUILayout.ObjectField(Target.SDF, typeof(RaymarchSDF), false);
+    Target.RaymarchSDF = (RaymarchSDF) EditorGUILayout.ObjectField(Target.RaymarchSDF, typeof(RaymarchSDF), false);
 
     EditorGUILayout.Space();
 
     EditorGUILayout.LabelField("SDF Shader Values", boldStyle);
 
-    if (Target.sdfValues.Count <= 0)
+    if (Target.sdfVariables.Count <= 0)
     {
       EditorGUILayout.LabelField("There are no values for this SDF");
     }
 
-    for (int i = 0; i < Target.sdfValues.Count; i++)
+    for (int i = 0; i < Target.sdfVariables.Count; i++)
     {
       EditorGUI.BeginChangeCheck();
 
-      AnyValue value = Target.sdfValues._values[i];
-      GUIContent label = new GUIContent(Target.sdfValues._keys[i]);
-
-      AnyValue.EDITOR_DrawInspectorValue(ref value, label);
+      var variable = ShaderVariable.Editor.VariableField(Target.sdfVariables[i]);
 
       if (EditorGUI.EndChangeCheck())
       {
-        Target.sdfValues._values[i] = value;
+        Target.sdfVariables[i] = variable;
         EditorUtility.SetDirty(Target);
       }
     }

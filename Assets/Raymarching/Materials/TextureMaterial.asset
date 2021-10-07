@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89849a2e411c49f28d5b63ed77a2023d, type: 3}
+  m_Name: TextureMaterial
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 375473c31f33804fa12534d02a465e6a
+  _functionBody: "  float3x3 R = float3x3(float3(cos(_Time.y),sin(_Time.y),0),float3(-sin(_Time.y),cos(_Time.y),0),float3(0,0,-1));\r\n   
+    pos *= R/8.0;\r\n    normal *= R;\n\n    return float4(float3((tex2D(Texture,
+    pos.xy).rgb\r + tex2D(Texture, pos.zy).rgb\r + tex2D(Texture, pos.xz).rgb) /
+    3.0), 1);"
+  shaderVariables:
+  - name: Texture
+    type: 7
+    floatValue: 0
+    intValue: 0
+    vectorValue: {x: 0, y: 0, z: 0, w: 0}
+    textureValue: {fileID: 0}

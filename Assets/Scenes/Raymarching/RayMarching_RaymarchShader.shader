@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/06/2021 13:36:40
+//    Time Generated: 10/07/2021 22:37:40
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -24,6 +24,7 @@ Shader "Raymarch/RayMarching_RaymarchShader"
 
         // Includes
         #include "Assets/Raymarching/Shaders/Generated/DistanceFunctions.hlsl"
+        #include "Assets/Raymarching/Shaders/Generated/MaterialFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Ray.hlsl"
 
         #pragma vertex vert
@@ -54,7 +55,14 @@ Shader "Raymarch/RayMarching_RaymarchShader"
         // Lighting & Shadows
         uniform float3 _AmbientColour;
 
-        uniform float3 _Position88a5b9efeaaf47789d26eb58407396af;
+        // Raymarch Variables
+uniform float3 _Position3cfaeb6f64e949fabb06e9f73ef5f786;
+uniform float3 _Direction3cfaeb6f64e949fabb06e9f73ef5f786;
+uniform float4 _Colour3cfaeb6f64e949fabb06e9f73ef5f786;
+uniform float _Range3cfaeb6f64e949fabb06e9f73ef5f786;
+uniform float _Intensity3cfaeb6f64e949fabb06e9f73ef5f786;
+
+uniform float3 _Position88a5b9efeaaf47789d26eb58407396af;
 uniform float3 _Rotation88a5b9efeaaf47789d26eb58407396af;
 uniform float3 _Scale88a5b9efeaaf47789d26eb58407396af;
 uniform float4 _Colour88a5b9efeaaf47789d26eb58407396af;
@@ -171,7 +179,12 @@ resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
 
         float3 GetLight(float3 pos, float3 normal)
         {
-            return float3(1, 1, 1) * max(0.0, dot(-normal, float3(1, 1, 1))) * 1;
+            float3 light = float3(0, 0, 0);
+            
+            light += _Colour3cfaeb6f64e949fabb06e9f73ef5f786 * max(0.0, dot(-normal, _Direction3cfaeb6f64e949fabb06e9f73ef5f786)) * _Intensity3cfaeb6f64e949fabb06e9f73ef5f786; 
+
+
+            return light;
         }
 
         float3 GetObjectNormal(float3 pos)
@@ -209,7 +222,7 @@ resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
             float prevRadius = 0;
             float stepLength = 0;
 
-            float funcSign = GetDistanceFromObjects(ray.Origin).w < 0 ? -1 : +1;
+            float funcSign = GetDistanceFromObjects(ray.Origin).w < 0 ? +1 : +1;
 
             [loop]
             for (int i = 0; i < _MaxIterations; i++)

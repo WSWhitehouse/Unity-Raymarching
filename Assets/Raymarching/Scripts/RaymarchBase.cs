@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent, ExecuteAlways]
 public abstract class RaymarchBase : MonoBehaviour
@@ -15,8 +14,11 @@ public abstract class RaymarchBase : MonoBehaviour
 
   public abstract bool IsValid();
 
-  protected virtual void Awake()
+  public virtual void Awake()
   {
+#if UNITY_EDITOR
+    Raymarch.OnUploadShaderData -= UploadShaderData;
+#endif
     Raymarch.OnUploadShaderData += UploadShaderData;
   }
 
@@ -37,12 +39,7 @@ public abstract class RaymarchBase : MonoBehaviour
 
   protected abstract void UploadShaderData(Material material);
 
-  public virtual string GetShaderVariablesCode()
-  {
-    return string.Empty;
-  }
-  
-  public virtual string GetShaderDistanceCode()
+  public virtual string GetShaderCode_Variables()
   {
     return string.Empty;
   }

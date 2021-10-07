@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Globalization;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -6,29 +8,20 @@ using UnityEditor;
 
 public enum LightType
 {
-  Directional = 0,
-  Point = 1,
+  Directional,
+  Point,
+  Spot
+}
+
+public enum LightMode
+{
+  Baked,
+  Realtime
 }
 
 [DisallowMultipleComponent, ExecuteAlways, RequireComponent(typeof(Light))]
-public class RaymarchLight : MonoBehaviour
+public class RaymarchLight : RaymarchBase
 {
-  // Dirty Flag
-  private DirtyFlag _dirtyFlag;
-
-  public DirtyFlag DirtyFlag
-  {
-    get
-    {
-      if (_dirtyFlag == null)
-      {
-        _dirtyFlag = new DirtyFlag(transform);
-      }
-
-      return _dirtyFlag;
-    }
-  }
-  
   private Light _light;
 
   private Light Light
@@ -44,8 +37,24 @@ public class RaymarchLight : MonoBehaviour
     }
   }
 
-  public LightType LightType =>
-    Light.type == UnityEngine.LightType.Directional ? LightType.Directional : LightType.Point;
+  [SerializeField] private LightMode lightMode;
+  public LightMode LightMode => lightMode;
+
+  public LightType LightType
+  {
+    get
+    {
+      switch (Light.type)
+      {
+        case UnityEngine.LightType.Spot: return LightType.Spot;
+        case UnityEngine.LightType.Point: return LightType.Point;
+        case UnityEngine.LightType.Directional:
+        case UnityEngine.LightType.Area:
+        case UnityEngine.LightType.Disc:
+        default: return LightType.Directional;
+      }
+    }
+  }
 
   public Vector3 Position => transform.position;
   public Vector3 Direction => transform.forward;
@@ -53,16 +62,127 @@ public class RaymarchLight : MonoBehaviour
   public Color Colour => Light.color;
   public float Range => Light.range;
   public float Intensity => Light.intensity;
-  
-  private void OnEnable()
+
+  private struct ShaderIDs
   {
-    DirtyFlag.SetDirty();
+    public int Position;
+    public int Direction;
+    public int Colour;
+    public int Range;
+    public int Intensity;
   }
 
-  private void OnDisable()
+  private ShaderIDs shaderIDs;
+
+  private void InitShaderIDs()
   {
-    DirtyFlag.SetDirty();
+    string guid = GUID.ToShaderSafeString();
+
+    shaderIDs.Position = Shader.PropertyToID(string.Concat("_Position", guid));
+    shaderIDs.Direction = Shader.PropertyToID(string.Concat("_Direction", guid));
+    shaderIDs.Colour = Shader.PropertyToID(string.Concat("_Colour", guid));
+    shaderIDs.Range = Shader.PropertyToID(string.Concat("_Range", guid));
+    shaderIDs.Intensity = Shader.PropertyToID(string.Concat("_Intensity", guid));
   }
+
+  public override void Awake()
+  {
+    if (LightMode == LightMode.Realtime)
+    {
+      InitShaderIDs();
+      base.Awake();
+    }
+  }
+
+  protected override void OnDestroy()
+  {
+    if (LightMode == LightMode.Realtime)
+      base.OnDestroy();
+  }
+
+  public override bool IsValid()
+  {
+    return true;
+  }
+
+  protected override void UploadShaderData(Material material)
+  {
+    material.SetVector(shaderIDs.Position, Position);
+    material.SetVector(shaderIDs.Direction, Direction);
+    material.SetVector(shaderIDs.Colour, Colour);
+    material.SetFloat(shaderIDs.Range, Range);
+    material.SetFloat(shaderIDs.Intensity, Intensity);
+  }
+
+  public override string GetShaderCode_Variables()
+  {
+    if (LightMode == LightMode.Baked)
+      return base.GetShaderCode_Variables();
+
+    string guid = GUID.ToShaderSafeString();
+
+    var code = string.Concat("uniform float3 _Position", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+    code = string.Concat(code, "uniform float3 _Direction", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+    code = string.Concat(code, "uniform float4 _Colour", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+    code = string.Concat(code, "uniform float _Range", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+    code = string.Concat(code, "uniform float _Intensity", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+
+    return code;
+  }
+
+#if UNITY_EDITOR
+  public string GetShaderCode_CalcLight()
+  {
+    string guid = GUID.ToShaderSafeString();
+
+    string position = $"_Position{guid}";
+    string direction = $"_Direction{guid}";
+    string colour = $"_Colour{guid}";
+    string range = $"_Range{guid}";
+    string intensity = $"_Intensity{guid}";
+
+    if (LightMode == LightMode.Baked)
+    {
+      position = ToShaderFloat3(Position);
+      direction = ToShaderFloat3(Direction);
+      colour = ToShaderFloat3(new Vector3(Colour.r, Colour.g, Colour.b));
+      range = Range.ToString(CultureInfo.InvariantCulture);
+      intensity = Intensity.ToString(CultureInfo.InvariantCulture);
+    }
+
+    return GetLightTypeShaderCode(position, direction, colour, range, intensity);
+  }
+
+  private string GetLightTypeShaderCode(string position, string direction,
+    string colour, string range, string intensity)
+  {
+    string guid = GUID.ToShaderSafeString();
+    
+    switch (LightType)
+    {
+      case LightType.Point: //http://forum.unity3d.com/threads/light-attentuation-equation.16006/
+        return
+          $"float3 toLight{guid} = pos - {position}; {ShaderGen.NewLine}" +
+          $"float range{guid} = clamp(length(toLight{guid}) / {range}, 0., 1.); {ShaderGen.NewLine}" +
+          $"float attenuation{guid} = 1.0 / (1.0 + 256.0 * range{guid} * range{guid}); {ShaderGen.NewLine}" +
+          $"light += max(0.0, {colour} * dot(-normal, normalize(toLight{guid}.xyz))) * {intensity} * attenuation{guid}; {ShaderGen.NewLine}";
+      case LightType.Spot:
+        return $"";
+      case LightType.Directional:
+      default:
+        return $"light += {colour} * max(0.0, dot(-normal, {direction})) * {intensity}; {ShaderGen.NewLine}";
+    }
+  }
+
+  private string ToShaderFloat3(Vector3 vec)
+  {
+    return
+      $"float3({vec.x.ToString(CultureInfo.InvariantCulture)}, " +
+      $"{vec.y.ToString(CultureInfo.InvariantCulture)}, " +
+      $"{vec.z.ToString(CultureInfo.InvariantCulture)})";
+  }
+
+#endif
 }
 
 #if UNITY_EDITOR
@@ -73,14 +193,7 @@ public class RaymarchLightEditor : Editor
 
   public override void OnInspectorGUI()
   {
-    EditorGUI.BeginChangeCheck();
-
     DrawDefaultInspector();
-
-    if (EditorGUI.EndChangeCheck())
-    {
-      Target.DirtyFlag.SetDirty();
-    }
   }
 }
 #endif

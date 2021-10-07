@@ -15,6 +15,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         // Includes
         #include "Assets/Raymarching/Shaders/Generated/DistanceFunctions.hlsl"
+        #include "Assets/Raymarching/Shaders/Generated/MaterialFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Ray.hlsl"
 
         #pragma vertex vert
@@ -67,7 +68,11 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         float3 GetLight(float3 pos, float3 normal)
         {
-            return float3(1, 1, 1) * max(0.0, dot(-normal, float3(1, 1, 1))) * 1;
+            float3 light = float3(0, 0, 0);
+            
+            // RAYMARCH CALC LIGHT //
+
+            return light;
         }
 
         float3 GetObjectNormal(float3 pos)
@@ -105,7 +110,7 @@ Shader "Raymarch/RaymarchTemplateShader"
             float prevRadius = 0;
             float stepLength = 0;
 
-            float funcSign = GetDistanceFromObjects(ray.Origin).w < 0 ? -1 : +1;
+            float funcSign = GetDistanceFromObjects(ray.Origin).w < 0 ? +1 : +1;
 
             [loop]
             for (int i = 0; i < _MaxIterations; i++)

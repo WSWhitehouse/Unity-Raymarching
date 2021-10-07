@@ -4,25 +4,28 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/07/2021 09:51:49
+//    Time Generated: 10/06/2021 19:30:41
 //---------------------------------------------------------------------
 
-#ifndef DISTANCEFUNCTIONS_HLSL
-#define DISTANCEFUNCTIONS_HLSL
+#ifndef MATERIALFUNCTIONS_HLSL
+#define MATERIALFUNCTIONS_HLSL
 
 // Unity Includes 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-float SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(float3 pos, float3 scale)
+float4 Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(float3 pos, float4 colour, float3 normal, sampler2D Texture)
 {
- float3 o = abs(pos) - scale;
-return length(max(o, 0.0)) + min(max(o.x, max(o.y, o.z)), 0.0);
+    float3x3 R = float3x3(float3(cos(_Time.y), sin(_Time.y), 0),
+                          float3(-sin(_Time.y), cos(_Time.y), 0),
+                          float3(0, 0, -1));
+    
+    pos = mul(pos, R / 8.0);
+    normal = mul(normal, R);
+
+    return float4(float3((tex2D(Texture, pos.xy).rgb
+                      + tex2D(Texture, pos.zy).rgb
+                      + tex2D(Texture, pos.xz).rgb) / 3.0), 1);
 }
 
-float SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(float3 pos, float3 scale)
-{
- return length(pos) - min(scale.x, min(scale.y, scale.z));
-}
-
-#endif // DISTANCEFUNCTIONS_HLSL
+#endif // MATERIALFUNCTIONS_HLSL

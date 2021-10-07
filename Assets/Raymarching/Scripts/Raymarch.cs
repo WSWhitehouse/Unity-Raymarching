@@ -37,4 +37,9 @@ public static class Raymarch
     OnUploadShaderData?.Invoke(Material);
     Settings.UploadShaderData(Material);
   }
+
+  public static bool ShouldRender()
+  {
+    return Material != null && Settings != null;
+  }
 }

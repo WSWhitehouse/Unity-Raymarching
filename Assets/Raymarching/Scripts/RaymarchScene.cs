@@ -27,7 +27,10 @@ public class RaymarchScene : MonoBehaviour
   private void Awake()
   {
 #if UNITY_EDITOR
-    BuildTree();
+    if (!Application.isPlaying)
+    {
+      BuildTree();
+    }
 #endif
 
     Raymarch.Settings = settings;
@@ -42,7 +45,7 @@ public class RaymarchScene : MonoBehaviour
   {
     if (Application.isPlaying) return;
     EditorSceneManager.sceneSaving += OnSceneSaving;
-    
+
     Raymarch.Settings = settings;
     Raymarch.Shader = shader;
   }
@@ -100,11 +103,19 @@ public class RaymarchScene : MonoBehaviour
 
   private void AddObjToTree(GameObject gameObject)
   {
-    var rmObject = gameObject.GetComponent<RaymarchObject>();
-    if (rmObject != null && rmObject.IsValid())
+    var rmBase = gameObject.GetComponent<RaymarchBase>();
+    if (rmBase != null && rmBase.IsValid())
     {
-      _objects.Add(rmObject);
-      _bases.Add(rmObject);
+      _bases.Add(rmBase);
+
+      var rmObject = rmBase.GetComponent<RaymarchObject>();
+      if (rmObject != null)
+      {
+        _objects.Add(rmObject);
+      }
+
+      if (!Application.isPlaying)
+        rmBase.Awake();
     }
 
     var rmMod = gameObject.GetComponent<RaymarchModifier>();

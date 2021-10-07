@@ -251,6 +251,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b59b367701734e09a4cf052069c6479c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 6febfa3ce964fa49bb06e9f73ef5f786
+  lightMode: 1
 --- !u!1 &491504017
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,10 +382,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 0f5ac957fa6f5443bf7f8f17f47c3610
-  sdf: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-  sdfValues:
-    _keys: []
-    _values: []
+  raymarchSDF: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+  sdfVariables: []
   colour: {r: 0, g: 0.21631074, b: 1, a: 1}
   roundness: 0.102
   hollow: 0
@@ -480,10 +481,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 4ae03170d37a66449638bbee6d28c5e0
-  sdf: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-  sdfValues:
-    _keys: []
-    _values: []
+  raymarchSDF: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+  sdfVariables: []
   colour: {r: 1, g: 0.6341173, b: 0, a: 1}
   roundness: 0.102
   hollow: 0
@@ -569,10 +568,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: efb9a588afea78479d26eb58407396af
-  sdf: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-  sdfValues:
-    _keys: []
-    _values: []
+  raymarchSDF: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+  sdfVariables: []
   colour: {r: 1, g: 0, b: 0, a: 1}
   roundness: 0
   hollow: 0
@@ -623,10 +620,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: f5d5913c5b2dc3429cb8d5f9021fa043
-  sdf: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
-  sdfValues:
-    _keys: []
-    _values: []
+  raymarchSDF: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
+  sdfVariables: []
   colour: {r: 1, g: 1, b: 1, a: 1}
   roundness: 0
   hollow: 0
@@ -692,10 +687,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: cdc80ff14c37bb4bbd965d4d0f46fb71
-  sdf: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
-  sdfValues:
-    _keys: []
-    _values: []
+  raymarchSDF: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
+  sdfVariables: []
   colour: {r: 1, g: 1, b: 1, a: 1}
   roundness: 0
   hollow: 0

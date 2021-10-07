@@ -55,7 +55,7 @@ public class RaymarchRenderPass : ScriptableRenderPass
     }
 #endif
 
-    if (Raymarch.Material == null || Raymarch.Settings == null)
+    if (!Raymarch.ShouldRender())
     {
       return;
     }

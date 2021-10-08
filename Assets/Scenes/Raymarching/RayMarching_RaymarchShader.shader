@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/07/2021 22:37:40
+//    Time Generated: 10/08/2021 10:34:34
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -164,14 +164,6 @@ if (distance57c95a0f6ffa4354bf7f8f17f47c3610 < resultDistance)
 resultDistance = distance57c95a0f6ffa4354bf7f8f17f47c3610;
 resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
 }
-
-
-
-            // if (distance < resultDistance)
-            // {
-            //     resultDistance = distance;
-            //     resultColour = colour;
-            // }
 
 
             return float4(resultColour.xyz, resultDistance);

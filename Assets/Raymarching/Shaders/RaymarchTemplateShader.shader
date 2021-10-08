@@ -55,14 +55,6 @@ Shader "Raymarch/RaymarchTemplateShader"
 
             // RAYMARCH CALC DISTANCE //
 
-
-            // if (distance < resultDistance)
-            // {
-            //     resultDistance = distance;
-            //     resultColour = colour;
-            // }
-
-
             return float4(resultColour.xyz, resultDistance);
         }
 

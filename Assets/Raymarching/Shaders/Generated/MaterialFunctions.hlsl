@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/08/2021 12:57:43
+//    Time Generated: 10/11/2021 17:13:47
 //---------------------------------------------------------------------
 
 #ifndef MATERIALFUNCTIONS_HLSL
@@ -14,13 +14,15 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-float4 Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(float3 pos, float4 colour, float3 normal, sampler2D Texture)
+float4 Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(float3 pos, float4 colour, sampler2D Texture)
 {
 float3x3 R = float3x3(float3(cos(_Time.y),sin(_Time.y),0),float3(-sin(_Time.y),cos(_Time.y),0),float3(0,0,-1));
-pos = mul(pos, R / 8);
-normal = mul(normal, R);
+//pos = mul(pos, R / 8);
 
-return float4(float3((tex2D(Texture, pos.xy).rgb + tex2D(Texture, pos.zy).rgb + tex2D(Texture, pos.xz).rgb) / 3.0), 1);
+return float4(
+float3((tex2D(Texture, pos.xy).rgb
+ + tex2D(Texture, pos.zy).rgb
+ + tex2D(Texture, pos.xz).rgb) / 3.0), 1) * colour;
 }
 
 #endif // MATERIALFUNCTIONS_HLSL

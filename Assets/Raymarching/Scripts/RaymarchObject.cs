@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -8,14 +9,13 @@ using UnityEditor;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchObject : RaymarchBase
 {
+  [SerializeField] public ShaderFeatureImpl<RaymarchSDF> raymarchSDF;
+  [SerializeField] public ShaderFeatureImpl<RaymarchMaterial> raymarchMat;
+
   public override void Awake()
   {
-#if UNITY_EDITOR
-    if (raymarchSDF != null)
-    {
-      raymarchSDF.OnShaderValuesChanged += OnShaderValuesChanged;
-    }
-#endif
+    raymarchSDF.OnAwake(GUID);
+    raymarchMat.OnAwake(GUID);
 
     InitShaderIDs();
     base.Awake();
@@ -23,82 +23,11 @@ public class RaymarchObject : RaymarchBase
 
   protected override void OnDestroy()
   {
-#if UNITY_EDITOR
-    if (raymarchSDF != null)
-    {
-      raymarchSDF.OnShaderValuesChanged -= OnShaderValuesChanged;
-    }
-#endif
+    raymarchSDF.OnDestroy();
+    raymarchMat.OnDestroy();
 
     base.OnDestroy();
   }
-
-#if UNITY_EDITOR
-  private void OnShaderValuesChanged()
-  {
-    int count = raymarchSDF.shaderVariables.Count;
-
-    var newVariables = new List<ShaderVariable>(count);
-
-    for (int i = 0; i < count; i++)
-    {
-      int index = sdfVariables.FindIndex(x =>
-        x.Name == raymarchSDF.shaderVariables[i].Name);
-
-      if (index < 0) // variable not found
-      {
-        newVariables.Add(raymarchSDF.shaderVariables[i]);
-        continue;
-      }
-
-      newVariables.Add(sdfVariables[index].ShaderType != raymarchSDF.shaderVariables[i].ShaderType
-        ? raymarchSDF.shaderVariables[i]
-        : sdfVariables[index]);
-    }
-
-    sdfVariables = newVariables;
-  }
-#endif
-
-  [SerializeField] private RaymarchSDF raymarchSDF;
-
-  public RaymarchSDF RaymarchSDF
-  {
-    get => raymarchSDF;
-#if UNITY_EDITOR
-    set
-    {
-      if (EqualityComparer<RaymarchSDF>.Default.Equals(raymarchSDF, value)) return;
-
-
-      if (raymarchSDF != null)
-      {
-        raymarchSDF.OnShaderValuesChanged -= OnShaderValuesChanged;
-      }
-
-      if (value == null)
-      {
-        raymarchSDF = null;
-        sdfVariables.Clear();
-      }
-      else
-      {
-        raymarchSDF = value;
-        OnShaderValuesChanged();
-      }
-
-      if (raymarchSDF != null)
-      {
-        raymarchSDF.OnShaderValuesChanged += OnShaderValuesChanged;
-      }
-
-      if (Application.isPlaying) return;
-      EditorUtility.SetDirty(this);
-    }
-#endif
-  }
-
-  [SerializeField] public List<ShaderVariable> sdfVariables;
 
   private struct ShaderIDs
   {
@@ -106,8 +35,6 @@ public class RaymarchObject : RaymarchBase
     public int Rotation;
     public int Scale;
     public int Colour;
-
-    public int[] SdfValues;
   }
 
   private ShaderIDs shaderIDs;
@@ -116,21 +43,15 @@ public class RaymarchObject : RaymarchBase
   {
     string guid = GUID.ToShaderSafeString();
 
-    shaderIDs.Position = Shader.PropertyToID(string.Concat("_Position", guid));
-    shaderIDs.Rotation = Shader.PropertyToID(string.Concat("_Rotation", guid));
-    shaderIDs.Scale = Shader.PropertyToID(string.Concat("_Scale", guid));
-    shaderIDs.Colour = Shader.PropertyToID(string.Concat("_Colour", guid));
-
-    shaderIDs.SdfValues = new int[sdfVariables.Count];
-    for (int i = 0; i < shaderIDs.SdfValues.Length; i++)
-    {
-      shaderIDs.SdfValues[i] = Shader.PropertyToID(sdfVariables[i].GetShaderName(GUID));
-    }
+    shaderIDs.Position = Shader.PropertyToID($"_Position{guid}");
+    shaderIDs.Rotation = Shader.PropertyToID($"_Rotation{guid}");
+    shaderIDs.Scale = Shader.PropertyToID($"_Scale{guid}");
+    shaderIDs.Colour = Shader.PropertyToID($"_Colour{guid}");
   }
 
   public override bool IsValid()
   {
-    return raymarchSDF != null;
+    return raymarchSDF.ShaderFeature != null;
   }
 
   public Vector3 Position => transform.position;
@@ -142,48 +63,12 @@ public class RaymarchObject : RaymarchBase
 
   public Vector3 Scale => transform.lossyScale * 0.5f;
 
-  [SerializeField] private Color colour =
-    Color.white;
+  [SerializeField] private Color colour = Color.white;
 
   public Color Colour
   {
     get => colour;
     set => DirtyFlag.SetField(ref colour, value);
-  }
-
-  [SerializeField, Range(0, 1)] private float roundness = 0f;
-
-  public float Roundness
-  {
-    get
-    {
-      float minScale = Mathf.Min(Scale.x, Mathf.Min(Scale.y, Scale.z));
-      float maxRoundness = minScale * 0.5f;
-      return roundness * maxRoundness;
-    }
-    set => DirtyFlag.SetField(ref roundness, Mathf.Clamp(value, 0f, 1f));
-  }
-
-  [SerializeField] private bool hollow = false;
-
-  public bool Hollow
-  {
-    get => hollow;
-    set => DirtyFlag.SetField(ref hollow, value);
-  }
-
-  [SerializeField, Range(0, 1)] private float wallThickness;
-
-  public float WallThickness
-  {
-    get
-    {
-      float thickness = hollow ? wallThickness : 1.0f;
-      float minScale = Mathf.Min(Scale.x, Mathf.Min(Scale.y, Scale.z));
-      float maxThickness = minScale * 0.5f;
-      return thickness * maxThickness;
-    }
-    set => DirtyFlag.SetField(ref wallThickness, Mathf.Clamp(value, 0f, 1f));
   }
 
 #if UNITY_EDITOR
@@ -192,38 +77,51 @@ public class RaymarchObject : RaymarchBase
   {
     string guid = GUID.ToShaderSafeString();
 
-    var code = string.Concat("uniform float3 _Position", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float3 _Rotation", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float3 _Scale", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float4 _Colour", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+    var code = $"uniform float3 _Position{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float3 _Rotation{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float3 _Scale{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float4 _Colour{guid};{ShaderGen.NewLine}";
 
-    for (int i = 0; i < sdfVariables.Count; i++)
-    {
-      code = string.Concat(code, sdfVariables[i].ToShaderVariable(GUID), ShaderGen.NewLine);
-    }
+    code = string.Concat(code, raymarchSDF.GetShaderVariables(GUID));
+    code = string.Concat(code, raymarchMat.GetShaderVariables(GUID));
 
     return code;
   }
 
   public string GetShaderCode_CalcDistance()
   {
-    string guid = GUID.ToShaderSafeString();
-
-    return string.Concat("float distance", guid, " = ", raymarchSDF.FunctionNameWithGuid,
-      "(", GetShaderDistanceParameters(), ")", ShaderGen.SemiColon);
+    return $"{raymarchSDF.ShaderFeature.FunctionNameWithGuid}({GetShaderDistanceParameters()});";
   }
 
   private string GetShaderDistanceParameters()
   {
     string guid = GUID.ToShaderSafeString();
-    string parameters = string.Concat("position", guid, ", ", "_Scale", guid);
 
-    for (int i = 0; i < sdfVariables.Count; i++)
+    string parameters = $"position{guid}, _Scale{guid}";
+    for (int i = 0; i < raymarchSDF.ShaderVariables.Count; i++)
     {
-      parameters = string.Concat(parameters, ", ", sdfVariables[i].GetShaderName(GUID));
+      parameters = string.Concat(parameters, ", ", raymarchSDF.ShaderVariables[i].GetShaderName(GUID));
     }
 
     return parameters;
+  }
+
+  public string GetShaderCode_Material()
+  {
+    string guid = GUID.ToShaderSafeString();
+
+    if (raymarchMat.ShaderFeature == null)
+    {
+      return $"resultColour = _Colour{guid}.xyz;{ShaderGen.NewLine}";
+    }
+
+    string parameters = $"position{guid}, _Colour{guid}";
+    for (int i = 0; i < raymarchMat.ShaderVariables.Count; i++)
+    {
+      parameters = string.Concat(parameters, ", ", raymarchMat.ShaderVariables[i].GetShaderName(GUID));
+    }
+
+    return $"resultColour = {raymarchMat.ShaderFeature.FunctionNameWithGuid}({parameters});";
   }
 
 #endif
@@ -235,10 +133,8 @@ public class RaymarchObject : RaymarchBase
     material.SetVector(shaderIDs.Scale, Scale);
     material.SetVector(shaderIDs.Colour, Colour);
 
-    for (int i = 0; i < sdfVariables.Count; i++)
-    {
-      sdfVariables[i].UploadToShader(material, shaderIDs.SdfValues[i]);
-    }
+    raymarchSDF.UploadShaderData(material);
+    raymarchMat.UploadShaderData(material);
   }
 }
 
@@ -248,49 +144,46 @@ public class RaymarchObjectEditor : Editor
 {
   private RaymarchObject Target => target as RaymarchObject;
 
+  private static bool _materialDropDown = false;
+
   public override void OnInspectorGUI()
   {
+    serializedObject.Update();
+    
     EditorGUI.BeginChangeCheck();
 
-    DrawDefaultInspector();
+    GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("label"))
+      {
+        fontStyle = FontStyle.Bold
+      };
+      
+      EditorGUILayout.LabelField("Signed Distance Function", boldStyle);
+    Target.raymarchSDF =
+      ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderFeatureField(GUIContent.none, Target.raymarchSDF, Target);
+    Target.raymarchSDF =
+      ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderVariableField(new GUIContent("SDF Variables"), Target.raymarchSDF,
+        Target);
+
+    EditorGUILayout.Space();
+
+    _materialDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_materialDropDown, new GUIContent("Material"));
+    if (_materialDropDown)
+    {
+      Target.raymarchMat =
+        ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderFeatureField(new GUIContent("Material", "Leave material empty to use colour"), Target.raymarchMat, Target);
+      
+      Target.Colour = EditorGUILayout.ColorField(new GUIContent("Colour"), Target.Colour);
+
+      Target.raymarchMat =
+        ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat, Target);
+    }
+    
+    EditorGUILayout.EndFoldoutHeaderGroup();
 
     if (EditorGUI.EndChangeCheck())
     {
       Target.DirtyFlag.SetDirty();
-    }
-
-    EditorGUILayout.Space();
-
-    GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("label"))
-    {
-      fontStyle = FontStyle.Bold
-    };
-
-    serializedObject.Update();
-
-    EditorGUILayout.LabelField("Signed Distance Function", boldStyle);
-    Target.RaymarchSDF = (RaymarchSDF) EditorGUILayout.ObjectField(Target.RaymarchSDF, typeof(RaymarchSDF), false);
-
-    EditorGUILayout.Space();
-
-    EditorGUILayout.LabelField("SDF Shader Values", boldStyle);
-
-    if (Target.sdfVariables.Count <= 0)
-    {
-      EditorGUILayout.LabelField("There are no values for this SDF");
-    }
-
-    for (int i = 0; i < Target.sdfVariables.Count; i++)
-    {
-      EditorGUI.BeginChangeCheck();
-
-      var variable = ShaderVariable.Editor.VariableField(Target.sdfVariables[i]);
-
-      if (EditorGUI.EndChangeCheck())
-      {
-        Target.sdfVariables[i] = variable;
-        EditorUtility.SetDirty(Target);
-      }
+      EditorUtility.SetDirty(Target);
     }
 
     serializedObject.ApplyModifiedProperties();

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 0d935c5a93ece247970ec043d92e6116
-  _functionBody: ' return length(pos) - min(scale.x, min(scale.y, scale.z));'
+  functionBody: return length(pos) - min(scale.x, min(scale.y, scale.z));
   shaderVariables: []

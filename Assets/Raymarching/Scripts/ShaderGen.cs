@@ -14,10 +14,6 @@ public class ShaderGen
 {
   #region Common Shader Code
 
-  public const string SquigglyBracketOpen = "{";
-  public const string SquigglyBracketClose = "}";
-  public const string SemiColon = ";";
-
   public const string Comment = "// ";
   public const string NewLine = "\r\n";
 
@@ -52,8 +48,8 @@ public class ShaderGen
       AssetDatabase.LoadAssetAtPath<RaymarchSDF>(AssetDatabase.GUIDToAssetPath(guid))));
 
     var functions = sdfAssets.Aggregate(String.Empty,
-      (current, sdf) => string.Concat(current, NewLine, sdf.FunctionPrototypeWithGuid, NewLine, SquigglyBracketOpen,
-        NewLine, sdf.FunctionBody, NewLine, SquigglyBracketClose, NewLine));
+      (current, sdf) => string.Concat(current, NewLine, sdf.FunctionPrototypeWithGuid, NewLine, "{",
+        NewLine, sdf.FunctionBody, NewLine, "}", NewLine));
 
     GenerateUtilShader(DistanceFunctionShaderName, functions);
 
@@ -76,8 +72,8 @@ public class ShaderGen
       AssetDatabase.LoadAssetAtPath<RaymarchMaterial>(AssetDatabase.GUIDToAssetPath(guid))));
 
     var functions = materials.Aggregate(String.Empty,
-      (current, mat) => string.Concat(current, NewLine, mat.FunctionPrototypeWithGuid, NewLine, SquigglyBracketOpen,
-        NewLine, mat.FunctionBody, NewLine, SquigglyBracketClose, NewLine));
+      (current, mat) => string.Concat(current, NewLine, mat.FunctionPrototypeWithGuid, NewLine, "{",
+        NewLine, mat.FunctionBody, NewLine, "}", NewLine));
 
     GenerateUtilShader(MaterialFunctionShaderName, functions);
 
@@ -148,27 +144,25 @@ public class ShaderGen
 
     string raymarchDistance = string.Empty;
 
-    foreach (var rmBase in _objects)
+    foreach (var rmObject in _objects)
     {
-      string positionName = string.Concat("_Position", rmBase.GUID.ToShaderSafeString());
-      string rotationName = string.Concat("_Rotation", rmBase.GUID.ToShaderSafeString());
-      string distanceName = string.Concat("distance", rmBase.GUID.ToShaderSafeString());
-      string colourName = string.Concat("_Colour", rmBase.GUID.ToShaderSafeString());
+      string guid = rmObject.GUID.ToShaderSafeString();
 
-      string localPosName = string.Concat("position", rmBase.GUID.ToShaderSafeString());
+      string positionName = $"_Position{guid}";
+      string rotationName = $"_Rotation{guid}";
+      string distanceName = $"distance{guid}";
+      string colourName = $"_Colour{guid}";
+      string localPosName = $"position{guid}";
 
-      raymarchDistance = string.Concat(raymarchDistance, NewLine, "float3 ", localPosName, " = origin - ", positionName,
-        SemiColon,
-        NewLine);
-      raymarchDistance = string.Concat(raymarchDistance, NewLine, CalculateRotationString(localPosName, rotationName),
-        NewLine);
-      raymarchDistance = string.Concat(raymarchDistance, rmBase.GetShaderCode_CalcDistance(), NewLine);
+      raymarchDistance = $"{raymarchDistance}{NewLine}float3 {localPosName} = rayPos - {positionName};{NewLine}";
+      raymarchDistance = $"{raymarchDistance}{NewLine}{CalculateRotationString(localPosName, rotationName)};{NewLine}";
+      raymarchDistance = $"{raymarchDistance}{NewLine}float {distanceName} = {rmObject.GetShaderCode_CalcDistance()}{NewLine}";
 
-      raymarchDistance = string.Concat(raymarchDistance, NewLine, "if (", distanceName, " < resultDistance)",
-        NewLine, SquigglyBracketOpen,
-        NewLine, "resultDistance = ", distanceName, SemiColon,
-        NewLine, "resultColour = ", colourName, ".xyz", SemiColon,
-        NewLine, SquigglyBracketClose, NewLine);
+      raymarchDistance = $"{raymarchDistance}{NewLine}if ({distanceName} < resultDistance){NewLine} " +
+                         $"{{ {NewLine}" +
+                         $"resultDistance = {distanceName};{NewLine}" +
+                         $"{rmObject.GetShaderCode_Material()}{NewLine}" +
+                         $"}} {NewLine}";
     }
 
     string raymarchLight = _lights.Aggregate(string.Empty,

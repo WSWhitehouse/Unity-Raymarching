@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: ac5a8405559d5c428e1f8d191d017e1e
-  _functionBody: ' float3 o = abs(pos) - scale;
+  functionBody: 'float3 o = abs(pos) - scale;
 
     return length(max(o, 0.0)) +
     min(max(o.x, max(o.y, o.z)), 0.0);'

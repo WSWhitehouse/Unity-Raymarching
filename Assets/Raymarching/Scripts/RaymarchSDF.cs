@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -18,22 +17,22 @@ public class RaymarchSDF : ShaderFeature
     return "float";
   }
 
-  protected override List<ShaderVariable> GetDefaultParameters()
+  protected override ShaderVariable[] GetDefaultParameters()
   {
-    var list = new List<ShaderVariable>
+    return new ShaderVariable[]
     {
       new ShaderVariable("pos", ShaderType.Vector3),
       new ShaderVariable("scale", ShaderType.Vector3)
     };
-
-    return list;
   }
 
+#if UNITY_EDITOR
   public override void SignalShaderFeatureUpdated()
   {
     base.SignalShaderFeatureUpdated();
     ShaderGen.GenerateDistanceFunctionsShader();
   }
+#endif
 }
 
 #if UNITY_EDITOR

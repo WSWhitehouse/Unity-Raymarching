@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/11/2021 10:47:08
+//    Time Generated: 10/11/2021 17:25:02
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -61,11 +61,13 @@ uniform float3 _Position88a5b9efeaaf47789d26eb58407396af;
 uniform float3 _Rotation88a5b9efeaaf47789d26eb58407396af;
 uniform float3 _Scale88a5b9efeaaf47789d26eb58407396af;
 uniform float4 _Colour88a5b9efeaaf47789d26eb58407396af;
+uniform sampler2D _Texture88a5b9efeaaf47789d26eb58407396af; 
 
 uniform float3 _Position3c91d5f52d5b42c39cb8d5f9021fa043;
 uniform float3 _Rotation3c91d5f52d5b42c39cb8d5f9021fa043;
 uniform float3 _Scale3c91d5f52d5b42c39cb8d5f9021fa043;
 uniform float4 _Colour3c91d5f52d5b42c39cb8d5f9021fa043;
+uniform sampler2D _Texture3c91d5f52d5b42c39cb8d5f9021fa043; 
 
 uniform float3 _Positionf10fc8cd374c4bbbbd965d4d0f46fb71;
 uniform float3 _Rotationf10fc8cd374c4bbbbd965d4d0f46fb71;
@@ -84,81 +86,89 @@ uniform float4 _Colour57c95a0f6ffa4354bf7f8f17f47c3610;
 
 
 
-        float4 GetDistanceFromObjects(float3 origin)
+        float4 GetDistanceFromObjects(float3 rayPos)
         {
             float resultDistance = _RenderDistance;
             float3 resultColour = float3(1, 1, 1);
 
             
-float3 position88a5b9efeaaf47789d26eb58407396af = origin - _Position88a5b9efeaaf47789d26eb58407396af;
+float3 position88a5b9efeaaf47789d26eb58407396af = rayPos - _Position88a5b9efeaaf47789d26eb58407396af;
 
 position88a5b9efeaaf47789d26eb58407396af.xz = mul(position88a5b9efeaaf47789d26eb58407396af.xz, float2x2(cos(_Rotation88a5b9efeaaf47789d26eb58407396af.y), sin(_Rotation88a5b9efeaaf47789d26eb58407396af.y), -sin(_Rotation88a5b9efeaaf47789d26eb58407396af.y), cos(_Rotation88a5b9efeaaf47789d26eb58407396af.y)));
 position88a5b9efeaaf47789d26eb58407396af.yz = mul(position88a5b9efeaaf47789d26eb58407396af.yz, float2x2(cos(_Rotation88a5b9efeaaf47789d26eb58407396af.x), -sin(_Rotation88a5b9efeaaf47789d26eb58407396af.x), sin(_Rotation88a5b9efeaaf47789d26eb58407396af.x), cos(_Rotation88a5b9efeaaf47789d26eb58407396af.x)));
 position88a5b9efeaaf47789d26eb58407396af.xy = mul(position88a5b9efeaaf47789d26eb58407396af.xy, float2x2(cos(_Rotation88a5b9efeaaf47789d26eb58407396af.z), -sin(_Rotation88a5b9efeaaf47789d26eb58407396af.z), sin(_Rotation88a5b9efeaaf47789d26eb58407396af.z), cos(_Rotation88a5b9efeaaf47789d26eb58407396af.z)));
+;
 
 float distance88a5b9efeaaf47789d26eb58407396af = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position88a5b9efeaaf47789d26eb58407396af, _Scale88a5b9efeaaf47789d26eb58407396af);
 
 if (distance88a5b9efeaaf47789d26eb58407396af < resultDistance)
-{
+ { 
 resultDistance = distance88a5b9efeaaf47789d26eb58407396af;
-resultColour = _Colour88a5b9efeaaf47789d26eb58407396af.xyz;
-}
+resultColour = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position88a5b9efeaaf47789d26eb58407396af, _Colour88a5b9efeaaf47789d26eb58407396af, _Texture88a5b9efeaaf47789d26eb58407396af);
+} 
 
-float3 position3c91d5f52d5b42c39cb8d5f9021fa043 = origin - _Position3c91d5f52d5b42c39cb8d5f9021fa043;
+float3 position3c91d5f52d5b42c39cb8d5f9021fa043 = rayPos - _Position3c91d5f52d5b42c39cb8d5f9021fa043;
 
 position3c91d5f52d5b42c39cb8d5f9021fa043.xz = mul(position3c91d5f52d5b42c39cb8d5f9021fa043.xz, float2x2(cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y), sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y), -sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y), cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y)));
 position3c91d5f52d5b42c39cb8d5f9021fa043.yz = mul(position3c91d5f52d5b42c39cb8d5f9021fa043.yz, float2x2(cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x), -sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x), sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x), cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x)));
 position3c91d5f52d5b42c39cb8d5f9021fa043.xy = mul(position3c91d5f52d5b42c39cb8d5f9021fa043.xy, float2x2(cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z), -sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z), sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z), cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z)));
+;
 
 float distance3c91d5f52d5b42c39cb8d5f9021fa043 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(position3c91d5f52d5b42c39cb8d5f9021fa043, _Scale3c91d5f52d5b42c39cb8d5f9021fa043);
 
 if (distance3c91d5f52d5b42c39cb8d5f9021fa043 < resultDistance)
-{
+ { 
 resultDistance = distance3c91d5f52d5b42c39cb8d5f9021fa043;
-resultColour = _Colour3c91d5f52d5b42c39cb8d5f9021fa043.xyz;
-}
+resultColour = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position3c91d5f52d5b42c39cb8d5f9021fa043, _Colour3c91d5f52d5b42c39cb8d5f9021fa043, _Texture3c91d5f52d5b42c39cb8d5f9021fa043);
+} 
 
-float3 positionf10fc8cd374c4bbbbd965d4d0f46fb71 = origin - _Positionf10fc8cd374c4bbbbd965d4d0f46fb71;
+float3 positionf10fc8cd374c4bbbbd965d4d0f46fb71 = rayPos - _Positionf10fc8cd374c4bbbbd965d4d0f46fb71;
 
 positionf10fc8cd374c4bbbbd965d4d0f46fb71.xz = mul(positionf10fc8cd374c4bbbbd965d4d0f46fb71.xz, float2x2(cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y), sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y), -sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y), cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y)));
 positionf10fc8cd374c4bbbbd965d4d0f46fb71.yz = mul(positionf10fc8cd374c4bbbbd965d4d0f46fb71.yz, float2x2(cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x), -sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x), sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x), cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x)));
 positionf10fc8cd374c4bbbbd965d4d0f46fb71.xy = mul(positionf10fc8cd374c4bbbbd965d4d0f46fb71.xy, float2x2(cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z), -sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z), sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z), cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z)));
+;
 
 float distancef10fc8cd374c4bbbbd965d4d0f46fb71 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(positionf10fc8cd374c4bbbbd965d4d0f46fb71, _Scalef10fc8cd374c4bbbbd965d4d0f46fb71);
 
 if (distancef10fc8cd374c4bbbbd965d4d0f46fb71 < resultDistance)
-{
+ { 
 resultDistance = distancef10fc8cd374c4bbbbd965d4d0f46fb71;
 resultColour = _Colourf10fc8cd374c4bbbbd965d4d0f46fb71.xyz;
-}
 
-float3 position7031e04a7ad344669638bbee6d28c5e0 = origin - _Position7031e04a7ad344669638bbee6d28c5e0;
+} 
+
+float3 position7031e04a7ad344669638bbee6d28c5e0 = rayPos - _Position7031e04a7ad344669638bbee6d28c5e0;
 
 position7031e04a7ad344669638bbee6d28c5e0.xz = mul(position7031e04a7ad344669638bbee6d28c5e0.xz, float2x2(cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.y), sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.y), -sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.y), cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.y)));
 position7031e04a7ad344669638bbee6d28c5e0.yz = mul(position7031e04a7ad344669638bbee6d28c5e0.yz, float2x2(cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.x), -sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.x), sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.x), cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.x)));
 position7031e04a7ad344669638bbee6d28c5e0.xy = mul(position7031e04a7ad344669638bbee6d28c5e0.xy, float2x2(cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.z), -sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.z), sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.z), cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.z)));
+;
 
 float distance7031e04a7ad344669638bbee6d28c5e0 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position7031e04a7ad344669638bbee6d28c5e0, _Scale7031e04a7ad344669638bbee6d28c5e0);
 
 if (distance7031e04a7ad344669638bbee6d28c5e0 < resultDistance)
-{
+ { 
 resultDistance = distance7031e04a7ad344669638bbee6d28c5e0;
 resultColour = _Colour7031e04a7ad344669638bbee6d28c5e0.xyz;
-}
 
-float3 position57c95a0f6ffa4354bf7f8f17f47c3610 = origin - _Position57c95a0f6ffa4354bf7f8f17f47c3610;
+} 
+
+float3 position57c95a0f6ffa4354bf7f8f17f47c3610 = rayPos - _Position57c95a0f6ffa4354bf7f8f17f47c3610;
 
 position57c95a0f6ffa4354bf7f8f17f47c3610.xz = mul(position57c95a0f6ffa4354bf7f8f17f47c3610.xz, float2x2(cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y), sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y), -sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y), cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y)));
 position57c95a0f6ffa4354bf7f8f17f47c3610.yz = mul(position57c95a0f6ffa4354bf7f8f17f47c3610.yz, float2x2(cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x), -sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x), sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x), cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x)));
 position57c95a0f6ffa4354bf7f8f17f47c3610.xy = mul(position57c95a0f6ffa4354bf7f8f17f47c3610.xy, float2x2(cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z), -sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z), sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z), cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z)));
+;
 
 float distance57c95a0f6ffa4354bf7f8f17f47c3610 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position57c95a0f6ffa4354bf7f8f17f47c3610, _Scale57c95a0f6ffa4354bf7f8f17f47c3610);
 
 if (distance57c95a0f6ffa4354bf7f8f17f47c3610 < resultDistance)
-{
+ { 
 resultDistance = distance57c95a0f6ffa4354bf7f8f17f47c3610;
 resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
-}
+
+} 
 
 
             return float4(resultColour.xyz, resultDistance);

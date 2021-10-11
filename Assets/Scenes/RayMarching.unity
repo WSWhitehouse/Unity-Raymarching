@@ -302,7 +302,7 @@ Transform:
   m_Children:
   - {fileID: 817398801}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &589048859
 GameObject:
@@ -382,12 +382,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 0f5ac957fa6f5443bf7f8f17f47c3610
-  raymarchSDF: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-  sdfVariables: []
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
   colour: {r: 0, g: 0.21631074, b: 1, a: 1}
-  roundness: 0.102
-  hollow: 0
-  wallThickness: 0
 --- !u!4 &605198481
 Transform:
   m_ObjectHideFlags: 0
@@ -400,8 +401,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1070571268}
-  m_RootOrder: 2
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 13.361, y: -38.142, z: -41.262}
 --- !u!1 &817398800
 GameObject:
@@ -464,8 +465,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1070571268}
-  m_RootOrder: 1
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1035846469
 MonoBehaviour:
@@ -481,62 +482,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 4ae03170d37a66449638bbee6d28c5e0
-  raymarchSDF: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-  sdfVariables: []
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
   colour: {r: 1, g: 0.6341173, b: 0, a: 1}
-  roundness: 0.102
-  hollow: 0
-  wallThickness: 0
---- !u!1 &1070571266
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1070571268}
-  - component: {fileID: 1070571267}
-  m_Layer: 0
-  m_Name: modifier
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1070571267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1070571266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e81064fa22154f1687a801edb131f8f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  operation: 1
-  operationSmooth: 0
-  operationMod: 1
---- !u!4 &1070571268
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1070571266}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1499568966}
-  - {fileID: 1035846468}
-  - {fileID: 605198481}
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1405943641
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,12 +520,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: efb9a588afea78479d26eb58407396af
-  raymarchSDF: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-  sdfVariables: []
-  colour: {r: 1, g: 0, b: 0, a: 1}
-  roundness: 0
-  hollow: 0
-  wallThickness: 0
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 11400000, guid: 68533ef4ca7169043bf7d7199392d505, type: 2}
+    shaderVariables:
+    - name: Texture
+      shaderType: 7
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+  colour: {r: 1, g: 0.013039118, b: 0, a: 1}
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0
@@ -582,7 +541,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405943641}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.5, z: 0}
+  m_LocalPosition: {x: -0.05, y: -1.5, z: 0.49}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -620,12 +579,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: f5d5913c5b2dc3429cb8d5f9021fa043
-  raymarchSDF: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
-  sdfVariables: []
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 11400000, guid: 68533ef4ca7169043bf7d7199392d505, type: 2}
+    shaderVariables:
+    - name: Texture
+      shaderType: 7
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
   colour: {r: 1, g: 1, b: 1, a: 1}
-  roundness: 0
-  hollow: 0
-  wallThickness: 0
 --- !u!4 &1430610918
 Transform:
   m_ObjectHideFlags: 0
@@ -666,12 +632,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1499568965}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.04, y: 0.012, z: 3.35}
+  m_LocalPosition: {x: -3.1, y: 0.012, z: 2.56}
   m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 1070571268}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1499568967
 MonoBehaviour:
@@ -687,12 +653,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: cdc80ff14c37bb4bbd965d4d0f46fb71
-  raymarchSDF: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
-  sdfVariables: []
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
   colour: {r: 1, g: 1, b: 1, a: 1}
-  roundness: 0
-  hollow: 0
-  wallThickness: 0.19
 --- !u!1 &1559188885
 GameObject:
   m_ObjectHideFlags: 0
@@ -788,7 +755,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1566595692
 GameObject:
@@ -1016,5 +983,5 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

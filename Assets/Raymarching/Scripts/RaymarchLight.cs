@@ -1,7 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -79,11 +77,11 @@ public class RaymarchLight : RaymarchBase
   {
     string guid = GUID.ToShaderSafeString();
 
-    shaderIDs.Position = Shader.PropertyToID(string.Concat("_Position", guid));
-    shaderIDs.Direction = Shader.PropertyToID(string.Concat("_Direction", guid));
-    shaderIDs.Colour = Shader.PropertyToID(string.Concat("_Colour", guid));
-    shaderIDs.Range = Shader.PropertyToID(string.Concat("_Range", guid));
-    shaderIDs.Intensity = Shader.PropertyToID(string.Concat("_Intensity", guid));
+    shaderIDs.Position = Shader.PropertyToID($"_Position{guid}");
+    shaderIDs.Direction = Shader.PropertyToID($"_Direction{guid}");
+    shaderIDs.Colour = Shader.PropertyToID($"_Colour{guid}");
+    shaderIDs.Range = Shader.PropertyToID($"_Range{guid}");
+    shaderIDs.Intensity = Shader.PropertyToID($"_Intensity{guid}");
   }
 
   public override void Awake()
@@ -122,11 +120,11 @@ public class RaymarchLight : RaymarchBase
 
     string guid = GUID.ToShaderSafeString();
 
-    var code = string.Concat("uniform float3 _Position", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float3 _Direction", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float4 _Colour", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float _Range", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
-    code = string.Concat(code, "uniform float _Intensity", guid, ShaderGen.SemiColon, ShaderGen.NewLine);
+    var code = $"uniform float3 _Position{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float3 _Direction{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float4 _Colour{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float _Range{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float _Intensity{guid};{ShaderGen.NewLine}";
 
     return code;
   }
@@ -158,7 +156,7 @@ public class RaymarchLight : RaymarchBase
     string colour, string range, string intensity)
   {
     string guid = GUID.ToShaderSafeString();
-    
+
     switch (LightType)
     {
       case LightType.Point: //http://forum.unity3d.com/threads/light-attentuation-equation.16006/

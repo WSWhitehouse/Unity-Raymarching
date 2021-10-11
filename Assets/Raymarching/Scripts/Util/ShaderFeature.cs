@@ -23,7 +23,7 @@ public abstract class ShaderFeature : ScriptableObject
       string parameters = String.Empty;
       var defaultParams = GetDefaultParameters();
 
-      for (int i = 0; i < defaultParams.Count; i++)
+      for (int i = 0; i < defaultParams.Length; i++)
       {
         if (i == 0)
         {
@@ -67,9 +67,9 @@ public abstract class ShaderFeature : ScriptableObject
     return string.Empty;
   }
 
-  protected virtual List<ShaderVariable> GetDefaultParameters()
+  protected virtual ShaderVariable[] GetDefaultParameters()
   {
-    return new List<ShaderVariable>();
+    return Array.Empty<ShaderVariable>();
   }
 
 #if UNITY_EDITOR
@@ -118,7 +118,7 @@ public class ShaderFeatureEditor : Editor
 
     EditorGUILayout.BeginVertical(GUI.skin.box);
     EditorGUILayout.LabelField(Target.FunctionPrototype, wordWrapStyle);
-    EditorGUILayout.LabelField(ShaderGen.SquigglyBracketOpen);
+    EditorGUILayout.LabelField("{");
 
     EditorGUI.BeginChangeCheck();
 
@@ -129,7 +129,7 @@ public class ShaderFeatureEditor : Editor
       Target.SignalShaderFeatureUpdated();
     }
 
-    EditorGUILayout.LabelField(ShaderGen.SquigglyBracketClose);
+    EditorGUILayout.LabelField("}");
     EditorGUILayout.EndVertical();
 
     EditorGUILayout.Space();

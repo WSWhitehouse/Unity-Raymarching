@@ -48,7 +48,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         // RAYMARCH VARS //
 
-        float4 GetDistanceFromObjects(float3 origin)
+        float4 GetDistanceFromObjects(float3 rayPos)
         {
             float resultDistance = _RenderDistance;
             float3 resultColour = float3(1, 1, 1);

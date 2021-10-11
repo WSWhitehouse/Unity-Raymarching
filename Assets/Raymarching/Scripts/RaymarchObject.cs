@@ -149,15 +149,15 @@ public class RaymarchObjectEditor : Editor
   public override void OnInspectorGUI()
   {
     serializedObject.Update();
-    
+
     EditorGUI.BeginChangeCheck();
 
     GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("label"))
-      {
-        fontStyle = FontStyle.Bold
-      };
-      
-      EditorGUILayout.LabelField("Signed Distance Function", boldStyle);
+    {
+      fontStyle = FontStyle.Bold
+    };
+
+    EditorGUILayout.LabelField("Signed Distance Function", boldStyle);
     Target.raymarchSDF =
       ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderFeatureField(GUIContent.none, Target.raymarchSDF, Target);
     Target.raymarchSDF =
@@ -169,15 +169,24 @@ public class RaymarchObjectEditor : Editor
     _materialDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_materialDropDown, new GUIContent("Material"));
     if (_materialDropDown)
     {
-      Target.raymarchMat =
-        ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderFeatureField(new GUIContent("Material", "Leave material empty to use colour"), Target.raymarchMat, Target);
+      EditorGUILayout.BeginVertical(GUI.skin.box);
       
+      EditorGUILayout.HelpBox(
+        "Materials describe how the Raymarch Object will look. Leave the following material field empty to just use a colour.",
+        MessageType.Info, true);
+
+      Target.raymarchMat =
+        ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderFeatureField(new GUIContent("Material"),
+          Target.raymarchMat, Target);
+
       Target.Colour = EditorGUILayout.ColorField(new GUIContent("Colour"), Target.Colour);
 
       Target.raymarchMat =
         ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat, Target);
+      
+      EditorGUILayout.EndVertical();
     }
-    
+
     EditorGUILayout.EndFoldoutHeaderGroup();
 
     if (EditorGUI.EndChangeCheck())

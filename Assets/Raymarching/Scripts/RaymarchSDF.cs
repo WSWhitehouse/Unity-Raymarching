@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -17,9 +18,15 @@ public class RaymarchSDF : ShaderFeature
     return "float";
   }
 
-  protected override string GetDefaultParameters()
+  protected override List<ShaderVariable> GetDefaultParameters()
   {
-    return "float3 pos, float3 scale";
+    var list = new List<ShaderVariable>
+    {
+      new ShaderVariable("pos", ShaderType.Vector3),
+      new ShaderVariable("scale", ShaderType.Vector3)
+    };
+
+    return list;
   }
 
   public override void SignalShaderFeatureUpdated()

@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/08/2021 10:34:34
+//    Time Generated: 10/11/2021 10:47:08
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -56,11 +56,6 @@ Shader "Raymarch/RayMarching_RaymarchShader"
         uniform float3 _AmbientColour;
 
         // Raymarch Variables
-uniform float3 _Position3cfaeb6f64e949fabb06e9f73ef5f786;
-uniform float3 _Direction3cfaeb6f64e949fabb06e9f73ef5f786;
-uniform float4 _Colour3cfaeb6f64e949fabb06e9f73ef5f786;
-uniform float _Range3cfaeb6f64e949fabb06e9f73ef5f786;
-uniform float _Intensity3cfaeb6f64e949fabb06e9f73ef5f786;
 
 uniform float3 _Position88a5b9efeaaf47789d26eb58407396af;
 uniform float3 _Rotation88a5b9efeaaf47789d26eb58407396af;
@@ -173,7 +168,7 @@ resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
         {
             float3 light = float3(0, 0, 0);
             
-            light += _Colour3cfaeb6f64e949fabb06e9f73ef5f786 * max(0.0, dot(-normal, _Direction3cfaeb6f64e949fabb06e9f73ef5f786)) * _Intensity3cfaeb6f64e949fabb06e9f73ef5f786; 
+            light += float3(1, 0.9568627, 0.8392157) * max(0.0, dot(-normal, float3(-0.3213938, -0.7660444, 0.5566705))) * 1; 
 
 
             return light;

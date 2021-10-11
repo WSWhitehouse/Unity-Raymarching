@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -17,9 +18,16 @@ public class RaymarchMaterial : ShaderFeature
     return "float4";
   }
 
-  protected override string GetDefaultParameters()
+  protected override List<ShaderVariable> GetDefaultParameters()
   {
-    return "float3 pos, float4 colour, float3 normal";
+    var list = new List<ShaderVariable>
+    {
+      new ShaderVariable("pos", ShaderType.Vector3),
+      new ShaderVariable("colour", ShaderType.Vector4),
+      new ShaderVariable("normal", ShaderType.Vector3)
+    };
+    
+    return list;
   }
 
   public override void SignalShaderFeatureUpdated()

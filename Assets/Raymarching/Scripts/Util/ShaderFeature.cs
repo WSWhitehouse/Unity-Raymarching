@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Action = System.Action;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,13 +14,25 @@ public abstract class ShaderFeature : ScriptableObject
   public SerializableGuid GUID => guid;
 
   public string FunctionName => $"{GetFunctionPrefix()}_{name.Replace(' ', '_')}";
-  public string FunctionNameWithGUID => $"{FunctionName}_{GUID.ToShaderSafeString()}";
+  public string FunctionNameWithGuid => $"{FunctionName}_{GUID.ToShaderSafeString()}";
 
   public string FunctionParameters
   {
     get
     {
-      string parameters = GetDefaultParameters();
+      string parameters = String.Empty;
+      var defaultParams = GetDefaultParameters();
+
+      for (int i = 0; i < defaultParams.Count; i++)
+      {
+        if (i == 0)
+        {
+          parameters = $"{defaultParams[i].ToShaderParameter()}";
+          continue;
+        }
+        
+        parameters = $"{parameters}, {defaultParams[i].ToShaderParameter()}";
+      }
 
       for (int i = 0; i < shaderVariables.Count; i++)
       {
@@ -32,18 +45,17 @@ public abstract class ShaderFeature : ScriptableObject
 
   public string FunctionPrototype => $"{GetReturnType()} {FunctionName}({FunctionParameters})";
 
-  public string FunctionPrototypeWithGUID => $"{GetReturnType()} {FunctionNameWithGUID}({FunctionParameters})";
+  public string FunctionPrototypeWithGuid => $"{GetReturnType()} {FunctionNameWithGuid}({FunctionParameters})";
 
-  [SerializeField] private string _functionBody = "return 0;";
+  [SerializeField] private string functionBody = "return 0;";
 
   public string FunctionBody
   {
-    get => _functionBody;
-    set => _functionBody = value;
+    get => functionBody;
+    set => functionBody = value;
   }
 
   [SerializeField] public List<ShaderVariable> shaderVariables;
-  public Action OnShaderValuesChanged;
 
   protected virtual string GetFunctionPrefix()
   {
@@ -55,12 +67,14 @@ public abstract class ShaderFeature : ScriptableObject
     return string.Empty;
   }
 
-  protected virtual string GetDefaultParameters()
+  protected virtual List<ShaderVariable> GetDefaultParameters()
   {
-    return string.Empty;
+    return new List<ShaderVariable>();
   }
 
 #if UNITY_EDITOR
+  public Action OnShaderValuesChanged;
+  
   protected void Awake()
   {
     SignalShaderFeatureUpdated();

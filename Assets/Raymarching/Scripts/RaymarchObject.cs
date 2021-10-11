@@ -43,7 +43,7 @@ public class RaymarchObject : RaymarchBase
     for (int i = 0; i < count; i++)
     {
       int index = sdfVariables.FindIndex(x =>
-        x.GetVariableName() == raymarchSDF.shaderVariables[i].GetVariableName());
+        x.Name == raymarchSDF.shaderVariables[i].Name);
 
       if (index < 0) // variable not found
       {
@@ -51,7 +51,7 @@ public class RaymarchObject : RaymarchBase
         continue;
       }
 
-      newVariables.Add(sdfVariables[index].GetVariableType() != raymarchSDF.shaderVariables[i].GetVariableType()
+      newVariables.Add(sdfVariables[index].ShaderType != raymarchSDF.shaderVariables[i].ShaderType
         ? raymarchSDF.shaderVariables[i]
         : sdfVariables[index]);
     }
@@ -209,7 +209,7 @@ public class RaymarchObject : RaymarchBase
   {
     string guid = GUID.ToShaderSafeString();
 
-    return string.Concat("float distance", guid, " = ", raymarchSDF.FunctionNameWithGUID,
+    return string.Concat("float distance", guid, " = ", raymarchSDF.FunctionNameWithGuid,
       "(", GetShaderDistanceParameters(), ")", ShaderGen.SemiColon);
   }
 

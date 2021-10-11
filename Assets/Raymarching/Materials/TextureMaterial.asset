@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 375473c31f33804fa12534d02a465e6a
-  _functionBody: "  float3x3 R = float3x3(float3(cos(_Time.y),sin(_Time.y),0),float3(-sin(_Time.y),cos(_Time.y),0),float3(0,0,-1));\r\n   
-    pos *= R/8.0;\r\n    normal *= R;\n\n    return float4(float3((tex2D(Texture,
+  _functionBody: "float3x3 R = float3x3(float3(cos(_Time.y),sin(_Time.y),0),float3(-sin(_Time.y),cos(_Time.y),0),float3(0,0,-1));\r\npos
+    = mul(pos, R / 8);\r\nnormal = mul(normal, R);\n\nreturn float4(float3((tex2D(Texture,
     pos.xy).rgb\r + tex2D(Texture, pos.zy).rgb\r + tex2D(Texture, pos.xz).rgb) /
     3.0), 1);"
   shaderVariables:

@@ -52,7 +52,7 @@ public class ShaderGen
       AssetDatabase.LoadAssetAtPath<RaymarchSDF>(AssetDatabase.GUIDToAssetPath(guid))));
 
     var functions = sdfAssets.Aggregate(String.Empty,
-      (current, sdf) => string.Concat(current, NewLine, sdf.FunctionPrototypeWithGUID, NewLine, SquigglyBracketOpen,
+      (current, sdf) => string.Concat(current, NewLine, sdf.FunctionPrototypeWithGuid, NewLine, SquigglyBracketOpen,
         NewLine, sdf.FunctionBody, NewLine, SquigglyBracketClose, NewLine));
 
     GenerateUtilShader(DistanceFunctionShaderName, functions);
@@ -76,7 +76,7 @@ public class ShaderGen
       AssetDatabase.LoadAssetAtPath<RaymarchMaterial>(AssetDatabase.GUIDToAssetPath(guid))));
 
     var functions = materials.Aggregate(String.Empty,
-      (current, mat) => string.Concat(current, NewLine, mat.FunctionPrototypeWithGUID, NewLine, SquigglyBracketOpen,
+      (current, mat) => string.Concat(current, NewLine, mat.FunctionPrototypeWithGuid, NewLine, SquigglyBracketOpen,
         NewLine, mat.FunctionBody, NewLine, SquigglyBracketClose, NewLine));
 
     GenerateUtilShader(MaterialFunctionShaderName, functions);

@@ -253,7 +253,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 6febfa3ce964fa49bb06e9f73ef5f786
-  lightMode: 1
+  lightMode: 0
 --- !u!1 &491504017
 GameObject:
   m_ObjectHideFlags: 0

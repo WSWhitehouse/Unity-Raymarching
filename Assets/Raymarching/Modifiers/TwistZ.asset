@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c992fa5b27b1504439742fa83be21c99, type: 3}
+  m_Name: TwistZ
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 9435d0c1c1175747b9996d01b0db1171
+  functionBody: 'float c = cos(TwistAmountZ*pos.z);
+
+    float s = sin(TwistAmountZ*pos.z);
+
+    float2x2 
+    m = float2x2(c,-s,s,c);
+
+    return float3( mul(m,pos.xy), pos.z);'
+  shaderVariables:
+  - name: TwistAmountZ
+    shaderType: 0
+    floatValue: 0
+    intValue: 0
+    vectorValue: {x: 0, y: 0, z: 0, w: 0}
+    textureValue: {fileID: 0}
+  modifierType: 0

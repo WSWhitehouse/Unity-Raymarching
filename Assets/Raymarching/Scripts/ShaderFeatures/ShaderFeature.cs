@@ -98,12 +98,15 @@ public class ShaderFeatureEditor : Editor
 
   private string _functionBody;
 
-  private void OnEnable()
+  protected virtual void OnEnable()
   {
     _functionBody = Target.FunctionBody;
   }
 
-  public override void OnInspectorGUI()
+  // NOTE(WSWhitehouse): Do *NOT* override this function as it handles enabling/disabling
+  // of the GUI while in play mode. Instead, override "DrawShaderFeatureInspector()". The
+  // function is marked sealed to ensure it cannot be overriden.
+  public sealed override void OnInspectorGUI()
   {
     if (Application.isPlaying)
       EditorGUILayout.HelpBox("You cannot edit Shader Features during play mode.", MessageType.Info, true);
@@ -118,7 +121,7 @@ public class ShaderFeatureEditor : Editor
     GUI.enabled = cachedGUIEnabled;
   }
 
-  private void DrawShaderFeatureInspector()
+  protected virtual void DrawShaderFeatureInspector()
   {
     GUIStyle wordWrapStyle = EditorStyles.wordWrappedLabel;
     wordWrapStyle.fontStyle = FontStyle.Bold;
@@ -126,27 +129,15 @@ public class ShaderFeatureEditor : Editor
     EditorGUILayout.BeginVertical(GUI.skin.box);
     EditorGUILayout.LabelField(Target.FunctionPrototype, wordWrapStyle);
     EditorGUILayout.LabelField("{");
-
-    // EditorGUI.BeginChangeCheck();
-
-    // if (!GUI.enabled)
-    // {
-    //   Target.FunctionBody = EditorGUILayout.TextArea(Target.FunctionBody);
-    // }
-
+    
+    EditorGUI.indentLevel++;
     _functionBody = EditorGUILayout.TextArea(_functionBody);
-
-    //
-    // if (EditorGUI.EndChangeCheck())
-    // {
-    //   Target.SignalShaderFeatureUpdated();
-    // }
+    EditorGUI.indentLevel--;
 
     EditorGUILayout.LabelField("}");
 
     EditorGUILayout.BeginHorizontal();
-
-
+    
     bool guiEnableCache = GUI.enabled;
     GUI.enabled = !_functionBody.Equals(Target.FunctionBody) && guiEnableCache;
 

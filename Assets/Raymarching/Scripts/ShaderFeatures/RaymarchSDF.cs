@@ -41,9 +41,9 @@ public class RaymarchSDFEditor : ShaderFeatureEditor
 {
   private RaymarchSDF Target => target as RaymarchSDF;
 
-  public override void OnInspectorGUI()
+  protected override void DrawShaderFeatureInspector()
   {
-    base.OnInspectorGUI();
+    base.DrawShaderFeatureInspector();
   }
 }
 #endif

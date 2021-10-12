@@ -388,7 +388,9 @@ MonoBehaviour:
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
+  raymarchMods: []
   colour: {r: 0, g: 0.21631074, b: 1, a: 1}
+  marchingStepAmount: 1
 --- !u!4 &605198481
 Transform:
   m_ObjectHideFlags: 0
@@ -460,8 +462,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1035846467}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.58, y: 0.012, z: 1.22}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.414, y: 0.416, z: 1.039}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -488,7 +490,33 @@ MonoBehaviour:
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: a50f5e34812b6c14c8d5509d2c236cbb, type: 2}
+    shaderVariables:
+    - name: TwistAmountY
+      shaderType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
+    shaderVariables:
+    - name: TwistAmountX
+      shaderType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 0f8fe211ce69b3a4fb2b636b90d0d954, type: 2}
+    shaderVariables:
+    - name: TwistAmountZ
+      shaderType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   colour: {r: 1, g: 0.64045507, b: 0.0141509175, a: 1}
+  marchingStepAmount: 4.9
 --- !u!1 &1405943641
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,7 +528,7 @@ GameObject:
   - component: {fileID: 1405943643}
   - component: {fileID: 1405943642}
   m_Layer: 0
-  m_Name: RM Cube
+  m_Name: "RM Cube \U0001F883\U0001F883\U0001F883\U0001F883\U0001F847\U0001F847"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -532,7 +560,25 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 2.05
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: d077c243d9fe2b843b642edbd11a0c37, type: 2}
+    shaderVariables:
+    - name: BendAmount
+      shaderType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   colour: {r: 1, g: 0.016675858, b: 0, a: 1}
+  marchingStepAmount: 1.8
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0
@@ -541,7 +587,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405943641}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05, y: -1.5, z: 0.49}
+  m_LocalPosition: {x: 0.44, y: -1.5, z: 0.38}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -591,7 +637,9 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+  raymarchMods: []
   colour: {r: 1, g: 1, b: 1, a: 1}
+  marchingStepAmount: 1
 --- !u!4 &1430610918
 Transform:
   m_ObjectHideFlags: 0
@@ -632,7 +680,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1499568965}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.1, y: 0.012, z: 2.56}
+  m_LocalPosition: {x: -7.05, y: 0.012, z: 1.774}
   m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -659,7 +707,17 @@ MonoBehaviour:
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 14.05
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   colour: {r: 1, g: 1, b: 1, a: 1}
+  marchingStepAmount: 12.3
 --- !u!1 &1559188885
 GameObject:
   m_ObjectHideFlags: 0
@@ -978,7 +1036,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1745839856}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.32, y: 0, z: 1.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

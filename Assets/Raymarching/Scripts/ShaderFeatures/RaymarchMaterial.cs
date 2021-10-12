@@ -41,10 +41,10 @@ public class RaymarchMaterial : ShaderFeature
 public class RaymarchMaterialEditor : ShaderFeatureEditor
 {
   private RaymarchMaterial Target => target as RaymarchMaterial;
-
-  public override void OnInspectorGUI()
+  
+  protected override void DrawShaderFeatureInspector()
   {
-    base.OnInspectorGUI();
+    base.DrawShaderFeatureInspector();
   }
 }
 #endif

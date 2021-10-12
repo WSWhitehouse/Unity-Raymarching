@@ -16,6 +16,7 @@ Shader "Raymarch/RaymarchTemplateShader"
         // Includes
         #include "Assets/Raymarching/Shaders/Generated/DistanceFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Generated/MaterialFunctions.hlsl"
+        #include "Assets/Raymarching/Shaders/Generated/ModifierFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Ray.hlsl"
 
         #pragma vertex vert

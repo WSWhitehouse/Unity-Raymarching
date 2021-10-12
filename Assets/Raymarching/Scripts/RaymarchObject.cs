@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -12,10 +13,18 @@ public class RaymarchObject : RaymarchBase
   [SerializeField] public ShaderFeatureImpl<RaymarchSDF> raymarchSDF;
   [SerializeField] public ShaderFeatureImpl<RaymarchMaterial> raymarchMat;
 
+  [SerializeField] public List<ShaderFeatureImpl<RaymarchModifier>> raymarchMods =
+    new List<ShaderFeatureImpl<RaymarchModifier>>();
+
   public override void Awake()
   {
     raymarchSDF.OnAwake(GUID);
     raymarchMat.OnAwake(GUID);
+
+    foreach (var mod in raymarchMods)
+    {
+      mod.OnAwake(GUID);
+    }
 
     InitShaderIDs();
     base.Awake();
@@ -26,6 +35,11 @@ public class RaymarchObject : RaymarchBase
     raymarchSDF.OnDestroy();
     raymarchMat.OnDestroy();
 
+    foreach (var mod in raymarchMods)
+    {
+      mod.OnDestroy();
+    }
+
     base.OnDestroy();
   }
 
@@ -35,6 +49,7 @@ public class RaymarchObject : RaymarchBase
     public int Rotation;
     public int Scale;
     public int Colour;
+    public int MarchingStepAmount;
   }
 
   private ShaderIDs shaderIDs;
@@ -47,6 +62,7 @@ public class RaymarchObject : RaymarchBase
     shaderIDs.Rotation = Shader.PropertyToID($"_Rotation{guid}");
     shaderIDs.Scale = Shader.PropertyToID($"_Scale{guid}");
     shaderIDs.Colour = Shader.PropertyToID($"_Colour{guid}");
+    shaderIDs.MarchingStepAmount = Shader.PropertyToID($"_MarchingStepAmount{guid}");
   }
 
   public override bool IsValid()
@@ -71,6 +87,15 @@ public class RaymarchObject : RaymarchBase
     set => DirtyFlag.SetField(ref colour, value);
   }
 
+  [SerializeField] private float marchingStepAmount = 1f;
+  
+  public float MarchingStepAmount
+  {
+    get => marchingStepAmount;
+    set => DirtyFlag.SetField(ref marchingStepAmount, value);
+  }
+
+
 #if UNITY_EDITOR
   // Shader
   public override string GetShaderCode_Variables()
@@ -81,16 +106,51 @@ public class RaymarchObject : RaymarchBase
     code = $"{code}uniform float3 _Rotation{guid};{ShaderGen.NewLine}";
     code = $"{code}uniform float3 _Scale{guid};{ShaderGen.NewLine}";
     code = $"{code}uniform float4 _Colour{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float _MarchingStepAmount{guid};{ShaderGen.NewLine}";
 
     code = string.Concat(code, raymarchSDF.GetShaderVariables(GUID));
     code = string.Concat(code, raymarchMat.GetShaderVariables(GUID));
+    code = raymarchMods.Aggregate(code, (current, mod) =>
+      string.Concat(current, mod.GetShaderVariables(GUID)));
 
     return code;
   }
 
   public string GetShaderCode_CalcDistance()
   {
-    return $"{raymarchSDF.ShaderFeature.FunctionNameWithGuid}({GetShaderDistanceParameters()});";
+    string guid = GUID.ToShaderSafeString();
+
+    string localDistName = $"distance{guid}";
+    string localPosName = $"position{guid}";
+
+    string marchingStepAmountName = $"_MarchingStepAmount{guid}";
+
+    string result = string.Empty;
+
+    for (var i = 0; i < raymarchMods.Count; i++)
+    {
+      var modifier = raymarchMods[i];
+      if (modifier.ShaderFeature.ModifierType != ModifierType.PreSDF) continue;
+
+      result =
+        $"{result}{localPosName} = {modifier.ShaderFeature.FunctionNameWithGuid}({GetModifierParameters(i)});{ShaderGen.NewLine}";
+    }
+
+    result =
+      $"{result}float {localDistName} = {raymarchSDF.ShaderFeature.FunctionNameWithGuid}({GetShaderDistanceParameters()});{ShaderGen.NewLine}";
+
+    for (var i = 0; i < raymarchMods.Count; i++)
+    {
+      var modifier = raymarchMods[i];
+      if (modifier.ShaderFeature.ModifierType != ModifierType.PostSDF) continue;
+
+      result =
+        $"{result}{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({GetModifierParameters(i)});{ShaderGen.NewLine}";
+    }
+
+    result = $"{result}{localDistName} /= {marchingStepAmountName};{ShaderGen.NewLine}";
+
+    return result;
   }
 
   private string GetShaderDistanceParameters()
@@ -101,6 +161,35 @@ public class RaymarchObject : RaymarchBase
     for (int i = 0; i < raymarchSDF.ShaderVariables.Count; i++)
     {
       parameters = string.Concat(parameters, ", ", raymarchSDF.ShaderVariables[i].GetShaderName(GUID));
+    }
+
+    return parameters;
+  }
+
+  private string GetModifierParameters(int index)
+  {
+    var modifier = raymarchMods[index];
+
+    string guid = GUID.ToShaderSafeString();
+    string localDistName = $"distance{guid}";
+
+    string parameters;
+
+    switch (modifier.ShaderFeature.ModifierType)
+    {
+      case ModifierType.PreSDF:
+        parameters = $"position{guid}, _Scale{guid}";
+        break;
+      case ModifierType.PostSDF:
+        parameters = $"position{guid}, {localDistName}";
+        break;
+      default:
+        throw new ArgumentOutOfRangeException();
+    }
+
+    for (int i = 0; i < modifier.ShaderVariables.Count; i++)
+    {
+      parameters = string.Concat(parameters, ", ", modifier.ShaderVariables[i].GetShaderName(GUID));
     }
 
     return parameters;
@@ -132,9 +221,15 @@ public class RaymarchObject : RaymarchBase
     material.SetVector(shaderIDs.Rotation, Rotation);
     material.SetVector(shaderIDs.Scale, Scale);
     material.SetVector(shaderIDs.Colour, Colour);
+    material.SetFloat(shaderIDs.MarchingStepAmount, MarchingStepAmount);
 
     raymarchSDF.UploadShaderData(material);
     raymarchMat.UploadShaderData(material);
+
+    foreach (var mod in raymarchMods)
+    {
+      mod.UploadShaderData(material);
+    }
   }
 }
 
@@ -145,6 +240,7 @@ public class RaymarchObjectEditor : Editor
   private RaymarchObject Target => target as RaymarchObject;
 
   private static bool _materialDropDown = false;
+  private static bool _modifierDropDown = false;
 
   public override void OnInspectorGUI()
   {
@@ -163,14 +259,22 @@ public class RaymarchObjectEditor : Editor
     Target.raymarchSDF =
       ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderVariableField(new GUIContent("SDF Variables"), Target.raymarchSDF,
         Target);
-
+    
+    EditorGUI.BeginChangeCheck();
+    Target.MarchingStepAmount =
+      EditorGUILayout.FloatField(new GUIContent("Marching Step Amount"), Target.MarchingStepAmount);
+    if (EditorGUI.EndChangeCheck())
+    {
+      EditorUtility.SetDirty(target);
+    }
+    
     EditorGUILayout.Space();
 
     _materialDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_materialDropDown, new GUIContent("Material"));
     if (_materialDropDown)
     {
       EditorGUILayout.BeginVertical(GUI.skin.box);
-      
+
       EditorGUILayout.HelpBox(
         "Materials describe how the Raymarch Object will look. Leave the following material field empty to just use a colour.",
         MessageType.Info, true);
@@ -183,7 +287,84 @@ public class RaymarchObjectEditor : Editor
 
       Target.raymarchMat =
         ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat, Target);
-      
+
+      EditorGUILayout.EndVertical();
+    }
+
+    EditorGUILayout.EndFoldoutHeaderGroup();
+
+    _modifierDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_modifierDropDown, new GUIContent("Modifiers"));
+    if (_modifierDropDown)
+    {
+      EditorGUILayout.BeginVertical(GUI.skin.box);
+
+      for (int i = 0; i < Target.raymarchMods.Count; i++)
+      {
+        EditorGUILayout.BeginVertical(GUI.skin.box);
+
+        Target.raymarchMods[i] =
+          ShaderFeatureImpl<RaymarchModifier>.Editor.ShaderFeatureField(GUIContent.none,
+            Target.raymarchMods[i], Target);
+
+        Target.raymarchMods[i] =
+          ShaderFeatureImpl<RaymarchModifier>.Editor.ShaderVariableField(GUIContent.none,
+            Target.raymarchMods[i], Target);
+
+        GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.25f);
+
+        Rect rect = EditorGUILayout.GetControlRect();
+        rect.width *= 0.5f;
+
+        Rect arrowButtonsRect = rect;
+        arrowButtonsRect.width *= 0.5f;
+
+        bool guiEnabledCache = GUI.enabled;
+        if (i <= 0)
+        {
+          GUI.enabled = false;
+        }
+
+        if (GUI.Button(arrowButtonsRect, "▲"))
+        {
+          MoveRaymarchMods(i, i - 1);
+        }
+
+        GUI.enabled = guiEnabledCache;
+
+        if (i >= Target.raymarchMods.Count - 1)
+        {
+          GUI.enabled = false;
+        }
+
+        arrowButtonsRect.x += arrowButtonsRect.width;
+
+        if (GUI.Button(arrowButtonsRect, "▼"))
+        {
+          MoveRaymarchMods(i, i + 1);
+        }
+
+        GUI.enabled = guiEnabledCache;
+
+        rect.x += rect.width;
+
+        if (GUI.Button(rect, "Remove Modifier"))
+        {
+          Target.raymarchMods.RemoveAt(i);
+          EditorUtility.SetDirty(Target);
+          break; // break so loop iter doesnt get messed up!
+        }
+
+        EditorGUILayout.EndVertical();
+
+        GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
+      }
+
+      if (GUILayout.Button("Add New Modifier"))
+      {
+        Target.raymarchMods.Add(new ShaderFeatureImpl<RaymarchModifier>());
+        EditorUtility.SetDirty(Target);
+      }
+
       EditorGUILayout.EndVertical();
     }
 
@@ -196,6 +377,13 @@ public class RaymarchObjectEditor : Editor
     }
 
     serializedObject.ApplyModifiedProperties();
+  }
+
+  private void MoveRaymarchMods(int oldIndex, int newIndex)
+  {
+    var item = Target.raymarchMods[oldIndex];
+    Target.raymarchMods.RemoveAt(oldIndex);
+    Target.raymarchMods.Insert(newIndex, item);
   }
 }
 #endif

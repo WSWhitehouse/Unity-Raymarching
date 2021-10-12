@@ -69,13 +69,11 @@ public class RaymarchScene : MonoBehaviour
   }
 
   private List<RaymarchObject> _objects = new List<RaymarchObject>();
-  private Dictionary<int, RaymarchModifier> _modifiers = new Dictionary<int, RaymarchModifier>();
   private List<RaymarchBase> _bases = new List<RaymarchBase>();
 
   public void BuildTree()
   {
     _objects.Clear();
-    _modifiers.Clear();
     _bases.Clear();
 
     Scene activeScene = SceneManager.GetActiveScene();
@@ -95,10 +93,14 @@ public class RaymarchScene : MonoBehaviour
 
     shader = ShaderGen.GenerateSceneRaymarchShader(activeScene, templateShader, _bases);
 
-    if (shader == null)
+    if (shader != null)
     {
-      Debug.LogError("Generated shader is null!");
+      Raymarch.Settings = settings;
+      Raymarch.Shader = shader;
+      return;
     }
+
+    Debug.LogError("Generated shader is null!");
   }
 
   private void AddObjToTree(GameObject gameObject)
@@ -118,7 +120,7 @@ public class RaymarchScene : MonoBehaviour
         rmBase.Awake();
     }
 
-    var rmMod = gameObject.GetComponent<RaymarchModifier>();
+    /*// var rmMod = gameObject.GetComponent<RaymarchModifier>();
     int index = _objects.Count;
 
     // if (rmMod != null)
@@ -135,7 +137,7 @@ public class RaymarchScene : MonoBehaviour
       rmMod.Index = _modifiers.Count;
 
       _modifiers.Add(index, rmMod);
-    }
+    }*/
   }
 
 #endif

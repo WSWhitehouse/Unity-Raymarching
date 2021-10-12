@@ -10,7 +10,7 @@ using UnityEditor;
 public class ShaderFeatureImpl<T> where T : ShaderFeature
 {
   [SerializeField] private T shaderFeature;
-  [SerializeField] private List<ShaderVariable> shaderVariables;
+  [SerializeField] private List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
 
   public T ShaderFeature
   {
@@ -98,8 +98,16 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
   // Shader
   private int[] _shaderIDs;
 
+#if UNITY_EDITOR
+  private SerializableGuid guid;
+#endif
+
   private void InitShaderIDs(SerializableGuid guid)
   {
+#if UNITY_EDITOR
+    this.guid = guid;
+#endif
+
     _shaderIDs = new int[ShaderVariables.Count];
     for (int i = 0; i < _shaderIDs.Length; i++)
     {
@@ -126,6 +134,15 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
   public void UploadShaderData(Material material)
   {
     if (ShaderFeature == null) return;
+
+#if UNITY_EDITOR
+    if (ShaderVariables.Count != _shaderIDs.Length)
+    {
+      // something has seriously gone wrong.
+      Debug.LogError("Shader Variable count doesnt equal shader ID length!");
+      InitShaderIDs(guid);
+    }
+#endif
 
     for (int i = 0; i < ShaderVariables.Count; i++)
     {

@@ -41,7 +41,7 @@ public class ShaderGen
 
   public static void GenerateDistanceFunctionsShader()
   {
-    string[] guids = AssetDatabase.FindAssets(string.Concat("t:", nameof(RaymarchSDF)), null);
+    string[] guids = AssetDatabase.FindAssets($"t:{nameof(RaymarchSDF)}", null);
 
     List<RaymarchSDF> sdfAssets = new List<RaymarchSDF>(guids.Length);
     sdfAssets.AddRange(guids.Select(guid =>
@@ -65,7 +65,7 @@ public class ShaderGen
 
   public static void GenerateMaterialFunctionsShader()
   {
-    string[] guids = AssetDatabase.FindAssets(string.Concat("t:", nameof(RaymarchMaterial)), null);
+    string[] guids = AssetDatabase.FindAssets($"t:{nameof(RaymarchMaterial)}", null);
 
     List<RaymarchMaterial> materials = new List<RaymarchMaterial>(guids.Length);
     materials.AddRange(guids.Select(guid =>
@@ -82,6 +82,30 @@ public class ShaderGen
   }
 
   #endregion // Material Functions
+
+  #region Modifier Functions
+
+  private const string ModifierFunctionShaderName = "ModifierFunctions";
+
+  public static void GenerateModifierFunctionsShader()
+  {
+    string[] guids = AssetDatabase.FindAssets($"t:{nameof(RaymarchModifier)}", null);
+
+    List<RaymarchModifier> modifiers = new List<RaymarchModifier>(guids.Length);
+    modifiers.AddRange(guids.Select(guid =>
+      AssetDatabase.LoadAssetAtPath<RaymarchModifier>(AssetDatabase.GUIDToAssetPath(guid))));
+
+    var functions = modifiers.Aggregate(String.Empty,
+      (current, mod) => string.Concat(current, NewLine, mod.FunctionPrototypeWithGuid, NewLine, "{",
+        NewLine, mod.FunctionBody, NewLine, "}", NewLine));
+
+    GenerateUtilShader(ModifierFunctionShaderName, functions);
+
+    // maybe detect what assets have already been generated and skip them?
+    // instead of regenerating the entire shader every time one is created/destroyed
+  }
+
+  #endregion // Modifier Functions
 
   #region Scene Raymarch Shader
 
@@ -150,17 +174,20 @@ public class ShaderGen
 
       string positionName = $"_Position{guid}";
       string rotationName = $"_Rotation{guid}";
-      string distanceName = $"distance{guid}";
       string colourName = $"_Colour{guid}";
+      
+      string localDistName = $"distance{guid}";
       string localPosName = $"position{guid}";
 
       raymarchDistance = $"{raymarchDistance}{NewLine}float3 {localPosName} = rayPos - {positionName};{NewLine}";
       raymarchDistance = $"{raymarchDistance}{NewLine}{CalculateRotationString(localPosName, rotationName)};{NewLine}";
-      raymarchDistance = $"{raymarchDistance}{NewLine}float {distanceName} = {rmObject.GetShaderCode_CalcDistance()}{NewLine}";
+      
+      raymarchDistance =
+        $"{raymarchDistance}{NewLine}{rmObject.GetShaderCode_CalcDistance()}{NewLine}";
 
-      raymarchDistance = $"{raymarchDistance}{NewLine}if ({distanceName} < resultDistance){NewLine} " +
+      raymarchDistance = $"{raymarchDistance}{NewLine}if ({localDistName} < resultDistance){NewLine} " +
                          $"{{ {NewLine}" +
-                         $"resultDistance = {distanceName};{NewLine}" +
+                         $"resultDistance = {localDistName};{NewLine}" +
                          $"{rmObject.GetShaderCode_Material()}{NewLine}" +
                          $"}} {NewLine}";
     }

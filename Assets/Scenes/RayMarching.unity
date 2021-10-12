@@ -488,7 +488,7 @@ MonoBehaviour:
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
-  colour: {r: 1, g: 0.6341173, b: 0, a: 1}
+  colour: {r: 1, g: 0.64045507, b: 0.0141509175, a: 1}
 --- !u!1 &1405943641
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,8 +531,8 @@ MonoBehaviour:
       floatValue: 0
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
-  colour: {r: 1, g: 0.013039118, b: 0, a: 1}
+      textureValue: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
+  colour: {r: 1, g: 0.016675858, b: 0, a: 1}
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0

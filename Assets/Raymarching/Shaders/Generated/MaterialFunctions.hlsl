@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/11/2021 17:13:47
+//    Time Generated: 10/12/2021 09:16:52
 //---------------------------------------------------------------------
 
 #ifndef MATERIALFUNCTIONS_HLSL
@@ -21,7 +21,7 @@ float3x3 R = float3x3(float3(cos(_Time.y),sin(_Time.y),0),float3(-sin(_Time.y),c
 
 return float4(
 float3((tex2D(Texture, pos.xy).rgb
- + tex2D(Texture, pos.zy).rgb
++ tex2D(Texture, pos.zy).rgb
  + tex2D(Texture, pos.xz).rgb) / 3.0), 1) * colour;
 }
 

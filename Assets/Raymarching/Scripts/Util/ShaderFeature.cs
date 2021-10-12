@@ -30,7 +30,7 @@ public abstract class ShaderFeature : ScriptableObject
           parameters = $"{defaultParams[i].ToShaderParameter()}";
           continue;
         }
-        
+
         parameters = $"{parameters}, {defaultParams[i].ToShaderParameter()}";
       }
 
@@ -55,7 +55,7 @@ public abstract class ShaderFeature : ScriptableObject
     set => functionBody = value;
   }
 
-  [SerializeField] public List<ShaderVariable> shaderVariables;
+  [SerializeField] public List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
 
   protected virtual string GetFunctionPrefix()
   {
@@ -74,7 +74,7 @@ public abstract class ShaderFeature : ScriptableObject
 
 #if UNITY_EDITOR
   public Action OnShaderValuesChanged;
-  
+
   protected void Awake()
   {
     SignalShaderFeatureUpdated();
@@ -95,6 +95,13 @@ public class ShaderFeatureEditor : Editor
   private ShaderFeature Target => target as ShaderFeature;
 
   private bool _valuesDropDown = true;
+
+  private string _functionBody;
+
+  private void OnEnable()
+  {
+    _functionBody = Target.FunctionBody;
+  }
 
   public override void OnInspectorGUI()
   {
@@ -120,16 +127,44 @@ public class ShaderFeatureEditor : Editor
     EditorGUILayout.LabelField(Target.FunctionPrototype, wordWrapStyle);
     EditorGUILayout.LabelField("{");
 
-    EditorGUI.BeginChangeCheck();
+    // EditorGUI.BeginChangeCheck();
 
-    Target.FunctionBody = EditorGUILayout.TextArea(Target.FunctionBody);
+    // if (!GUI.enabled)
+    // {
+    //   Target.FunctionBody = EditorGUILayout.TextArea(Target.FunctionBody);
+    // }
 
-    if (EditorGUI.EndChangeCheck())
+    _functionBody = EditorGUILayout.TextArea(_functionBody);
+
+    //
+    // if (EditorGUI.EndChangeCheck())
+    // {
+    //   Target.SignalShaderFeatureUpdated();
+    // }
+
+    EditorGUILayout.LabelField("}");
+
+    EditorGUILayout.BeginHorizontal();
+
+
+    bool guiEnableCache = GUI.enabled;
+    GUI.enabled = !_functionBody.Equals(Target.FunctionBody) && guiEnableCache;
+
+    if (GUILayout.Button("Apply"))
     {
+      Target.FunctionBody = _functionBody;
       Target.SignalShaderFeatureUpdated();
     }
 
-    EditorGUILayout.LabelField("}");
+    if (GUILayout.Button("Revert"))
+    {
+      _functionBody = Target.FunctionBody;
+    }
+
+    GUI.enabled = guiEnableCache;
+
+    EditorGUILayout.EndHorizontal();
+
     EditorGUILayout.EndVertical();
 
     EditorGUILayout.Space();

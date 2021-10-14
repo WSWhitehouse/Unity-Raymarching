@@ -21,9 +21,10 @@ public class RaymarchObject : RaymarchBase
     raymarchSDF.OnAwake(GUID);
     raymarchMat.OnAwake(GUID);
 
-    foreach (var mod in raymarchMods)
+    for (var i = 0; i < raymarchMods.Count; i++)
     {
-      mod.OnAwake(GUID);
+      var mod = raymarchMods[i];
+      mod.OnAwake(GUID, i.ToString());
     }
 
     InitShaderIDs();
@@ -67,7 +68,7 @@ public class RaymarchObject : RaymarchBase
 
   public override bool IsValid()
   {
-    return raymarchSDF.ShaderFeature != null;
+    return raymarchSDF.IsValid();
   }
 
   public Vector3 Position => transform.position;
@@ -160,7 +161,7 @@ public class RaymarchObject : RaymarchBase
     string parameters = $"position{guid}, _Scale{guid}";
     for (int i = 0; i < raymarchSDF.ShaderVariables.Count; i++)
     {
-      parameters = string.Concat(parameters, ", ", raymarchSDF.ShaderVariables[i].GetShaderName(GUID));
+      parameters = string.Concat(parameters, ", ", raymarchSDF.GetShaderVariableName(i, GUID));
     }
 
     return parameters;
@@ -189,7 +190,7 @@ public class RaymarchObject : RaymarchBase
 
     for (int i = 0; i < modifier.ShaderVariables.Count; i++)
     {
-      parameters = string.Concat(parameters, ", ", modifier.ShaderVariables[i].GetShaderName(GUID));
+      parameters = string.Concat(parameters, ", ", modifier.GetShaderVariableName(i, GUID));
     }
 
     return parameters;
@@ -207,7 +208,7 @@ public class RaymarchObject : RaymarchBase
     string parameters = $"position{guid}, _Colour{guid}";
     for (int i = 0; i < raymarchMat.ShaderVariables.Count; i++)
     {
-      parameters = string.Concat(parameters, ", ", raymarchMat.ShaderVariables[i].GetShaderName(GUID));
+      parameters = string.Concat(parameters, ", ", raymarchMat.GetShaderVariableName(i, GUID));
     }
 
     return $"resultColour = {raymarchMat.ShaderFeature.FunctionNameWithGuid}({parameters});";
@@ -316,22 +317,13 @@ public class RaymarchObjectEditor : Editor
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
         EditorGUI.BeginChangeCheck();
-        var shaderFeature =
+        Target.raymarchMods[i].ShaderFeature =
           (RaymarchModifier) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchMods[i].ShaderFeature,
             typeof(RaymarchModifier), false);
 
         if (EditorGUI.EndChangeCheck())
         {
-          if (Target.raymarchMods.All(featureImpl => featureImpl.ShaderFeature != shaderFeature))
-          {
-            Target.raymarchMods[i].ShaderFeature = shaderFeature;
-            ShaderGen.GenerateRaymarchShader();
-          }
-          else
-          {
-            EditorUtility.DisplayDialog("Duplicate Modifiers",
-              "You cannot place a duplicate modifier on a raymarch object.", "Ok");
-          }
+          ShaderGen.GenerateRaymarchShader();
         }
 
         Target.raymarchMods[i] =

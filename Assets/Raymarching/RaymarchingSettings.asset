@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0913a1cfd9e7404f863f7f127878f477, type: 3}
   m_Name: RaymarchingSettings
   m_EditorClassIdentifier: 
-  renderDistance: 50
+  renderDistance: 1000
   hitResolution: 0.001
   relaxation: 1.2
   maxIterations: 164

@@ -12,6 +12,8 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
   [SerializeField] private T shaderFeature;
   [SerializeField] private List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
 
+  private string postfix = string.Empty;
+
   public T ShaderFeature
   {
     get => shaderFeature;
@@ -46,7 +48,12 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
 
   public List<ShaderVariable> ShaderVariables => shaderVariables;
 
-  public void OnAwake(SerializableGuid guid)
+  public string GetShaderVariableName(int index, SerializableGuid guid)
+  {
+    return $"{ShaderVariables[index].GetShaderName(guid)}{postfix}";
+  }
+
+  public void OnAwake(SerializableGuid guid, string postfix = "")
   {
 #if UNITY_EDITOR
     if (ShaderFeature != null)
@@ -55,7 +62,14 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     }
 #endif
 
+    this.postfix = postfix;
+
     InitShaderIDs(guid);
+  }
+
+  public bool IsValid()
+  {
+    return ShaderFeature != null;
   }
 
   public void OnDestroy()
@@ -111,7 +125,7 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     _shaderIDs = new int[ShaderVariables.Count];
     for (int i = 0; i < _shaderIDs.Length; i++)
     {
-      _shaderIDs[i] = Shader.PropertyToID(ShaderVariables[i].GetShaderName(guid));
+      _shaderIDs[i] = Shader.PropertyToID(GetShaderVariableName(i, guid));
     }
   }
 
@@ -124,7 +138,8 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
 
     for (int i = 0; i < ShaderVariables.Count; i++)
     {
-      code = $"{code}{ShaderVariables[i].ToShaderVariable(guid)} {ShaderGen.NewLine}";
+      code =
+        $"{code}uniform {ShaderVariables[i].GetShaderType()} {GetShaderVariableName(i, guid)};  {ShaderGen.NewLine}";
     }
 
     return code;

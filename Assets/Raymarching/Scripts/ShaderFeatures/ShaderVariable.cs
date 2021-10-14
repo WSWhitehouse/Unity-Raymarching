@@ -63,11 +63,6 @@ public struct ShaderVariable
     return $"_{Name}{guid.ToShaderSafeString()}";
   }
 
-  public string ToShaderVariable(SerializableGuid guid)
-  {
-    return $"uniform {GetShaderType()} {GetShaderName(guid)};";
-  }
-
   public string ToShaderParameter()
   {
     return $"{GetShaderType()} {Name}";

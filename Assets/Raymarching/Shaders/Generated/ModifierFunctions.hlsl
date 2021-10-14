@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/14/2021 08:29:18
+//    Time Generated: 10/14/2021 12:00:07
 //---------------------------------------------------------------------
 
 #ifndef MODIFIERFUNCTIONS_HLSL
@@ -27,6 +27,11 @@ float Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(float3 pos, float objDis
 float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displacement*pos.z);
 
 return objDistance + displacement;
+}
+
+float3 Mod_InfiniteRepetition_802c270f402c48459b9597d4fb74dba8(float3 pos, float3 scale, float3 RepPeriod)
+{
+return fmod(pos + 0.5 * RepPeriod, RepPeriod) - 0.5 * RepPeriod;
 }
 
 float Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(float3 pos, float objDistance, float Freq, float Amplitude, float Speed, float3 Dir)

@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 2a6a026408556d439246e11c95a9502e
+    serializedGuid: 39da09992d670a4c9ddbeec2369d040d
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -432,7 +432,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 0, g: 0.21631074, b: 1, a: 1}
-  marchingStepAmount: 19.99
+  marchingStepAmount: 12.9
 --- !u!4 &605198481
 Transform:
   m_ObjectHideFlags: 0
@@ -684,16 +684,110 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
   raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      floatValue: 50.67
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      floatValue: 0.01
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      floatValue: 6.2
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 4
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 1, w: 0}
+      textureValue: {fileID: 0}
   - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
     shaderVariables:
     - name: Displacement
       shaderType: 0
-      floatValue: 7.5
+      floatValue: 2.85
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      floatValue: 1
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      floatValue: 0.2
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      floatValue: 1
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 4
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 1.65
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      floatValue: 5.98
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      floatValue: -0.05
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      floatValue: 0.5
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 4
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: -1, y: 0, z: -1, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 2.88
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 1, g: 0.016675858, b: 0, a: 1}
-  marchingStepAmount: 14.7
+  marchingStepAmount: 4.94
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0
@@ -702,7 +796,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405943641}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.44, y: -1.5, z: 0.38}
+  m_LocalPosition: {x: 0, y: -0.25, z: 0}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -795,7 +889,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1499568965}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.05, y: 0.012, z: 1.774}
+  m_LocalPosition: {x: -11.21, y: 0.012, z: -1.26}
   m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -831,8 +925,113 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 10.16
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 4.12
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 17.96
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      floatValue: 217.87
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      floatValue: 0.57
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      floatValue: 1
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 4
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 7.43
+  marchingStepAmount: 12.09
+--- !u!1 &1551371003
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1551371005}
+  - component: {fileID: 1551371004}
+  m_Layer: 0
+  m_Name: RM Cube (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1551371004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551371003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 2a6a026408556d439246e11c95a9502e
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods: []
+  colour: {r: 0, g: 0.21631074, b: 1, a: 1}
+  marchingStepAmount: 1
+--- !u!4 &1551371005
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551371003}
+  m_LocalRotation: {x: 0.4054279, y: -0.77119017, z: 0.47647664, w: -0.1177459}
+  m_LocalPosition: {x: 2.03, y: 3.32, z: 1.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 140.25, y: 312.378, z: 466.409}
 --- !u!1 &1559188885
 GameObject:
   m_ObjectHideFlags: 0

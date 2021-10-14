@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 
 public class ShaderGen
 {
-  #region Common Shader Code
+  #region Shader Code
 
   public const string Comment = "// ";
   public const string NewLine = "\r\n";
@@ -33,7 +33,7 @@ public class ShaderGen
     return string.Concat(EndIf, Comment, nameUpper, NewLine);
   }
 
-  #endregion // Common Shader Code
+  #endregion // Shader Code
 
   #region Distance Functions
 
@@ -114,23 +114,40 @@ public class ShaderGen
   private const string RaymarchCalcDistance = "// RAYMARCH CALC DISTANCE //";
   private const string RaymarchCalcLights = "// RAYMARCH CALC LIGHT //";
 
-  private static string CalculateRotationString(string positionName, string rotationName)
+  private static void CheckForDuplicateGUIDS(ref List<RaymarchBase> rmBases)
   {
-    return string.Format("{0}.xz = mul({0}.xz, float2x2(cos({1}.y), sin({1}.y), -sin({1}.y), cos({1}.y)));" + NewLine +
-                         "{0}.yz = mul({0}.yz, float2x2(cos({1}.x), -sin({1}.x), sin({1}.x), cos({1}.x)));" + NewLine +
-                         "{0}.xy = mul({0}.xy, float2x2(cos({1}.z), -sin({1}.z), sin({1}.z), cos({1}.z)));" + NewLine,
-      positionName, rotationName);
+    for (int i = 0; i < rmBases.Count; i++)
+    {
+      for (int j = i + 1; j < rmBases.Count; j++)
+      {
+        if (rmBases[i].GUID.GUID == rmBases[j].GUID.GUID)
+        {
+          rmBases[i].GUID.ResetGUID();
+        }
+      }
+    }
   }
 
-  public static Shader GenerateSceneRaymarchShader(Scene scene, Shader template, List<RaymarchBase> raymarchBase)
+  public static void GenerateRaymarchShader()
   {
+    RaymarchScene rmScene = RaymarchScene.ActiveInstance;
+
+    // Raymarch Scene Sanity Checks
+    if (rmScene == null) return;
+    if (rmScene.templateShader == null) return;
+
+    Scene activeScene = rmScene.gameObject.scene;
+    var raymarchBases = GenerateRaymarchSceneHierarchy(activeScene);
+
+    CheckForDuplicateGUIDS(ref raymarchBases);
+
     string currentDir = Directory.GetCurrentDirectory();
 
     // Finding path of template
-    string templatePath = string.Concat(currentDir, "/", AssetDatabase.GetAssetPath(template));
+    string templatePath = string.Concat(currentDir, "/", AssetDatabase.GetAssetPath(rmScene.templateShader));
 
     // Find/Create path for Generated Shader
-    string scenePath = string.Concat(currentDir, "/", scene.path);
+    string scenePath = string.Concat(currentDir, "/", activeScene.path);
     string sceneName = Path.GetFileNameWithoutExtension(scenePath);
     scenePath = string.Concat(Path.GetDirectoryName(scenePath), "/");
 
@@ -148,7 +165,7 @@ public class ShaderGen
     List<RaymarchObject> _objects = new List<RaymarchObject>();
     List<RaymarchLight> _lights = new List<RaymarchLight>();
 
-    foreach (var rmBase in raymarchBase)
+    foreach (var rmBase in raymarchBases)
     {
       var rmObj = rmBase.GetComponent<RaymarchObject>();
       if (rmObj != null)
@@ -163,7 +180,7 @@ public class ShaderGen
       }
     }
 
-    string raymarchVars = raymarchBase.Aggregate($"// Raymarch Variables{NewLine}",
+    string raymarchVars = raymarchBases.Aggregate($"// Raymarch Variables{NewLine}",
       (current, rmBase) => string.Concat(current, rmBase.GetShaderCode_Variables(), NewLine));
 
     string raymarchDistance = string.Empty;
@@ -175,13 +192,13 @@ public class ShaderGen
       string positionName = $"_Position{guid}";
       string rotationName = $"_Rotation{guid}";
       string colourName = $"_Colour{guid}";
-      
+
       string localDistName = $"distance{guid}";
       string localPosName = $"position{guid}";
 
-      raymarchDistance = $"{raymarchDistance}{NewLine}float3 {localPosName} = rayPos - {positionName};{NewLine}";
-      raymarchDistance = $"{raymarchDistance}{NewLine}{CalculateRotationString(localPosName, rotationName)};{NewLine}";
-      
+      raymarchDistance =
+        $"{raymarchDistance}{NewLine}float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}";
+
       raymarchDistance =
         $"{raymarchDistance}{NewLine}{rmObject.GetShaderCode_CalcDistance()}{NewLine}";
 
@@ -214,12 +231,70 @@ public class ShaderGen
     int assetsIndex = filePath.IndexOf("\\Assets\\", StringComparison.Ordinal);
     filePath = filePath.Remove(0, assetsIndex + 1);
 
-    return AssetDatabase.LoadAssetAtPath<Shader>(filePath);
+    rmScene.Shader = AssetDatabase.LoadAssetAtPath<Shader>(filePath);
+
+    if (rmScene.Shader == null)
+    {
+      Debug.LogError("Generated shader is null!");
+    }
+  }
+
+  private static List<RaymarchBase> GenerateRaymarchSceneHierarchy(Scene scene)
+  {
+    List<RaymarchBase> rmBases = new List<RaymarchBase>();
+
+    if (!scene.isLoaded || !scene.IsValid())
+    {
+      return rmBases;
+    }
+
+    var rootGameObjects = new List<GameObject>(scene.rootCount);
+    scene.GetRootGameObjects(rootGameObjects);
+
+    foreach (var rootGameObject in rootGameObjects)
+    {
+      CheckObjectForRmBase(ref rmBases, rootGameObject);
+    }
+
+    return rmBases;
+  }
+
+  private static void CheckObjectForRmBase(ref List<RaymarchBase> rmBases, GameObject gameObject)
+  {
+    var rmBase = gameObject.GetComponent<RaymarchBase>();
+    if (rmBase != null && rmBase.IsValid())
+    {
+      rmBases.Add(rmBase);
+      if (!Application.isPlaying)
+        rmBase.Awake();
+    }
+
+    // TODO(WSWhitehouse) Support child objects
+    // TODO(WSWhitehouse) Support raymarch operations in hierarchy
+
+    /*// var rmMod = gameObject.GetComponent<RaymarchModifier>();
+    int index = _objects.Count;
+
+    // if (rmMod != null)
+    // _bases.Add(rmMod);
+
+    foreach (Transform child in gameObject.transform)
+    {
+      AddObjToTree(child.gameObject);
+    }
+
+    if (rmMod != null)
+    {
+      rmMod.NumOfObjects = _objects.Count - index;
+      rmMod.Index = _modifiers.Count;
+
+      _modifiers.Add(index, rmMod);
+    }*/
   }
 
   #endregion // Scene Raymarch Shader
 
-  #region Util Shader
+  #region Util
 
   private const string UtilShaderPath = "Assets/Raymarching/Shaders/Generated/";
   private const string UtilShaderExtension = "hlsl";
@@ -280,7 +355,7 @@ public class ShaderGen
     return result;
   }
 
-  #endregion // Util Shader
+  #endregion // Util
 }
 
 #endif

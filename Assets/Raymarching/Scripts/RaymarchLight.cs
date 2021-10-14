@@ -192,7 +192,19 @@ public class RaymarchLightEditor : Editor
 
   public override void OnInspectorGUI()
   {
+    serializedObject.Update();
+    
+    EditorGUI.BeginChangeCheck();
+
     DrawDefaultInspector();
+    
+    if (EditorGUI.EndChangeCheck())
+    {
+      EditorUtility.SetDirty(Target);
+      ShaderGen.GenerateRaymarchShader();
+    }
+    
+    serializedObject.ApplyModifiedProperties();
   }
 }
 #endif

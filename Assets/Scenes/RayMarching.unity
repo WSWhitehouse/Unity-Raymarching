@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 6febfa3ce964fa49bb06e9f73ef5f786
+    serializedGuid: 6a1913296cf3784f8661f592315628a5
   lightMode: 0
 --- !u!1 &491504017
 GameObject:
@@ -381,16 +381,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 0f5ac957fa6f5443bf7f8f17f47c3610
+    serializedGuid: 2a6a026408556d439246e11c95a9502e
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
-  raymarchMods: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      floatValue: 8.22
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      floatValue: 11.93
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      floatValue: 0.06
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      floatValue: 1
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 4
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: a50f5e34812b6c14c8d5509d2c236cbb, type: 2}
+    shaderVariables:
+    - name: TwistAmountY
+      shaderType: 0
+      floatValue: 2.33
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   colour: {r: 0, g: 0.21631074, b: 1, a: 1}
-  marchingStepAmount: 1
+  marchingStepAmount: 19.99
 --- !u!4 &605198481
 Transform:
   m_ObjectHideFlags: 0
@@ -398,14 +440,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 605198479}
-  m_LocalRotation: {x: 0.21723662, y: -0.26497173, z: -0.29517317, w: 0.8918919}
-  m_LocalPosition: {x: -1.81, y: 0.012, z: 2.89}
+  m_LocalRotation: {x: -0.36040154, y: -0.3370122, z: -0.2803791, w: 0.82335967}
+  m_LocalPosition: {x: -1.81, y: 1.843, z: 2.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 13.361, y: -38.142, z: -41.262}
+  m_LocalEulerAnglesHint: {x: -51.487, y: -34.519, z: -20.57}
 --- !u!1 &817398800
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 4ae03170d37a66449638bbee6d28c5e0
+    serializedGuid: 89c23ed46188e94d94c897c65f232b53
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -495,7 +537,7 @@ MonoBehaviour:
     shaderVariables:
     - name: TwistAmountY
       shaderType: 0
-      floatValue: 0
+      floatValue: -1.27
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -503,7 +545,7 @@ MonoBehaviour:
     shaderVariables:
     - name: TwistAmountX
       shaderType: 0
-      floatValue: 0
+      floatValue: 0.67
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -516,7 +558,88 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 1, g: 0.64045507, b: 0.0141509175, a: 1}
-  marchingStepAmount: 4.9
+  marchingStepAmount: 1
+--- !u!1 &1303356924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1303356926}
+  - component: {fileID: 1303356925}
+  m_Layer: 0
+  m_Name: RM Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1303356925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1303356924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: ece45529a7501948951eedbe070d2998
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      floatValue: 3.02
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      floatValue: 1
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      floatValue: 1
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 4
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  colour: {r: 1, g: 1, b: 1, a: 1}
+  marchingStepAmount: 1
+--- !u!4 &1303356926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1303356924}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.1, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1405943641
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,7 +670,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: efb9a588afea78479d26eb58407396af
+    serializedGuid: c7a55a064e75e34ebf1117f267e253f0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -565,20 +688,12 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
-      floatValue: 2.05
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - shaderFeature: {fileID: 11400000, guid: d077c243d9fe2b843b642edbd11a0c37, type: 2}
-    shaderVariables:
-    - name: BendAmount
-      shaderType: 0
-      floatValue: 0
+      floatValue: 7.5
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 1, g: 0.016675858, b: 0, a: 1}
-  marchingStepAmount: 1.8
+  marchingStepAmount: 14.7
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0
@@ -624,7 +739,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: f5d5913c5b2dc3429cb8d5f9021fa043
+    serializedGuid: 227ca4c88eb1ff4abb588ce1fb9a6c49
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
     shaderVariables: []
@@ -638,7 +753,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
   raymarchMods: []
-  colour: {r: 1, g: 1, b: 1, a: 1}
+  colour: {r: 0, g: 0.11023998, b: 1, a: 1}
   marchingStepAmount: 1
 --- !u!4 &1430610918
 Transform:
@@ -700,7 +815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: cdc80ff14c37bb4bbd965d4d0f46fb71
+    serializedGuid: f499af18b308ef4fbfdd01bdbad93604
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
     shaderVariables: []
@@ -712,12 +827,12 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
-      floatValue: 14.05
+      floatValue: 12.58
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 12.3
+  marchingStepAmount: 7.43
 --- !u!1 &1559188885
 GameObject:
   m_ObjectHideFlags: 0

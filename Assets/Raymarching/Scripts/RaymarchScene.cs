@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
@@ -10,6 +9,7 @@ using UnityEditor.SceneManagement;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchScene : MonoBehaviour
 {
+  // Raymarch Settings
   [SerializeField] private RaymarchSettings settings;
 
   public RaymarchSettings Settings
@@ -18,36 +18,86 @@ public class RaymarchScene : MonoBehaviour
     set
     {
       settings = value;
-      Raymarch.Settings = settings;
+      UpdateRaymarchData();
+
+#if UNITY_EDITOR
+      EditorUtility.SetDirty(this);
+#endif
     }
   }
 
+  // Active Raymarch Shader
   [SerializeField] private Shader shader;
 
-  private void Awake()
+  public Shader Shader
   {
-#if UNITY_EDITOR
-    if (!Application.isPlaying)
+    get => shader;
+    set
     {
-      BuildTree();
-    }
-#endif
+      shader = value;
+      UpdateRaymarchData();
 
+#if UNITY_EDITOR
+      EditorUtility.SetDirty(this);
+#endif
+    }
+  }
+
+  private void UpdateRaymarchData()
+  {
     Raymarch.Settings = settings;
     Raymarch.Shader = shader;
   }
 
+  /// <summary>
+  /// Using a singleton here because there MUST be one per scene, the RaymarchScene object
+  /// must be gotten in a static instance when generating the shader. It is *very* strongly
+  /// recommended to not use this singleton outside the editor - if you need access to this
+  /// object during runtime, use GameObject.Find, GetComponent, or even cache it! If
+  /// ActiveInstance is null then there isn't a RaymarchScene in the active scene.
+  /// </summary>
+  public static RaymarchScene ActiveInstance { get; private set; } = null;
+
+  private void Awake()
+  {
+    // Set up Singleton
+    if (ActiveInstance != null && ActiveInstance != this)
+    {
+      Debug.LogError(
+        $"There are multiple RaymarchScenes in the current scene ({gameObject.scene.name}) - there must only be 1!");
+#if UNITY_EDITOR
+      EditorGUIUtility.PingObject(this);
+#endif
+
+      return;
+    }
+
+    ActiveInstance = this;
+    UpdateRaymarchData();
+
+#if UNITY_EDITOR
+    if (!Application.isPlaying)
+      ShaderGen.GenerateRaymarchShader();
+#endif
+  }
+
+  private void OnDestroy()
+  {
+    if (ActiveInstance == this)
+      ActiveInstance = null;
+  }
+
+
 #if UNITY_EDITOR
 
-  [SerializeField] private Shader templateShader;
+  [SerializeField] public Shader templateShader;
 
   private void OnEnable()
   {
     if (Application.isPlaying) return;
     EditorSceneManager.sceneSaving += OnSceneSaving;
 
-    Raymarch.Settings = settings;
-    Raymarch.Shader = shader;
+    UpdateRaymarchData();
   }
 
   private void OnDisable()
@@ -67,79 +117,6 @@ public class RaymarchScene : MonoBehaviour
   {
     Awake();
   }
-
-  private List<RaymarchObject> _objects = new List<RaymarchObject>();
-  private List<RaymarchBase> _bases = new List<RaymarchBase>();
-
-  public void BuildTree()
-  {
-    _objects.Clear();
-    _bases.Clear();
-
-    Scene activeScene = SceneManager.GetActiveScene();
-
-    if (!activeScene.isLoaded || !activeScene.IsValid() || templateShader == null)
-    {
-      return;
-    }
-
-    List<GameObject> rootGameObjects = new List<GameObject>(activeScene.rootCount);
-    activeScene.GetRootGameObjects(rootGameObjects);
-
-    foreach (var rootGameObject in rootGameObjects)
-    {
-      AddObjToTree(rootGameObject);
-    }
-
-    shader = ShaderGen.GenerateSceneRaymarchShader(activeScene, templateShader, _bases);
-
-    if (shader != null)
-    {
-      Raymarch.Settings = settings;
-      Raymarch.Shader = shader;
-      return;
-    }
-
-    Debug.LogError("Generated shader is null!");
-  }
-
-  private void AddObjToTree(GameObject gameObject)
-  {
-    var rmBase = gameObject.GetComponent<RaymarchBase>();
-    if (rmBase != null && rmBase.IsValid())
-    {
-      _bases.Add(rmBase);
-
-      var rmObject = rmBase.GetComponent<RaymarchObject>();
-      if (rmObject != null)
-      {
-        _objects.Add(rmObject);
-      }
-
-      if (!Application.isPlaying)
-        rmBase.Awake();
-    }
-
-    /*// var rmMod = gameObject.GetComponent<RaymarchModifier>();
-    int index = _objects.Count;
-
-    // if (rmMod != null)
-    // _bases.Add(rmMod);
-
-    foreach (Transform child in gameObject.transform)
-    {
-      AddObjToTree(child.gameObject);
-    }
-
-    if (rmMod != null)
-    {
-      rmMod.NumOfObjects = _objects.Count - index;
-      rmMod.Index = _modifiers.Count;
-
-      _modifiers.Add(index, rmMod);
-    }*/
-  }
-
 #endif
 }
 
@@ -222,7 +199,7 @@ public class RaymarchSceneEditor : Editor
 
     if (GUILayout.Button("Regenerate Shader"))
     {
-      Target.BuildTree();
+      ShaderGen.GenerateRaymarchShader();
     }
 
     EditorGUILayout.Space();

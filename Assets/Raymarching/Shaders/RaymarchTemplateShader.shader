@@ -49,6 +49,14 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         // RAYMARCH VARS //
 
+        float3 Rotate3D(float3 pos, float3 rot)
+        {
+            pos.xz = mul(pos.xz, float2x2(cos(rot.y), sin(rot.y), -sin(rot.y), cos(rot.y)));
+            pos.yz = mul(pos.yz, float2x2(cos(rot.x), -sin(rot.x), sin(rot.x), cos(rot.x)));
+            pos.xy = mul(pos.xy, float2x2(cos(rot.z), -sin(rot.z), sin(rot.z), cos(rot.z)));
+            return pos;
+        }
+
         float4 GetDistanceFromObjects(float3 rayPos)
         {
             float resultDistance = _RenderDistance;
@@ -62,7 +70,7 @@ Shader "Raymarch/RaymarchTemplateShader"
         float3 GetLight(float3 pos, float3 normal)
         {
             float3 light = float3(0, 0, 0);
-            
+
             // RAYMARCH CALC LIGHT //
 
             return light;

@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/12/2021 19:41:02
+//    Time Generated: 10/14/2021 11:33:24
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -58,45 +58,74 @@ Shader "Raymarch/RayMarching_RaymarchShader"
 
         // Raymarch Variables
 
-uniform float3 _Position88a5b9efeaaf47789d26eb58407396af;
-uniform float3 _Rotation88a5b9efeaaf47789d26eb58407396af;
-uniform float3 _Scale88a5b9efeaaf47789d26eb58407396af;
-uniform float4 _Colour88a5b9efeaaf47789d26eb58407396af;
-uniform float _MarchingStepAmount88a5b9efeaaf47789d26eb58407396af;
-uniform sampler2D _Texture88a5b9efeaaf47789d26eb58407396af; 
-uniform float _Displacement88a5b9efeaaf47789d26eb58407396af; 
-uniform float _BendAmount88a5b9efeaaf47789d26eb58407396af; 
+uniform float3 _Position065aa5c7754e4ee3bf1117f267e253f0;
+uniform float3 _Rotation065aa5c7754e4ee3bf1117f267e253f0;
+uniform float3 _Scale065aa5c7754e4ee3bf1117f267e253f0;
+uniform float4 _Colour065aa5c7754e4ee3bf1117f267e253f0;
+uniform float _MarchingStepAmount065aa5c7754e4ee3bf1117f267e253f0;
+uniform sampler2D _Texture065aa5c7754e4ee3bf1117f267e253f0; 
+uniform float _Displacement065aa5c7754e4ee3bf1117f267e253f0; 
 
-uniform float3 _Position3c91d5f52d5b42c39cb8d5f9021fa043;
-uniform float3 _Rotation3c91d5f52d5b42c39cb8d5f9021fa043;
-uniform float3 _Scale3c91d5f52d5b42c39cb8d5f9021fa043;
-uniform float4 _Colour3c91d5f52d5b42c39cb8d5f9021fa043;
-uniform float _MarchingStepAmount3c91d5f52d5b42c39cb8d5f9021fa043;
-uniform sampler2D _Texture3c91d5f52d5b42c39cb8d5f9021fa043; 
+uniform float3 _Positionc8a47c22b18e4affbb588ce1fb9a6c49;
+uniform float3 _Rotationc8a47c22b18e4affbb588ce1fb9a6c49;
+uniform float3 _Scalec8a47c22b18e4affbb588ce1fb9a6c49;
+uniform float4 _Colourc8a47c22b18e4affbb588ce1fb9a6c49;
+uniform float _MarchingStepAmountc8a47c22b18e4affbb588ce1fb9a6c49;
+uniform sampler2D _Texturec8a47c22b18e4affbb588ce1fb9a6c49; 
 
-uniform float3 _Positionf10fc8cd374c4bbbbd965d4d0f46fb71;
-uniform float3 _Rotationf10fc8cd374c4bbbbd965d4d0f46fb71;
-uniform float3 _Scalef10fc8cd374c4bbbbd965d4d0f46fb71;
-uniform float4 _Colourf10fc8cd374c4bbbbd965d4d0f46fb71;
-uniform float _MarchingStepAmountf10fc8cd374c4bbbbd965d4d0f46fb71;
-uniform float _Displacementf10fc8cd374c4bbbbd965d4d0f46fb71; 
+uniform float3 _Position18af99f408b34fefbfdd01bdbad93604;
+uniform float3 _Rotation18af99f408b34fefbfdd01bdbad93604;
+uniform float3 _Scale18af99f408b34fefbfdd01bdbad93604;
+uniform float4 _Colour18af99f408b34fefbfdd01bdbad93604;
+uniform float _MarchingStepAmount18af99f408b34fefbfdd01bdbad93604;
+uniform float _Displacement18af99f408b34fefbfdd01bdbad93604; 
 
-uniform float3 _Position7031e04a7ad344669638bbee6d28c5e0;
-uniform float3 _Rotation7031e04a7ad344669638bbee6d28c5e0;
-uniform float3 _Scale7031e04a7ad344669638bbee6d28c5e0;
-uniform float4 _Colour7031e04a7ad344669638bbee6d28c5e0;
-uniform float _MarchingStepAmount7031e04a7ad344669638bbee6d28c5e0;
-uniform float _TwistAmountY7031e04a7ad344669638bbee6d28c5e0; 
-uniform float _TwistAmountX7031e04a7ad344669638bbee6d28c5e0; 
-uniform float _TwistAmountZ7031e04a7ad344669638bbee6d28c5e0; 
+uniform float3 _Positiond43ec28988614de994c897c65f232b53;
+uniform float3 _Rotationd43ec28988614de994c897c65f232b53;
+uniform float3 _Scaled43ec28988614de994c897c65f232b53;
+uniform float4 _Colourd43ec28988614de994c897c65f232b53;
+uniform float _MarchingStepAmountd43ec28988614de994c897c65f232b53;
+uniform float _TwistAmountYd43ec28988614de994c897c65f232b53; 
+uniform float _TwistAmountXd43ec28988614de994c897c65f232b53; 
+uniform float _TwistAmountZd43ec28988614de994c897c65f232b53; 
 
-uniform float3 _Position57c95a0f6ffa4354bf7f8f17f47c3610;
-uniform float3 _Rotation57c95a0f6ffa4354bf7f8f17f47c3610;
-uniform float3 _Scale57c95a0f6ffa4354bf7f8f17f47c3610;
-uniform float4 _Colour57c95a0f6ffa4354bf7f8f17f47c3610;
-uniform float _MarchingStepAmount57c95a0f6ffa4354bf7f8f17f47c3610;
+uniform float3 _Position9909da39672d4c0a9ddbeec2369d040d;
+uniform float3 _Rotation9909da39672d4c0a9ddbeec2369d040d;
+uniform float3 _Scale9909da39672d4c0a9ddbeec2369d040d;
+uniform float4 _Colour9909da39672d4c0a9ddbeec2369d040d;
+uniform float _MarchingStepAmount9909da39672d4c0a9ddbeec2369d040d;
+uniform float _Displacement9909da39672d4c0a9ddbeec2369d040d; 
+uniform float _Freq9909da39672d4c0a9ddbeec2369d040d; 
+uniform float _Amplitude9909da39672d4c0a9ddbeec2369d040d; 
+uniform float _Speed9909da39672d4c0a9ddbeec2369d040d; 
+uniform float3 _Dir9909da39672d4c0a9ddbeec2369d040d; 
+uniform float _TwistAmountY9909da39672d4c0a9ddbeec2369d040d; 
+
+uniform float3 _Position2955e4ec50a74819951eedbe070d2998;
+uniform float3 _Rotation2955e4ec50a74819951eedbe070d2998;
+uniform float3 _Scale2955e4ec50a74819951eedbe070d2998;
+uniform float4 _Colour2955e4ec50a74819951eedbe070d2998;
+uniform float _MarchingStepAmount2955e4ec50a74819951eedbe070d2998;
+uniform float _Freq2955e4ec50a74819951eedbe070d2998; 
+uniform float _Amplitude2955e4ec50a74819951eedbe070d2998; 
+uniform float _Speed2955e4ec50a74819951eedbe070d2998; 
+uniform float3 _Dir2955e4ec50a74819951eedbe070d2998; 
+
+uniform float3 _Position64026a2a5508436d9246e11c95a9502e;
+uniform float3 _Rotation64026a2a5508436d9246e11c95a9502e;
+uniform float3 _Scale64026a2a5508436d9246e11c95a9502e;
+uniform float4 _Colour64026a2a5508436d9246e11c95a9502e;
+uniform float _MarchingStepAmount64026a2a5508436d9246e11c95a9502e;
 
 
+
+        float3 Rotate3D(float3 pos, float3 rot)
+        {
+            pos.xz = mul(pos.xz, float2x2(cos(rot.y), sin(rot.y), -sin(rot.y), cos(rot.y)));
+            pos.yz = mul(pos.yz, float2x2(cos(rot.x), -sin(rot.x), sin(rot.x), cos(rot.x)));
+            pos.xy = mul(pos.xy, float2x2(cos(rot.z), -sin(rot.z), sin(rot.z), cos(rot.z)));
+            return pos;
+        }
 
         float4 GetDistanceFromObjects(float3 rayPos)
         {
@@ -104,97 +133,101 @@ uniform float _MarchingStepAmount57c95a0f6ffa4354bf7f8f17f47c3610;
             float3 resultColour = float3(1, 1, 1);
 
             
-float3 position88a5b9efeaaf47789d26eb58407396af = rayPos - _Position88a5b9efeaaf47789d26eb58407396af;
+float3 position065aa5c7754e4ee3bf1117f267e253f0 = Rotate3D(rayPos - _Position065aa5c7754e4ee3bf1117f267e253f0, _Rotation065aa5c7754e4ee3bf1117f267e253f0);
 
-position88a5b9efeaaf47789d26eb58407396af.xz = mul(position88a5b9efeaaf47789d26eb58407396af.xz, float2x2(cos(_Rotation88a5b9efeaaf47789d26eb58407396af.y), sin(_Rotation88a5b9efeaaf47789d26eb58407396af.y), -sin(_Rotation88a5b9efeaaf47789d26eb58407396af.y), cos(_Rotation88a5b9efeaaf47789d26eb58407396af.y)));
-position88a5b9efeaaf47789d26eb58407396af.yz = mul(position88a5b9efeaaf47789d26eb58407396af.yz, float2x2(cos(_Rotation88a5b9efeaaf47789d26eb58407396af.x), -sin(_Rotation88a5b9efeaaf47789d26eb58407396af.x), sin(_Rotation88a5b9efeaaf47789d26eb58407396af.x), cos(_Rotation88a5b9efeaaf47789d26eb58407396af.x)));
-position88a5b9efeaaf47789d26eb58407396af.xy = mul(position88a5b9efeaaf47789d26eb58407396af.xy, float2x2(cos(_Rotation88a5b9efeaaf47789d26eb58407396af.z), -sin(_Rotation88a5b9efeaaf47789d26eb58407396af.z), sin(_Rotation88a5b9efeaaf47789d26eb58407396af.z), cos(_Rotation88a5b9efeaaf47789d26eb58407396af.z)));
-;
-
-position88a5b9efeaaf47789d26eb58407396af = Mod_Bend_4f75e62b05fa4290bc9060a1615db095(position88a5b9efeaaf47789d26eb58407396af, _Scale88a5b9efeaaf47789d26eb58407396af, _BendAmount88a5b9efeaaf47789d26eb58407396af);
-float distance88a5b9efeaaf47789d26eb58407396af = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position88a5b9efeaaf47789d26eb58407396af, _Scale88a5b9efeaaf47789d26eb58407396af);
-distance88a5b9efeaaf47789d26eb58407396af = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(position88a5b9efeaaf47789d26eb58407396af, distance88a5b9efeaaf47789d26eb58407396af, _Displacement88a5b9efeaaf47789d26eb58407396af);
-distance88a5b9efeaaf47789d26eb58407396af /= _MarchingStepAmount88a5b9efeaaf47789d26eb58407396af;
+float distance065aa5c7754e4ee3bf1117f267e253f0 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position065aa5c7754e4ee3bf1117f267e253f0, _Scale065aa5c7754e4ee3bf1117f267e253f0);
+distance065aa5c7754e4ee3bf1117f267e253f0 = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(position065aa5c7754e4ee3bf1117f267e253f0, distance065aa5c7754e4ee3bf1117f267e253f0, _Displacement065aa5c7754e4ee3bf1117f267e253f0);
+distance065aa5c7754e4ee3bf1117f267e253f0 /= _MarchingStepAmount065aa5c7754e4ee3bf1117f267e253f0;
 
 
-if (distance88a5b9efeaaf47789d26eb58407396af < resultDistance)
+if (distance065aa5c7754e4ee3bf1117f267e253f0 < resultDistance)
  { 
-resultDistance = distance88a5b9efeaaf47789d26eb58407396af;
-resultColour = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position88a5b9efeaaf47789d26eb58407396af, _Colour88a5b9efeaaf47789d26eb58407396af, _Texture88a5b9efeaaf47789d26eb58407396af);
+resultDistance = distance065aa5c7754e4ee3bf1117f267e253f0;
+resultColour = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position065aa5c7754e4ee3bf1117f267e253f0, _Colour065aa5c7754e4ee3bf1117f267e253f0, _Texture065aa5c7754e4ee3bf1117f267e253f0);
 } 
 
-float3 position3c91d5f52d5b42c39cb8d5f9021fa043 = rayPos - _Position3c91d5f52d5b42c39cb8d5f9021fa043;
+float3 positionc8a47c22b18e4affbb588ce1fb9a6c49 = Rotate3D(rayPos - _Positionc8a47c22b18e4affbb588ce1fb9a6c49, _Rotationc8a47c22b18e4affbb588ce1fb9a6c49);
 
-position3c91d5f52d5b42c39cb8d5f9021fa043.xz = mul(position3c91d5f52d5b42c39cb8d5f9021fa043.xz, float2x2(cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y), sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y), -sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y), cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.y)));
-position3c91d5f52d5b42c39cb8d5f9021fa043.yz = mul(position3c91d5f52d5b42c39cb8d5f9021fa043.yz, float2x2(cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x), -sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x), sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x), cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.x)));
-position3c91d5f52d5b42c39cb8d5f9021fa043.xy = mul(position3c91d5f52d5b42c39cb8d5f9021fa043.xy, float2x2(cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z), -sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z), sin(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z), cos(_Rotation3c91d5f52d5b42c39cb8d5f9021fa043.z)));
-;
-
-float distance3c91d5f52d5b42c39cb8d5f9021fa043 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(position3c91d5f52d5b42c39cb8d5f9021fa043, _Scale3c91d5f52d5b42c39cb8d5f9021fa043);
-distance3c91d5f52d5b42c39cb8d5f9021fa043 /= _MarchingStepAmount3c91d5f52d5b42c39cb8d5f9021fa043;
+float distancec8a47c22b18e4affbb588ce1fb9a6c49 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(positionc8a47c22b18e4affbb588ce1fb9a6c49, _Scalec8a47c22b18e4affbb588ce1fb9a6c49);
+distancec8a47c22b18e4affbb588ce1fb9a6c49 /= _MarchingStepAmountc8a47c22b18e4affbb588ce1fb9a6c49;
 
 
-if (distance3c91d5f52d5b42c39cb8d5f9021fa043 < resultDistance)
+if (distancec8a47c22b18e4affbb588ce1fb9a6c49 < resultDistance)
  { 
-resultDistance = distance3c91d5f52d5b42c39cb8d5f9021fa043;
-resultColour = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position3c91d5f52d5b42c39cb8d5f9021fa043, _Colour3c91d5f52d5b42c39cb8d5f9021fa043, _Texture3c91d5f52d5b42c39cb8d5f9021fa043);
+resultDistance = distancec8a47c22b18e4affbb588ce1fb9a6c49;
+resultColour = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(positionc8a47c22b18e4affbb588ce1fb9a6c49, _Colourc8a47c22b18e4affbb588ce1fb9a6c49, _Texturec8a47c22b18e4affbb588ce1fb9a6c49);
 } 
 
-float3 positionf10fc8cd374c4bbbbd965d4d0f46fb71 = rayPos - _Positionf10fc8cd374c4bbbbd965d4d0f46fb71;
+float3 position18af99f408b34fefbfdd01bdbad93604 = Rotate3D(rayPos - _Position18af99f408b34fefbfdd01bdbad93604, _Rotation18af99f408b34fefbfdd01bdbad93604);
 
-positionf10fc8cd374c4bbbbd965d4d0f46fb71.xz = mul(positionf10fc8cd374c4bbbbd965d4d0f46fb71.xz, float2x2(cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y), sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y), -sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y), cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.y)));
-positionf10fc8cd374c4bbbbd965d4d0f46fb71.yz = mul(positionf10fc8cd374c4bbbbd965d4d0f46fb71.yz, float2x2(cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x), -sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x), sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x), cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.x)));
-positionf10fc8cd374c4bbbbd965d4d0f46fb71.xy = mul(positionf10fc8cd374c4bbbbd965d4d0f46fb71.xy, float2x2(cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z), -sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z), sin(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z), cos(_Rotationf10fc8cd374c4bbbbd965d4d0f46fb71.z)));
-;
-
-float distancef10fc8cd374c4bbbbd965d4d0f46fb71 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(positionf10fc8cd374c4bbbbd965d4d0f46fb71, _Scalef10fc8cd374c4bbbbd965d4d0f46fb71);
-distancef10fc8cd374c4bbbbd965d4d0f46fb71 = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(positionf10fc8cd374c4bbbbd965d4d0f46fb71, distancef10fc8cd374c4bbbbd965d4d0f46fb71, _Displacementf10fc8cd374c4bbbbd965d4d0f46fb71);
-distancef10fc8cd374c4bbbbd965d4d0f46fb71 /= _MarchingStepAmountf10fc8cd374c4bbbbd965d4d0f46fb71;
+float distance18af99f408b34fefbfdd01bdbad93604 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(position18af99f408b34fefbfdd01bdbad93604, _Scale18af99f408b34fefbfdd01bdbad93604);
+distance18af99f408b34fefbfdd01bdbad93604 = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(position18af99f408b34fefbfdd01bdbad93604, distance18af99f408b34fefbfdd01bdbad93604, _Displacement18af99f408b34fefbfdd01bdbad93604);
+distance18af99f408b34fefbfdd01bdbad93604 /= _MarchingStepAmount18af99f408b34fefbfdd01bdbad93604;
 
 
-if (distancef10fc8cd374c4bbbbd965d4d0f46fb71 < resultDistance)
+if (distance18af99f408b34fefbfdd01bdbad93604 < resultDistance)
  { 
-resultDistance = distancef10fc8cd374c4bbbbd965d4d0f46fb71;
-resultColour = _Colourf10fc8cd374c4bbbbd965d4d0f46fb71.xyz;
+resultDistance = distance18af99f408b34fefbfdd01bdbad93604;
+resultColour = _Colour18af99f408b34fefbfdd01bdbad93604.xyz;
 
 } 
 
-float3 position7031e04a7ad344669638bbee6d28c5e0 = rayPos - _Position7031e04a7ad344669638bbee6d28c5e0;
+float3 positiond43ec28988614de994c897c65f232b53 = Rotate3D(rayPos - _Positiond43ec28988614de994c897c65f232b53, _Rotationd43ec28988614de994c897c65f232b53);
 
-position7031e04a7ad344669638bbee6d28c5e0.xz = mul(position7031e04a7ad344669638bbee6d28c5e0.xz, float2x2(cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.y), sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.y), -sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.y), cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.y)));
-position7031e04a7ad344669638bbee6d28c5e0.yz = mul(position7031e04a7ad344669638bbee6d28c5e0.yz, float2x2(cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.x), -sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.x), sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.x), cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.x)));
-position7031e04a7ad344669638bbee6d28c5e0.xy = mul(position7031e04a7ad344669638bbee6d28c5e0.xy, float2x2(cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.z), -sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.z), sin(_Rotation7031e04a7ad344669638bbee6d28c5e0.z), cos(_Rotation7031e04a7ad344669638bbee6d28c5e0.z)));
-;
-
-position7031e04a7ad344669638bbee6d28c5e0 = Mod_TwistY_84cc6354438645f28030230feaa53e13(position7031e04a7ad344669638bbee6d28c5e0, _Scale7031e04a7ad344669638bbee6d28c5e0, _TwistAmountY7031e04a7ad344669638bbee6d28c5e0);
-position7031e04a7ad344669638bbee6d28c5e0 = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(position7031e04a7ad344669638bbee6d28c5e0, _Scale7031e04a7ad344669638bbee6d28c5e0, _TwistAmountX7031e04a7ad344669638bbee6d28c5e0);
-position7031e04a7ad344669638bbee6d28c5e0 = Mod_TwistZ_c1d0359417c14757b9996d01b0db1171(position7031e04a7ad344669638bbee6d28c5e0, _Scale7031e04a7ad344669638bbee6d28c5e0, _TwistAmountZ7031e04a7ad344669638bbee6d28c5e0);
-float distance7031e04a7ad344669638bbee6d28c5e0 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position7031e04a7ad344669638bbee6d28c5e0, _Scale7031e04a7ad344669638bbee6d28c5e0);
-distance7031e04a7ad344669638bbee6d28c5e0 /= _MarchingStepAmount7031e04a7ad344669638bbee6d28c5e0;
+positiond43ec28988614de994c897c65f232b53 = Mod_TwistY_84cc6354438645f28030230feaa53e13(positiond43ec28988614de994c897c65f232b53, _Scaled43ec28988614de994c897c65f232b53, _TwistAmountYd43ec28988614de994c897c65f232b53);
+positiond43ec28988614de994c897c65f232b53 = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positiond43ec28988614de994c897c65f232b53, _Scaled43ec28988614de994c897c65f232b53, _TwistAmountXd43ec28988614de994c897c65f232b53);
+positiond43ec28988614de994c897c65f232b53 = Mod_TwistZ_c1d0359417c14757b9996d01b0db1171(positiond43ec28988614de994c897c65f232b53, _Scaled43ec28988614de994c897c65f232b53, _TwistAmountZd43ec28988614de994c897c65f232b53);
+float distanced43ec28988614de994c897c65f232b53 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positiond43ec28988614de994c897c65f232b53, _Scaled43ec28988614de994c897c65f232b53);
+distanced43ec28988614de994c897c65f232b53 /= _MarchingStepAmountd43ec28988614de994c897c65f232b53;
 
 
-if (distance7031e04a7ad344669638bbee6d28c5e0 < resultDistance)
+if (distanced43ec28988614de994c897c65f232b53 < resultDistance)
  { 
-resultDistance = distance7031e04a7ad344669638bbee6d28c5e0;
-resultColour = _Colour7031e04a7ad344669638bbee6d28c5e0.xyz;
+resultDistance = distanced43ec28988614de994c897c65f232b53;
+resultColour = _Colourd43ec28988614de994c897c65f232b53.xyz;
 
 } 
 
-float3 position57c95a0f6ffa4354bf7f8f17f47c3610 = rayPos - _Position57c95a0f6ffa4354bf7f8f17f47c3610;
+float3 position9909da39672d4c0a9ddbeec2369d040d = Rotate3D(rayPos - _Position9909da39672d4c0a9ddbeec2369d040d, _Rotation9909da39672d4c0a9ddbeec2369d040d);
 
-position57c95a0f6ffa4354bf7f8f17f47c3610.xz = mul(position57c95a0f6ffa4354bf7f8f17f47c3610.xz, float2x2(cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y), sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y), -sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y), cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.y)));
-position57c95a0f6ffa4354bf7f8f17f47c3610.yz = mul(position57c95a0f6ffa4354bf7f8f17f47c3610.yz, float2x2(cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x), -sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x), sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x), cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.x)));
-position57c95a0f6ffa4354bf7f8f17f47c3610.xy = mul(position57c95a0f6ffa4354bf7f8f17f47c3610.xy, float2x2(cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z), -sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z), sin(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z), cos(_Rotation57c95a0f6ffa4354bf7f8f17f47c3610.z)));
-;
-
-float distance57c95a0f6ffa4354bf7f8f17f47c3610 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position57c95a0f6ffa4354bf7f8f17f47c3610, _Scale57c95a0f6ffa4354bf7f8f17f47c3610);
-distance57c95a0f6ffa4354bf7f8f17f47c3610 /= _MarchingStepAmount57c95a0f6ffa4354bf7f8f17f47c3610;
+position9909da39672d4c0a9ddbeec2369d040d = Mod_TwistY_84cc6354438645f28030230feaa53e13(position9909da39672d4c0a9ddbeec2369d040d, _Scale9909da39672d4c0a9ddbeec2369d040d, _TwistAmountY9909da39672d4c0a9ddbeec2369d040d);
+float distance9909da39672d4c0a9ddbeec2369d040d = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position9909da39672d4c0a9ddbeec2369d040d, _Scale9909da39672d4c0a9ddbeec2369d040d);
+distance9909da39672d4c0a9ddbeec2369d040d = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Displacement9909da39672d4c0a9ddbeec2369d040d);
+distance9909da39672d4c0a9ddbeec2369d040d = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Freq9909da39672d4c0a9ddbeec2369d040d, _Amplitude9909da39672d4c0a9ddbeec2369d040d, _Speed9909da39672d4c0a9ddbeec2369d040d, _Dir9909da39672d4c0a9ddbeec2369d040d);
+distance9909da39672d4c0a9ddbeec2369d040d /= _MarchingStepAmount9909da39672d4c0a9ddbeec2369d040d;
 
 
-if (distance57c95a0f6ffa4354bf7f8f17f47c3610 < resultDistance)
+if (distance9909da39672d4c0a9ddbeec2369d040d < resultDistance)
  { 
-resultDistance = distance57c95a0f6ffa4354bf7f8f17f47c3610;
-resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
+resultDistance = distance9909da39672d4c0a9ddbeec2369d040d;
+resultColour = _Colour9909da39672d4c0a9ddbeec2369d040d.xyz;
+
+} 
+
+float3 position2955e4ec50a74819951eedbe070d2998 = Rotate3D(rayPos - _Position2955e4ec50a74819951eedbe070d2998, _Rotation2955e4ec50a74819951eedbe070d2998);
+
+float distance2955e4ec50a74819951eedbe070d2998 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position2955e4ec50a74819951eedbe070d2998, _Scale2955e4ec50a74819951eedbe070d2998);
+distance2955e4ec50a74819951eedbe070d2998 = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position2955e4ec50a74819951eedbe070d2998, distance2955e4ec50a74819951eedbe070d2998, _Freq2955e4ec50a74819951eedbe070d2998, _Amplitude2955e4ec50a74819951eedbe070d2998, _Speed2955e4ec50a74819951eedbe070d2998, _Dir2955e4ec50a74819951eedbe070d2998);
+distance2955e4ec50a74819951eedbe070d2998 /= _MarchingStepAmount2955e4ec50a74819951eedbe070d2998;
+
+
+if (distance2955e4ec50a74819951eedbe070d2998 < resultDistance)
+ { 
+resultDistance = distance2955e4ec50a74819951eedbe070d2998;
+resultColour = _Colour2955e4ec50a74819951eedbe070d2998.xyz;
+
+} 
+
+float3 position64026a2a5508436d9246e11c95a9502e = Rotate3D(rayPos - _Position64026a2a5508436d9246e11c95a9502e, _Rotation64026a2a5508436d9246e11c95a9502e);
+
+float distance64026a2a5508436d9246e11c95a9502e = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position64026a2a5508436d9246e11c95a9502e, _Scale64026a2a5508436d9246e11c95a9502e);
+distance64026a2a5508436d9246e11c95a9502e /= _MarchingStepAmount64026a2a5508436d9246e11c95a9502e;
+
+
+if (distance64026a2a5508436d9246e11c95a9502e < resultDistance)
+ { 
+resultDistance = distance64026a2a5508436d9246e11c95a9502e;
+resultColour = _Colour64026a2a5508436d9246e11c95a9502e.xyz;
 
 } 
 
@@ -205,7 +238,7 @@ resultColour = _Colour57c95a0f6ffa4354bf7f8f17f47c3610.xyz;
         float3 GetLight(float3 pos, float3 normal)
         {
             float3 light = float3(0, 0, 0);
-            
+
             light += float3(1, 0.9568627, 0.8392157) * max(0.0, dot(-normal, float3(-0.3213938, -0.7660444, 0.5566705))) * 1; 
 
 

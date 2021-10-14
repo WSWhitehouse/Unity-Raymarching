@@ -88,7 +88,7 @@ public class RaymarchObject : RaymarchBase
   }
 
   [SerializeField] private float marchingStepAmount = 1f;
-  
+
   public float MarchingStepAmount
   {
     get => marchingStepAmount;
@@ -254,20 +254,28 @@ public class RaymarchObjectEditor : Editor
     };
 
     EditorGUILayout.LabelField("Signed Distance Function", boldStyle);
-    Target.raymarchSDF =
-      ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderFeatureField(GUIContent.none, Target.raymarchSDF, Target);
+    // Target.raymarchSDF =
+    // ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderFeatureField(GUIContent.none, Target.raymarchSDF, Target);
+
+    EditorGUI.BeginChangeCheck();
+    Target.raymarchSDF.ShaderFeature =
+      (RaymarchSDF) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchSDF.ShaderFeature,
+        typeof(RaymarchSDF), false);
+    if (EditorGUI.EndChangeCheck())
+    {
+      ShaderGen.GenerateRaymarchShader();
+    }
+
     Target.raymarchSDF =
       ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderVariableField(new GUIContent("SDF Variables"), Target.raymarchSDF,
         Target);
-    
-    EditorGUI.BeginChangeCheck();
+
     Target.MarchingStepAmount =
-      EditorGUILayout.FloatField(new GUIContent("Marching Step Amount"), Target.MarchingStepAmount);
-    if (EditorGUI.EndChangeCheck())
-    {
-      EditorUtility.SetDirty(target);
-    }
-    
+      EditorGUILayout.FloatField(new GUIContent("Marching Step Amount",
+          "Increase this value to reduce visual glitches (especially useful when using modifiers). " +
+          "However, increasing this value also reduces the performance - so it's a fine balance between what looks good and the performance."),
+        Target.MarchingStepAmount);
+
     EditorGUILayout.Space();
 
     _materialDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_materialDropDown, new GUIContent("Material"));
@@ -279,9 +287,14 @@ public class RaymarchObjectEditor : Editor
         "Materials describe how the Raymarch Object will look. Leave the following material field empty to just use a colour.",
         MessageType.Info, true);
 
-      Target.raymarchMat =
-        ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderFeatureField(new GUIContent("Material"),
-          Target.raymarchMat, Target);
+      EditorGUI.BeginChangeCheck();
+      Target.raymarchMat.ShaderFeature =
+        (RaymarchMaterial) EditorGUILayout.ObjectField(new GUIContent("Material"), Target.raymarchMat.ShaderFeature,
+          typeof(RaymarchMaterial), false);
+      if (EditorGUI.EndChangeCheck())
+      {
+        ShaderGen.GenerateRaymarchShader();
+      }
 
       Target.Colour = EditorGUILayout.ColorField(new GUIContent("Colour"), Target.Colour);
 
@@ -302,9 +315,24 @@ public class RaymarchObjectEditor : Editor
       {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        Target.raymarchMods[i] =
-          ShaderFeatureImpl<RaymarchModifier>.Editor.ShaderFeatureField(GUIContent.none,
-            Target.raymarchMods[i], Target);
+        EditorGUI.BeginChangeCheck();
+        var shaderFeature =
+          (RaymarchModifier) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchMods[i].ShaderFeature,
+            typeof(RaymarchModifier), false);
+
+        if (EditorGUI.EndChangeCheck())
+        {
+          if (Target.raymarchMods.All(featureImpl => featureImpl.ShaderFeature != shaderFeature))
+          {
+            Target.raymarchMods[i].ShaderFeature = shaderFeature;
+            ShaderGen.GenerateRaymarchShader();
+          }
+          else
+          {
+            EditorUtility.DisplayDialog("Duplicate Modifiers",
+              "You cannot place a duplicate modifier on a raymarch object.", "Ok");
+          }
+        }
 
         Target.raymarchMods[i] =
           ShaderFeatureImpl<RaymarchModifier>.Editor.ShaderVariableField(GUIContent.none,
@@ -350,7 +378,7 @@ public class RaymarchObjectEditor : Editor
         if (GUI.Button(rect, "Remove Modifier"))
         {
           Target.raymarchMods.RemoveAt(i);
-          EditorUtility.SetDirty(Target);
+          ShaderGen.GenerateRaymarchShader();
           break; // break so loop iter doesnt get messed up!
         }
 
@@ -362,7 +390,6 @@ public class RaymarchObjectEditor : Editor
       if (GUILayout.Button("Add New Modifier"))
       {
         Target.raymarchMods.Add(new ShaderFeatureImpl<RaymarchModifier>());
-        EditorUtility.SetDirty(Target);
       }
 
       EditorGUILayout.EndVertical();
@@ -384,6 +411,7 @@ public class RaymarchObjectEditor : Editor
     var item = Target.raymarchMods[oldIndex];
     Target.raymarchMods.RemoveAt(oldIndex);
     Target.raymarchMods.Insert(newIndex, item);
+    ShaderGen.GenerateRaymarchShader();
   }
 }
 #endif

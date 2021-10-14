@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/12/2021 19:40:32
+//    Time Generated: 10/14/2021 08:29:18
 //---------------------------------------------------------------------
 
 #ifndef MODIFIERFUNCTIONS_HLSL
@@ -27,6 +27,40 @@ float Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(float3 pos, float objDis
 float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displacement*pos.z);
 
 return objDistance + displacement;
+}
+
+float Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(float3 pos, float objDistance, float Freq, float Amplitude, float Speed, float3 Dir)
+{
+        float direction = 0;
+
+        if (Dir.x >= 1)
+        {
+            direction += pos.x;
+        }
+        else if (Dir.x <= -1)
+        {
+            direction -= pos.x;
+        }
+
+        if (Dir.y >= 1)
+        {
+            direction += pos.y;
+        }
+        else if (Dir.y <= -1)
+        {
+            direction -= pos.y;
+        }
+
+        if (Dir.z >= 1)
+        {
+            direction += pos.z;
+        }
+        else if (Dir.z <= -1)
+        {
+            direction -= pos.z;
+        }
+
+        return objDistance - sin(direction * Freq + (_Time.y * Speed)) * Amplitude;
 }
 
 float3 Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(float3 pos, float3 scale, float TwistAmountX)

@@ -33,8 +33,7 @@ public class SerializableGuid
   }
 
 #if UNITY_EDITOR
-  [ContextMenu("Reset GUID")]
-  private void ResetGUID()
+  public void ResetGUID()
   {
     serializedGuid = Guid.NewGuid().ToByteArray();
     guid = Guid.Empty;

@@ -123,6 +123,64 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &155378031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 155378033}
+  - component: {fileID: 155378032}
+  m_Layer: 0
+  m_Name: operation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &155378032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155378031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00193114080c480bac7489c858edda55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 4d74759fb9410e478a9c305f58ee9b9b
+  operation:
+    shaderFeature: {fileID: 11400000, guid: 25e623070afac8141a93080a379dfa8c, type: 2}
+    shaderVariables:
+    - name: Smooth
+      shaderType: 0
+      parameterType: 0
+      floatValue: 0.28
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+--- !u!4 &155378033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155378031}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1303356926}
+  - {fileID: 1551371005}
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &218824359
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,6 +451,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 8.22
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -401,24 +460,28 @@ MonoBehaviour:
     shaderVariables:
     - name: Freq
       shaderType: 0
+      parameterType: 0
       floatValue: 11.93
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Amplitude
       shaderType: 0
+      parameterType: 0
       floatValue: 0.06
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Speed
       shaderType: 0
+      parameterType: 0
       floatValue: 1
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Dir
       shaderType: 4
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 1, y: 1, z: 1, w: 0}
@@ -427,6 +490,7 @@ MonoBehaviour:
     shaderVariables:
     - name: TwistAmountY
       shaderType: 0
+      parameterType: 0
       floatValue: 2.33
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -446,7 +510,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -51.487, y: -34.519, z: -20.57}
 --- !u!1 &817398800
 GameObject:
@@ -510,7 +574,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1035846469
 MonoBehaviour:
@@ -537,6 +601,7 @@ MonoBehaviour:
     shaderVariables:
     - name: TwistAmountY
       shaderType: 0
+      parameterType: 0
       floatValue: -1.27
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -545,6 +610,7 @@ MonoBehaviour:
     shaderVariables:
     - name: TwistAmountX
       shaderType: 0
+      parameterType: 0
       floatValue: 0.67
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -553,6 +619,7 @@ MonoBehaviour:
     shaderVariables:
     - name: TwistAmountZ
       shaderType: 0
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -597,34 +664,17 @@ MonoBehaviour:
     shaderFeature: {fileID: 0}
     shaderVariables: []
   raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
     shaderVariables:
-    - name: Freq
+    - name: TwistAmountX
       shaderType: 0
-      floatValue: 3.02
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Amplitude
-      shaderType: 0
-      floatValue: 1
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Speed
-      shaderType: 0
-      floatValue: 1
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Dir
-      shaderType: 4
-      floatValue: 0
+      parameterType: 0
+      floatValue: 3.36
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 1
+  marchingStepAmount: 1.92
 --- !u!4 &1303356926
 Transform:
   m_ObjectHideFlags: 0
@@ -632,13 +682,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303356924}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.1, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.475, y: 0, z: -3.818}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_Father: {fileID: 155378033}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1405943641
 GameObject:
@@ -679,6 +729,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Texture
       shaderType: 7
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -688,24 +739,28 @@ MonoBehaviour:
     shaderVariables:
     - name: Freq
       shaderType: 0
+      parameterType: 0
       floatValue: 50.67
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Amplitude
       shaderType: 0
+      parameterType: 0
       floatValue: 0.01
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Speed
       shaderType: 0
+      parameterType: 0
       floatValue: 6.2
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Dir
       shaderType: 4
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 1, w: 0}
@@ -714,6 +769,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 2.85
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -722,24 +778,28 @@ MonoBehaviour:
     shaderVariables:
     - name: Freq
       shaderType: 0
+      parameterType: 0
       floatValue: 1
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Amplitude
       shaderType: 0
+      parameterType: 0
       floatValue: 0.2
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Speed
       shaderType: 0
+      parameterType: 0
       floatValue: 1
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Dir
       shaderType: 4
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 1, y: 0, z: 0, w: 0}
@@ -748,6 +808,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 1.65
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -756,24 +817,28 @@ MonoBehaviour:
     shaderVariables:
     - name: Freq
       shaderType: 0
+      parameterType: 0
       floatValue: 5.98
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Amplitude
       shaderType: 0
+      parameterType: 0
       floatValue: -0.05
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Speed
       shaderType: 0
+      parameterType: 0
       floatValue: 0.5
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Dir
       shaderType: 4
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: -1, y: 0, z: -1, w: 0}
@@ -782,12 +847,22 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 2.88
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
+  - shaderFeature: {fileID: 11400000, guid: a8819671c347cd24e9b6345d52827ed4, type: 2}
+    shaderVariables:
+    - name: Thickness
+      shaderType: 0
+      parameterType: 0
+      floatValue: 0.3
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   colour: {r: 1, g: 0.016675858, b: 0, a: 1}
-  marchingStepAmount: 4.94
+  marchingStepAmount: 4.46
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0
@@ -795,13 +870,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405943641}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.25, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 6.34, y: -0.25, z: 3.63}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1430610916
 GameObject:
@@ -842,6 +917,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Texture
       shaderType: 7
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -862,7 +938,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1499568965
 GameObject:
@@ -894,7 +970,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1499568967
 MonoBehaviour:
@@ -921,6 +997,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 12.58
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -929,6 +1006,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 10.16
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -937,6 +1015,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 4.12
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -945,6 +1024,7 @@ MonoBehaviour:
     shaderVariables:
     - name: Displacement
       shaderType: 0
+      parameterType: 0
       floatValue: 17.96
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
@@ -953,30 +1033,34 @@ MonoBehaviour:
     shaderVariables:
     - name: Freq
       shaderType: 0
+      parameterType: 0
       floatValue: 217.87
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Amplitude
       shaderType: 0
+      parameterType: 0
       floatValue: 0.57
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Speed
       shaderType: 0
+      parameterType: 0
       floatValue: 1
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Dir
       shaderType: 4
+      parameterType: 0
       floatValue: 0
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
   colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 12.09
+  marchingStepAmount: 8.37
 --- !u!1 &1551371003
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,14 +1108,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551371003}
-  m_LocalRotation: {x: 0.4054279, y: -0.77119017, z: 0.47647664, w: -0.1177459}
-  m_LocalPosition: {x: 2.03, y: 3.32, z: 1.1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.456, y: 0.233, z: -3.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 11
-  m_LocalEulerAnglesHint: {x: 140.25, y: 312.378, z: 466.409}
+  m_Father: {fileID: 155378033}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1559188885
 GameObject:
   m_ObjectHideFlags: 0

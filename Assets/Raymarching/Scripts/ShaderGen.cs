@@ -9,6 +9,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 public class ShaderGen
 {
@@ -35,78 +36,6 @@ public class ShaderGen
 
   #endregion // Shader Code
 
-  #region Distance Functions
-
-  private const string DistanceFunctionShaderName = "DistanceFunctions";
-
-  public static void GenerateDistanceFunctionsShader()
-  {
-    string[] guids = AssetDatabase.FindAssets($"t:{nameof(RaymarchSDF)}", null);
-
-    List<RaymarchSDF> sdfAssets = new List<RaymarchSDF>(guids.Length);
-    sdfAssets.AddRange(guids.Select(guid =>
-      AssetDatabase.LoadAssetAtPath<RaymarchSDF>(AssetDatabase.GUIDToAssetPath(guid))));
-
-    var functions = sdfAssets.Aggregate(String.Empty,
-      (current, sdf) => string.Concat(current, NewLine, sdf.FunctionPrototypeWithGuid, NewLine, "{",
-        NewLine, sdf.FunctionBody, NewLine, "}", NewLine));
-
-    GenerateUtilShader(DistanceFunctionShaderName, functions);
-
-    // maybe detect what assets have already been generated and skip them?
-    // instead of regenerating the entire shader every time one is created/destroyed
-  }
-
-  #endregion // Distance Functions
-
-  #region Material Functions
-
-  private const string MaterialFunctionShaderName = "MaterialFunctions";
-
-  public static void GenerateMaterialFunctionsShader()
-  {
-    string[] guids = AssetDatabase.FindAssets($"t:{nameof(RaymarchMaterial)}", null);
-
-    List<RaymarchMaterial> materials = new List<RaymarchMaterial>(guids.Length);
-    materials.AddRange(guids.Select(guid =>
-      AssetDatabase.LoadAssetAtPath<RaymarchMaterial>(AssetDatabase.GUIDToAssetPath(guid))));
-
-    var functions = materials.Aggregate(String.Empty,
-      (current, mat) => string.Concat(current, NewLine, mat.FunctionPrototypeWithGuid, NewLine, "{",
-        NewLine, mat.FunctionBody, NewLine, "}", NewLine));
-
-    GenerateUtilShader(MaterialFunctionShaderName, functions);
-
-    // maybe detect what assets have already been generated and skip them?
-    // instead of regenerating the entire shader every time one is created/destroyed
-  }
-
-  #endregion // Material Functions
-
-  #region Modifier Functions
-
-  private const string ModifierFunctionShaderName = "ModifierFunctions";
-
-  public static void GenerateModifierFunctionsShader()
-  {
-    string[] guids = AssetDatabase.FindAssets($"t:{nameof(RaymarchModifier)}", null);
-
-    List<RaymarchModifier> modifiers = new List<RaymarchModifier>(guids.Length);
-    modifiers.AddRange(guids.Select(guid =>
-      AssetDatabase.LoadAssetAtPath<RaymarchModifier>(AssetDatabase.GUIDToAssetPath(guid))));
-
-    var functions = modifiers.Aggregate(String.Empty,
-      (current, mod) => string.Concat(current, NewLine, mod.FunctionPrototypeWithGuid, NewLine, "{",
-        NewLine, mod.FunctionBody, NewLine, "}", NewLine));
-
-    GenerateUtilShader(ModifierFunctionShaderName, functions);
-
-    // maybe detect what assets have already been generated and skip them?
-    // instead of regenerating the entire shader every time one is created/destroyed
-  }
-
-  #endregion // Modifier Functions
-
   #region Scene Raymarch Shader
 
   private const string RaymarchTemplateShaderTitle = "RaymarchTemplateShader";
@@ -130,6 +59,12 @@ public class ShaderGen
 
   public static void GenerateRaymarchShader()
   {
+    if (Application.isPlaying)
+    {
+      Debug.LogWarning("Generate Raymarch Shader called during runtime!");
+      return;
+    }
+
     RaymarchScene rmScene = RaymarchScene.ActiveInstance;
 
     // Raymarch Scene Sanity Checks
@@ -162,55 +97,93 @@ public class ShaderGen
       File.Delete(filePath);
     }
 
-    List<RaymarchObject> _objects = new List<RaymarchObject>();
-    List<RaymarchLight> _lights = new List<RaymarchLight>();
-
-    foreach (var rmBase in raymarchBases)
-    {
-      var rmObj = rmBase.GetComponent<RaymarchObject>();
-      if (rmObj != null)
-      {
-        _objects.Add(rmObj);
-      }
-
-      var rmlight = rmBase.GetComponent<RaymarchLight>();
-      if (rmlight != null)
-      {
-        _lights.Add(rmlight);
-      }
-    }
-
     string raymarchVars = raymarchBases.Aggregate($"// Raymarch Variables{NewLine}",
       (current, rmBase) => string.Concat(current, rmBase.GetShaderCode_Variables(), NewLine));
 
     string raymarchDistance = string.Empty;
+    string raymarchLight = string.Empty;
 
-    foreach (var rmObject in _objects)
+    List<RaymarchOperation> operations = new List<RaymarchOperation>();
+
+    for (var i = 0; i < raymarchBases.Count; i++)
     {
-      string guid = rmObject.GUID.ToShaderSafeString();
+      string guid = raymarchBases[i].GUID.ToShaderSafeString();
 
-      string positionName = $"_Position{guid}";
-      string rotationName = $"_Rotation{guid}";
-      string colourName = $"_Colour{guid}";
+      var rmOperation = raymarchBases[i].GetComponent<RaymarchOperation>();
+      if (rmOperation != null)
+      {
+        operations.Add(rmOperation);
 
-      string localDistName = $"distance{guid}";
-      string localPosName = $"position{guid}";
+        raymarchDistance = $"{raymarchDistance}{NewLine}// Operation Start {guid}";
+        // raymarchDistance = $"{raymarchDistance}{NewLine}float distance{guid} = _RenderDistance;";
+        // raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{guid} = float4(1,1,1,1);";
+      }
 
-      raymarchDistance =
-        $"{raymarchDistance}{NewLine}float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}";
+      var rmObj = raymarchBases[i].GetComponent<RaymarchObject>();
+      if (rmObj != null)
+      {
+        string positionName = $"_Position{guid}";
+        string rotationName = $"_Rotation{guid}";
+        string colourName = $"_Colour{guid}";
 
-      raymarchDistance =
-        $"{raymarchDistance}{NewLine}{rmObject.GetShaderCode_CalcDistance()}{NewLine}";
+        string localDistName = $"distance{guid}";
+        string localPosName = $"position{guid}";
 
-      raymarchDistance = $"{raymarchDistance}{NewLine}if ({localDistName} < resultDistance){NewLine} " +
-                         $"{{ {NewLine}" +
-                         $"resultDistance = {localDistName};{NewLine}" +
-                         $"{rmObject.GetShaderCode_Material()}{NewLine}" +
-                         $"}} {NewLine}";
+        raymarchDistance =
+          $"{raymarchDistance}{NewLine}float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}";
+
+        raymarchDistance =
+          $"{raymarchDistance}{NewLine}{rmObj.GetShaderCode_CalcDistance()}{NewLine}";
+
+
+        if (operations.Count > 0)
+        {
+          var operation = operations.Last();
+          var opGuid = operation.GUID.ToShaderSafeString();
+
+          if (i > operation.StartIndex)
+          {
+            raymarchDistance =
+              $"{raymarchDistance}{NewLine}{operation.GetShaderCode_CalcOperation(localDistName, rmObj.GetShaderCode_Material())}{NewLine}";
+          }
+          else
+          {
+            raymarchDistance = $"{raymarchDistance}{NewLine}float distance{opGuid} = {localDistName};";
+            raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{opGuid} = {rmObj.GetShaderCode_Material()};";
+          }
+        }
+        else
+        {
+          raymarchDistance = $"{raymarchDistance}{NewLine}if ({localDistName} < resultDistance){NewLine} " +
+                             $"{{ {NewLine}" +
+                             $"resultDistance = {localDistName};{NewLine}" +
+                             $"resultColour = {rmObj.GetShaderCode_Material()};{NewLine}" +
+                             $"}} {NewLine}";
+        }
+      }
+
+      var rmLight = raymarchBases[i].GetComponent<RaymarchLight>();
+      if (rmLight != null)
+      {
+        raymarchLight = string.Concat(raymarchLight, rmLight.GetShaderCode_CalcLight());
+      }
+
+      foreach (var operation in operations)
+      {
+        if (operation.EndIndex != i) continue;
+
+        string opGuid = operation.GUID.ToShaderSafeString();
+
+        raymarchDistance = $"{raymarchDistance}{NewLine}// Operation End {guid}";
+        raymarchDistance = $"{raymarchDistance}{NewLine}if (distance{opGuid} < resultDistance){NewLine} " +
+                           $"{{ {NewLine}" +
+                           $"resultDistance = distance{opGuid};{NewLine}" +
+                           $"resultColour = colour{opGuid};{NewLine}" +
+                           $"}} {NewLine}";
+      }
+
+      operations.RemoveAll(x => x.EndIndex == i);
     }
-
-    string raymarchLight = _lights.Aggregate(string.Empty,
-      (current, light) => string.Concat(current, light.GetShaderCode_CalcLight()));
 
     // Read template shader and replace placeholders
     string shader = File.ReadAllText(templatePath);
@@ -233,7 +206,11 @@ public class ShaderGen
 
     rmScene.Shader = AssetDatabase.LoadAssetAtPath<Shader>(filePath);
 
-    if (rmScene.Shader == null)
+    if (rmScene.Shader != null)
+    {
+      EditorUtility.SetDirty(rmScene.Shader);
+    }
+    else
     {
       Debug.LogError("Generated shader is null!");
     }
@@ -261,35 +238,26 @@ public class ShaderGen
 
   private static void CheckObjectForRmBase(ref List<RaymarchBase> rmBases, GameObject gameObject)
   {
-    var rmBase = gameObject.GetComponent<RaymarchBase>();
+    int currentIndex = rmBases.Count;
+
+    RaymarchBase rmBase = gameObject.GetComponent<RaymarchBase>();
     if (rmBase != null && rmBase.IsValid())
     {
       rmBases.Add(rmBase);
-      if (!Application.isPlaying)
-        rmBase.Awake();
+      rmBase.Awake();
     }
 
-    // TODO(WSWhitehouse) Support child objects
-    // TODO(WSWhitehouse) Support raymarch operations in hierarchy
-
-    /*// var rmMod = gameObject.GetComponent<RaymarchModifier>();
-    int index = _objects.Count;
-
-    // if (rmMod != null)
-    // _bases.Add(rmMod);
-
-    foreach (Transform child in gameObject.transform)
+    for (int i = 0; i < gameObject.transform.childCount; i++)
     {
-      AddObjToTree(child.gameObject);
+      Transform child = gameObject.transform.GetChild(i);
+      CheckObjectForRmBase(ref rmBases, child.gameObject);
     }
 
-    if (rmMod != null)
+    if (rmBase is RaymarchOperation rmOperation && rmBase.IsValid())
     {
-      rmMod.NumOfObjects = _objects.Count - index;
-      rmMod.Index = _modifiers.Count;
-
-      _modifiers.Add(index, rmMod);
-    }*/
+      rmOperation.StartIndex = currentIndex + 1;
+      rmOperation.EndIndex = rmBases.Count - 1;
+    }
   }
 
   #endregion // Scene Raymarch Shader
@@ -303,13 +271,18 @@ public class ShaderGen
                                               $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl\"{NewLine}" +
                                               $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl\"{NewLine}";
 
-  private static void GenerateUtilShader(string shaderName, string shaderContents)
+  public static void GenerateUtilShader<T>(string shaderName) where T : ShaderFeature
   {
-    GenerateUtilShader(shaderName, Encoding.ASCII.GetBytes(shaderContents));
-  }
+    string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).FullName}", null);
 
-  private static void GenerateUtilShader(string shaderName, byte[] shaderContents)
-  {
+    List<T> shaderFeatures = new List<T>(guids.Length);
+    shaderFeatures.AddRange(guids.Select(guid =>
+      AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid))));
+
+    var functions = shaderFeatures.Aggregate(String.Empty,
+      (current, feature) => string.Concat(current, NewLine, feature.FunctionPrototypeWithGuid, NewLine, "{",
+        NewLine, feature.FunctionBody, NewLine, "}", NewLine));
+
     string filePath = string.Concat(UtilShaderPath, shaderName, ".", UtilShaderExtension);
     string headerGuardName = string.Concat(shaderName.ToUpper().Replace(' ', '_'), "_", UtilShaderExtension.ToUpper());
 
@@ -327,14 +300,16 @@ public class ShaderGen
     file.Write(Encoding.ASCII.GetBytes(HeaderGuardStart(headerGuardName)));
 
     file.Write(Encoding.ASCII.GetBytes(UnityShaderIncludes));
-
-    file.Write(shaderContents);
+    file.Write(Encoding.ASCII.GetBytes(functions));
 
     file.Write(Encoding.ASCII.GetBytes(NewLine));
     file.Write(Encoding.ASCII.GetBytes(HeaderGuardEnd(headerGuardName)));
 
     file.Close();
     AssetDatabase.Refresh();
+
+    var shader = AssetDatabase.LoadAssetAtPath<Object>(filePath);
+    EditorUtility.SetDirty(shader);
   }
 
   private static string AutoGeneratedComment()

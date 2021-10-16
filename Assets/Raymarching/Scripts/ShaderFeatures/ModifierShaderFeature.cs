@@ -12,7 +12,7 @@ public enum ModifierType
 }
 
 [CreateAssetMenu(menuName = "Raymarching/Modifier")]
-public class RaymarchModifier : ShaderFeature
+public class ModifierShaderFeature : ShaderFeature
 {
   [SerializeField] private ModifierType modifierType;
 
@@ -59,16 +59,16 @@ public class RaymarchModifier : ShaderFeature
   public override void SignalShaderFeatureUpdated()
   {
     base.SignalShaderFeatureUpdated();
-    ShaderGen.GenerateModifierFunctionsShader();
+    ShaderGen.GenerateUtilShader<ModifierShaderFeature>("ModifierFunctions");
   }
 #endif
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(RaymarchModifier))]
-public class RaymarchModifierEditor : ShaderFeatureEditor
+[CustomEditor(typeof(ModifierShaderFeature))]
+public class ModifierShaderFeatureEditor : ShaderFeatureEditor
 {
-  private RaymarchModifier Target => target as RaymarchModifier;
+  private ModifierShaderFeature Target => target as ModifierShaderFeature;
 
   private readonly string[] modifierTypeStrings = Enum.GetNames(typeof(ModifierType));
 

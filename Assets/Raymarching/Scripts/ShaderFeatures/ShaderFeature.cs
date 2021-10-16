@@ -75,10 +75,10 @@ public abstract class ShaderFeature : ScriptableObject
 #if UNITY_EDITOR
   public Action OnShaderValuesChanged;
 
-  protected void Awake()
-  {
-    SignalShaderFeatureUpdated();
-  }
+  // protected void Awake()
+  // {
+  //   SignalShaderFeatureUpdated();
+  // }
 
   public virtual void SignalShaderFeatureUpdated()
   {
@@ -121,6 +121,11 @@ public class ShaderFeatureEditor : Editor
     GUI.enabled = cachedGUIEnabled;
   }
 
+  private void OnDisable()
+  {
+    Debug.Log("disable");
+  }
+
   protected virtual void DrawShaderFeatureInspector()
   {
     GUIStyle wordWrapStyle = EditorStyles.wordWrappedLabel;
@@ -129,7 +134,7 @@ public class ShaderFeatureEditor : Editor
     EditorGUILayout.BeginVertical(GUI.skin.box);
     EditorGUILayout.LabelField(Target.FunctionPrototype, wordWrapStyle);
     EditorGUILayout.LabelField("{");
-    
+
     EditorGUI.indentLevel++;
     _functionBody = EditorGUILayout.TextArea(_functionBody);
     EditorGUI.indentLevel--;
@@ -137,7 +142,7 @@ public class ShaderFeatureEditor : Editor
     EditorGUILayout.LabelField("}");
 
     EditorGUILayout.BeginHorizontal();
-    
+
     bool guiEnableCache = GUI.enabled;
     GUI.enabled = !_functionBody.Equals(Target.FunctionBody) && guiEnableCache;
 
@@ -209,7 +214,8 @@ public class ShaderFeatureEditor : Editor
 
   private void AddValue()
   {
-    Target.shaderVariables.Add(new ShaderVariable($"Value {Target.shaderVariables.Count.ToString()}"));
+    Target.shaderVariables.Add(
+      new ShaderVariable($"Value_{Target.shaderVariables.Count.ToString()}", ShaderType.Float));
     Target.SignalShaderFeatureUpdated();
   }
 }

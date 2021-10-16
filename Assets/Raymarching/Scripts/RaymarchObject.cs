@@ -10,11 +10,11 @@ using UnityEditor;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchObject : RaymarchBase
 {
-  [SerializeField] public ShaderFeatureImpl<RaymarchSDF> raymarchSDF;
-  [SerializeField] public ShaderFeatureImpl<RaymarchMaterial> raymarchMat;
+  [SerializeField] public ShaderFeatureImpl<SDFShaderFeature> raymarchSDF;
+  [SerializeField] public ShaderFeatureImpl<MaterialShaderFeature> raymarchMat;
 
-  [SerializeField] public List<ShaderFeatureImpl<RaymarchModifier>> raymarchMods =
-    new List<ShaderFeatureImpl<RaymarchModifier>>();
+  [SerializeField] public List<ShaderFeatureImpl<ModifierShaderFeature>> raymarchMods =
+    new List<ShaderFeatureImpl<ModifierShaderFeature>>();
 
   public override void Awake()
   {
@@ -202,7 +202,7 @@ public class RaymarchObject : RaymarchBase
 
     if (raymarchMat.ShaderFeature == null)
     {
-      return $"resultColour = _Colour{guid}.xyz;{ShaderGen.NewLine}";
+      return $"_Colour{guid}";
     }
 
     string parameters = $"position{guid}, _Colour{guid}";
@@ -211,7 +211,7 @@ public class RaymarchObject : RaymarchBase
       parameters = string.Concat(parameters, ", ", raymarchMat.GetShaderVariableName(i, GUID));
     }
 
-    return $"resultColour = {raymarchMat.ShaderFeature.FunctionNameWithGuid}({parameters});";
+    return $"{raymarchMat.ShaderFeature.FunctionNameWithGuid}({parameters})";
   }
 
 #endif
@@ -260,15 +260,15 @@ public class RaymarchObjectEditor : Editor
 
     EditorGUI.BeginChangeCheck();
     Target.raymarchSDF.ShaderFeature =
-      (RaymarchSDF) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchSDF.ShaderFeature,
-        typeof(RaymarchSDF), false);
+      (SDFShaderFeature) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchSDF.ShaderFeature,
+        typeof(SDFShaderFeature), false);
     if (EditorGUI.EndChangeCheck())
     {
       ShaderGen.GenerateRaymarchShader();
     }
 
     Target.raymarchSDF =
-      ShaderFeatureImpl<RaymarchSDF>.Editor.ShaderVariableField(new GUIContent("SDF Variables"), Target.raymarchSDF,
+      ShaderFeatureImpl<SDFShaderFeature>.Editor.ShaderVariableField(new GUIContent("SDF Variables"), Target.raymarchSDF,
         Target);
 
     Target.MarchingStepAmount =
@@ -290,8 +290,8 @@ public class RaymarchObjectEditor : Editor
 
       EditorGUI.BeginChangeCheck();
       Target.raymarchMat.ShaderFeature =
-        (RaymarchMaterial) EditorGUILayout.ObjectField(new GUIContent("Material"), Target.raymarchMat.ShaderFeature,
-          typeof(RaymarchMaterial), false);
+        (MaterialShaderFeature) EditorGUILayout.ObjectField(new GUIContent("Material"), Target.raymarchMat.ShaderFeature,
+          typeof(MaterialShaderFeature), false);
       if (EditorGUI.EndChangeCheck())
       {
         ShaderGen.GenerateRaymarchShader();
@@ -300,7 +300,7 @@ public class RaymarchObjectEditor : Editor
       Target.Colour = EditorGUILayout.ColorField(new GUIContent("Colour"), Target.Colour);
 
       Target.raymarchMat =
-        ShaderFeatureImpl<RaymarchMaterial>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat, Target);
+        ShaderFeatureImpl<MaterialShaderFeature>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat, Target);
 
       EditorGUILayout.EndVertical();
     }
@@ -318,8 +318,8 @@ public class RaymarchObjectEditor : Editor
 
         EditorGUI.BeginChangeCheck();
         Target.raymarchMods[i].ShaderFeature =
-          (RaymarchModifier) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchMods[i].ShaderFeature,
-            typeof(RaymarchModifier), false);
+          (ModifierShaderFeature) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchMods[i].ShaderFeature,
+            typeof(ModifierShaderFeature), false);
 
         if (EditorGUI.EndChangeCheck())
         {
@@ -327,7 +327,7 @@ public class RaymarchObjectEditor : Editor
         }
 
         Target.raymarchMods[i] =
-          ShaderFeatureImpl<RaymarchModifier>.Editor.ShaderVariableField(GUIContent.none,
+          ShaderFeatureImpl<ModifierShaderFeature>.Editor.ShaderVariableField(GUIContent.none,
             Target.raymarchMods[i], Target);
 
         GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.25f);
@@ -381,7 +381,7 @@ public class RaymarchObjectEditor : Editor
 
       if (GUILayout.Button("Add New Modifier"))
       {
-        Target.raymarchMods.Add(new ShaderFeatureImpl<RaymarchModifier>());
+        Target.raymarchMods.Add(new ShaderFeatureImpl<ModifierShaderFeature>());
       }
 
       EditorGUILayout.EndVertical();

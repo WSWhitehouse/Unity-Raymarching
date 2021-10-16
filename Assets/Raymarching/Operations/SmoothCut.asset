@@ -9,25 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c992fa5b27b1504439742fa83be21c99, type: 3}
-  m_Name: Bend
+  m_Script: {fileID: 11500000, guid: ff5ef3ef526b46b48b17cc45c3c240ac, type: 3}
+  m_Name: SmoothCut
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 2be6754ffa059042bc9060a1615db095
-  functionBody: 'float c = cos(BendAmount*pos.x);
+    serializedGuid: 0e9ae4e130db6b4fa07df634e603543e
+  functionBody: 'float h = clamp(0.5 - 0.5 * (resultDistance + objDistance) / Smooth,
+    0.0, 1.0);
 
-    float s = sin(BendAmount*pos.x);
-
-    float2x2 
-    m = float2x2(c,-s,s,c);
-
-    return float3(mul(m,pos.xy),pos.z); '
+    resultDistance = lerp(resultDistance, -objDistance, h) + Smooth
+    * h * (1.0 - h);'
   shaderVariables:
-  - name: BendAmount
+  - name: Smooth
     shaderType: 0
     parameterType: 0
-    floatValue: 0
+    floatValue: 1
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
-  modifierType: 0

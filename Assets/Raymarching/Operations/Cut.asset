@@ -9,13 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d47c79d4ab4cc64692a822c84963803, type: 3}
-  m_Name: Cube
+  m_Script: {fileID: 11500000, guid: ff5ef3ef526b46b48b17cc45c3c240ac, type: 3}
+  m_Name: Cut
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: ac5a8405559d5c428e1f8d191d017e1e
-  functionBody: 'float3 o = abs(pos) - scale;
-
-    return length(max(o, 0.0)) + min(max(o.x,
-    max(o.y, o.z)), 0.0);'
+    serializedGuid: 5f2868e6655bfa4bb03360efeb593db7
+  functionBody: "if (-objDistance > resultDistance)\n{\n resultDistance = -objDistance;\n}"
   shaderVariables: []

@@ -14,9 +14,10 @@ Shader "Raymarch/RaymarchTemplateShader"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
         // Includes
-        #include "Assets/Raymarching/Shaders/Generated/DistanceFunctions.hlsl"
+        #include "Assets/Raymarching/Shaders/Generated/SDFFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Generated/MaterialFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Generated/ModifierFunctions.hlsl"
+        #include "Assets/Raymarching/Shaders/Generated/OperationFunctions.hlsl"
         #include "Assets/Raymarching/Shaders/Ray.hlsl"
 
         #pragma vertex vert
@@ -60,7 +61,7 @@ Shader "Raymarch/RaymarchTemplateShader"
         float4 GetDistanceFromObjects(float3 rayPos)
         {
             float resultDistance = _RenderDistance;
-            float3 resultColour = float3(1, 1, 1);
+            float4 resultColour = float4(1, 1, 1, 1);
 
             // RAYMARCH CALC DISTANCE //
 

@@ -11,6 +11,7 @@ public struct ShaderVariable
 {
   [SerializeField] private string name;
   [SerializeField] private ShaderType shaderType;
+  [SerializeField] private ParameterType parameterType;
 
   [SerializeField] private float floatValue;
   [SerializeField] private int intValue;
@@ -30,10 +31,11 @@ public struct ShaderVariable
   }
 
   // Constructor
-  public ShaderVariable(string _name, ShaderType _type = ShaderType.Float)
+  public ShaderVariable(string _name, ShaderType _type, ParameterType _parameterType = ParameterType.None)
   {
     name = _name;
     shaderType = _type;
+    parameterType = _parameterType;
 
     floatValue = 0f;
     intValue = 0;
@@ -45,6 +47,7 @@ public struct ShaderVariable
   {
     name = other.name;
     shaderType = other.shaderType;
+    parameterType = other.parameterType;
 
     floatValue = other.floatValue;
     intValue = other.intValue;
@@ -65,7 +68,7 @@ public struct ShaderVariable
 
   public string ToShaderParameter()
   {
-    return $"{GetShaderType()} {Name}";
+    return $"{parameterType.ToShaderString()}{GetShaderType()} {Name}";
   }
 
   public void UploadToShader(Material material, int shaderID)
@@ -197,7 +200,14 @@ public struct ShaderVariable
     public static ShaderVariable EditableVariableField(ShaderVariable variable)
     {
       EditorGUILayout.BeginHorizontal();
-      variable.Name = EditorGUILayout.TextField(GUIContent.none, variable.Name);
+      
+      EditorGUI.BeginChangeCheck();
+      string name = EditorGUILayout.TextField(GUIContent.none, variable.Name);
+      if (EditorGUI.EndChangeCheck())
+      {
+        variable.Name = name.Replace(' ', '_');
+      }
+      
       variable.ShaderType = (ShaderType) EditorGUILayout.EnumPopup(GUIContent.none, variable.ShaderType);
       EditorGUILayout.EndHorizontal();
 

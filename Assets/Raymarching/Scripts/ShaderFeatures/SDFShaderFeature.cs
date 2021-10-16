@@ -1,20 +1,20 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-[CreateAssetMenu(menuName = "Raymarching/Material")]
-public class RaymarchMaterial : ShaderFeature
+[CreateAssetMenu(menuName = "Raymarching/Signed Distance Function (SDF)")]
+public class SDFShaderFeature : ShaderFeature
 {
   protected override string GetFunctionPrefix()
   {
-    return "Mat";
+    return "SDF";
   }
 
   protected override string GetReturnType()
   {
-    return "float4";
+    return "float";
   }
 
   protected override ShaderVariable[] GetDefaultParameters()
@@ -22,8 +22,7 @@ public class RaymarchMaterial : ShaderFeature
     return new ShaderVariable[]
     {
       new ShaderVariable("pos", ShaderType.Vector3),
-      new ShaderVariable("colour", ShaderType.Vector4),
-      // new ShaderVariable("normal", ShaderType.Vector3)
+      new ShaderVariable("scale", ShaderType.Vector3)
     };
   }
 
@@ -31,17 +30,17 @@ public class RaymarchMaterial : ShaderFeature
   public override void SignalShaderFeatureUpdated()
   {
     base.SignalShaderFeatureUpdated();
-    ShaderGen.GenerateMaterialFunctionsShader();
+    ShaderGen.GenerateUtilShader<SDFShaderFeature>("SDFFunctions");
   }
 #endif
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(RaymarchMaterial))]
-public class RaymarchMaterialEditor : ShaderFeatureEditor
+[CustomEditor(typeof(SDFShaderFeature))]
+public class SDFShaderFeatureEditor : ShaderFeatureEditor
 {
-  private RaymarchMaterial Target => target as RaymarchMaterial;
-  
+  private SDFShaderFeature Target => target as SDFShaderFeature;
+
   protected override void DrawShaderFeatureInspector()
   {
     base.DrawShaderFeatureInspector();

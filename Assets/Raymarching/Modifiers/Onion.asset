@@ -10,24 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c992fa5b27b1504439742fa83be21c99, type: 3}
-  m_Name: Bend
+  m_Name: Onion
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 2be6754ffa059042bc9060a1615db095
-  functionBody: 'float c = cos(BendAmount*pos.x);
-
-    float s = sin(BendAmount*pos.x);
-
-    float2x2 
-    m = float2x2(c,-s,s,c);
-
-    return float3(mul(m,pos.xy),pos.z); '
+    serializedGuid: 6fc5baec62384a428fad6d23b416efe1
+  functionBody: return abs(objDistance) - Thickness;
   shaderVariables:
-  - name: BendAmount
+  - name: Thickness
     shaderType: 0
-    parameterType: 0
     floatValue: 0
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
-  modifierType: 0
+  modifierType: 1

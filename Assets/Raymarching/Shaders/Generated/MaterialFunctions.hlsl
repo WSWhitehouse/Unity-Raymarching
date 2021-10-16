@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/14/2021 08:55:38
+//    Time Generated: 10/16/2021 12:54:58
 //---------------------------------------------------------------------
 
 #ifndef MATERIALFUNCTIONS_HLSL
@@ -17,7 +17,7 @@
 float4 Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(float3 pos, float4 colour, sampler2D Texture)
 {
 float3x3 R = float3x3(float3(cos(_Time.y),sin(_Time.y),0),float3(-sin(_Time.y),cos(_Time.y),0),float3(0,0,-1));
-//pos = mul(pos, R / 8);
+//pos = mul(pos, R / 8);
 
 return float4(
 float3((tex2D(Texture, pos.xy).rgb

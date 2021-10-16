@@ -154,7 +154,7 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     if (ShaderVariables.Count != _shaderIDs.Length)
     {
       // something has seriously gone wrong.
-      Debug.LogError("Shader Variable count doesnt equal shader ID length!");
+      Debug.LogError("Shader Variable count doesnt equal shader ID count!");
       InitShaderIDs(guid);
     }
 #endif

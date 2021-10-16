@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
@@ -60,6 +61,12 @@ public class RaymarchScene : MonoBehaviour
 
   private void Awake()
   {
+    InitSingleton();
+    UpdateRaymarchData();
+  }
+
+  private void InitSingleton()
+  {
     // Set up Singleton
     if (ActiveInstance != null && ActiveInstance != this)
     {
@@ -73,12 +80,6 @@ public class RaymarchScene : MonoBehaviour
     }
 
     ActiveInstance = this;
-    UpdateRaymarchData();
-
-#if UNITY_EDITOR
-    if (!Application.isPlaying)
-      ShaderGen.GenerateRaymarchShader();
-#endif
   }
 
   private void OnDestroy()
@@ -110,12 +111,12 @@ public class RaymarchScene : MonoBehaviour
   {
     if (scene != gameObject.scene) return; // not saving *this* scene 
 
-    Awake();
+    UpdateRaymarchData();
   }
 
   private void OnValidate()
   {
-    Awake();
+    InitSingleton();
   }
 #endif
 }
@@ -192,20 +193,36 @@ public class RaymarchSceneEditor : Editor
 
     GUI.enabled = cachedGUIEnabled;
 
-    EditorGUILayout.Space();
-
-    EditorGUILayout.LabelField("Template Shader", wordWrapStyle);
-    EditorGUILayout.PropertyField(_templateShaderProperty, GUIContent.none, true);
-
     if (GUILayout.Button("Regenerate Shader"))
     {
       ShaderGen.GenerateRaymarchShader();
     }
 
+    if (GUILayout.Button(new GUIContent("Force Render Scene",
+      "If the objects aren't rendering in the scene, press this button.")))
+    {
+      var objects = FindObjectsOfType<RaymarchBase>();
+
+      foreach (var rmBase in objects)
+      {
+        rmBase.Awake();
+      }
+    }
+
+    EditorGUILayout.Space();
+
+    EditorGUILayout.LabelField("Template Shader", wordWrapStyle);
+    EditorGUILayout.PropertyField(_templateShaderProperty, GUIContent.none, true);
+
     EditorGUILayout.Space();
 
     EditorGUILayout.LabelField("Raymarch Settings", wordWrapStyle);
-    Target.Settings = (RaymarchSettings) EditorGUILayout.ObjectField(Target.Settings, typeof(RaymarchSettings), false);
+    EditorGUI.BeginChangeCheck();
+    var settings = (RaymarchSettings) EditorGUILayout.ObjectField(Target.Settings, typeof(RaymarchSettings), false);
+    if (EditorGUI.EndChangeCheck())
+    {
+      Target.Settings = settings;
+    }
 
     DrawSettingsEditor();
 

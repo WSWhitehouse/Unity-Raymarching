@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be    
 //    lost if the code is regenerated.                                 
 //                                                                     
-//    Time Generated: 10/14/2021 12:00:07
+//    Time Generated: 10/16/2021 12:40:33
 //---------------------------------------------------------------------
 
 #ifndef MODIFIERFUNCTIONS_HLSL
@@ -14,7 +14,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
-float3 Mod_Bend_4f75e62b05fa4290bc9060a1615db095(float3 pos, float3 scale, float BendAmount)
+float3 Mod_Bend_4f75e62b05fa4290bc9060a1615db095( float3 pos,  float3 scale,  float BendAmount)
 {
 float c = cos(BendAmount*pos.x);
 float s = sin(BendAmount*pos.x);
@@ -22,19 +22,24 @@ float2x2  m = float2x2(c,-s,s,c);
 return float3(mul(m,pos.xy),pos.z); 
 }
 
-float Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(float3 pos, float objDistance, float Displacement)
+float Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1( float3 pos,  float objDistance,  float Displacement)
 {
 float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displacement*pos.z);
 
 return objDistance + displacement;
 }
 
-float3 Mod_InfiniteRepetition_802c270f402c48459b9597d4fb74dba8(float3 pos, float3 scale, float3 RepPeriod)
+float3 Mod_InfiniteRepetition_802c270f402c48459b9597d4fb74dba8( float3 pos,  float3 scale,  float3 RepPeriod)
 {
 return fmod(pos + 0.5 * RepPeriod, RepPeriod) - 0.5 * RepPeriod;
 }
 
-float Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(float3 pos, float objDistance, float Freq, float Amplitude, float Speed, float3 Dir)
+float Mod_Onion_ecbac56f3862424a8fad6d23b416efe1( float3 pos,  float objDistance,  float Thickness)
+{
+return abs(objDistance) - Thickness;
+}
+
+float Mod_SineWave_a6bfc751b1354407833fc4a471b08d44( float3 pos,  float objDistance,  float Freq,  float Amplitude,  float Speed,  float3 Dir)
 {
         float direction = 0;
 
@@ -68,7 +73,7 @@ float Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(float3 pos, float objDistanc
         return objDistance - sin(direction * Freq + (_Time.y * Speed)) * Amplitude;
 }
 
-float3 Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(float3 pos, float3 scale, float TwistAmountX)
+float3 Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc( float3 pos,  float3 scale,  float TwistAmountX)
 {
 float c = cos(TwistAmountX*pos.x);
 float s = sin(TwistAmountX*pos.x);
@@ -76,7 +81,7 @@ float2x2  m = float2x2(c,-s,s,c);
 return float3(mul(m,pos.yz),pos.x);
 }
 
-float3 Mod_TwistY_84cc6354438645f28030230feaa53e13(float3 pos, float3 scale, float TwistAmountY)
+float3 Mod_TwistY_84cc6354438645f28030230feaa53e13( float3 pos,  float3 scale,  float TwistAmountY)
 {
 float c = cos(TwistAmountY*pos.y);
 float s = sin(TwistAmountY*pos.y);
@@ -84,7 +89,7 @@ float2x2  m = float2x2(c,-s,s,c);
 return float3(mul(m,pos.xz),pos.y);
 }
 
-float3 Mod_TwistZ_c1d0359417c14757b9996d01b0db1171(float3 pos, float3 scale, float TwistAmountZ)
+float3 Mod_TwistZ_c1d0359417c14757b9996d01b0db1171( float3 pos,  float3 scale,  float TwistAmountZ)
 {
 float c = cos(TwistAmountZ*pos.z);
 float s = sin(TwistAmountZ*pos.z);

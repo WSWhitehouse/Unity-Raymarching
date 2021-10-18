@@ -39,8 +39,10 @@ public abstract class RaymarchBase : MonoBehaviour
 
   protected abstract void UploadShaderData(Material material);
 
+#if UNITY_EDITOR
   public virtual string GetShaderCode_Variables()
   {
     return string.Empty;
   }
+#endif
 }

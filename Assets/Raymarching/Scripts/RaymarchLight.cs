@@ -112,7 +112,8 @@ public class RaymarchLight : RaymarchBase
     material.SetFloat(shaderIDs.Range, Range);
     material.SetFloat(shaderIDs.Intensity, Intensity);
   }
-
+  
+#if UNITY_EDITOR
   public override string GetShaderCode_Variables()
   {
     if (LightMode == LightMode.Baked)
@@ -129,7 +130,6 @@ public class RaymarchLight : RaymarchBase
     return code;
   }
 
-#if UNITY_EDITOR
   public string GetShaderCode_CalcLight()
   {
     string guid = GUID.ToShaderSafeString();

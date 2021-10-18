@@ -109,18 +109,12 @@ public class ShaderGen
     {
       string guid = raymarchBases[i].GUID.ToShaderSafeString();
 
-      var rmOperation = raymarchBases[i].GetComponent<RaymarchOperation>();
-      if (rmOperation != null)
+      if (raymarchBases[i] is RaymarchOperation rmOperation)
       {
         operations.Add(rmOperation);
-
-        raymarchDistance = $"{raymarchDistance}{NewLine}// Operation Start {guid}";
-        // raymarchDistance = $"{raymarchDistance}{NewLine}float distance{guid} = _RenderDistance;";
-        // raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{guid} = float4(1,1,1,1);";
       }
 
-      var rmObj = raymarchBases[i].GetComponent<RaymarchObject>();
-      if (rmObj != null)
+      if (raymarchBases[i] is RaymarchObject rmObject)
       {
         string positionName = $"_Position{guid}";
         string rotationName = $"_Rotation{guid}";
@@ -133,23 +127,23 @@ public class ShaderGen
           $"{raymarchDistance}{NewLine}float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}";
 
         raymarchDistance =
-          $"{raymarchDistance}{NewLine}{rmObj.GetShaderCode_CalcDistance()}{NewLine}";
+          $"{raymarchDistance}{NewLine}{rmObject.GetShaderCode_CalcDistance()}{NewLine}";
 
 
         if (operations.Count > 0)
         {
-          var operation = operations.Last();
+          var operation = operations[^1];
           var opGuid = operation.GUID.ToShaderSafeString();
 
           if (i > operation.StartIndex)
           {
             raymarchDistance =
-              $"{raymarchDistance}{NewLine}{operation.GetShaderCode_CalcOperation(localDistName, rmObj.GetShaderCode_Material())}{NewLine}";
+              $"{raymarchDistance}{NewLine}{operation.GetShaderCode_CalcOperation(localDistName, rmObject.GetShaderCode_Material())}{NewLine}";
           }
           else
           {
             raymarchDistance = $"{raymarchDistance}{NewLine}float distance{opGuid} = {localDistName};";
-            raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{opGuid} = {rmObj.GetShaderCode_Material()};";
+            raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{opGuid} = {rmObject.GetShaderCode_Material()};";
           }
         }
         else
@@ -157,29 +151,37 @@ public class ShaderGen
           raymarchDistance = $"{raymarchDistance}{NewLine}if ({localDistName} < resultDistance){NewLine} " +
                              $"{{ {NewLine}" +
                              $"resultDistance = {localDistName};{NewLine}" +
-                             $"resultColour = {rmObj.GetShaderCode_Material()};{NewLine}" +
+                             $"resultColour = {rmObject.GetShaderCode_Material()};{NewLine}" +
                              $"}} {NewLine}";
         }
       }
 
-      var rmLight = raymarchBases[i].GetComponent<RaymarchLight>();
-      if (rmLight != null)
+      if (raymarchBases[i] is RaymarchLight rmLight)
       {
         raymarchLight = string.Concat(raymarchLight, rmLight.GetShaderCode_CalcLight());
       }
 
-      foreach (var operation in operations)
+      // End any operations that end on this index and remove them from the list
+      for (var j = operations.Count - 1; j >= 0; j--)
       {
+        var operation = operations[j];
         if (operation.EndIndex != i) continue;
 
         string opGuid = operation.GUID.ToShaderSafeString();
 
-        raymarchDistance = $"{raymarchDistance}{NewLine}// Operation End {guid}";
-        raymarchDistance = $"{raymarchDistance}{NewLine}if (distance{opGuid} < resultDistance){NewLine} " +
-                           $"{{ {NewLine}" +
-                           $"resultDistance = distance{opGuid};{NewLine}" +
-                           $"resultColour = colour{opGuid};{NewLine}" +
-                           $"}} {NewLine}";
+        if (j > 0)
+        {
+          raymarchDistance =
+            $"{raymarchDistance}{operations[j - 1].GetShaderCode_CalcOperation($"distance{opGuid}", $"colour{opGuid}")};{NewLine}";
+        }
+        else
+        {
+          raymarchDistance = $"{raymarchDistance}{NewLine}if (distance{opGuid} < resultDistance){NewLine} " +
+                             $"{{ {NewLine}" +
+                             $"resultDistance = distance{opGuid};{NewLine}" +
+                             $"resultColour = colour{opGuid};{NewLine}" +
+                             $"}} {NewLine}";
+        }
       }
 
       operations.RemoveAll(x => x.EndIndex == i);

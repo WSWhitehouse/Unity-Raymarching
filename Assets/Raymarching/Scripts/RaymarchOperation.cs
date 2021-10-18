@@ -50,7 +50,8 @@ public class RaymarchOperation : RaymarchBase
   {
     operation.UploadShaderData(material);
   }
-
+  
+#if UNITY_EDITOR
   public override string GetShaderCode_Variables()
   {
     // string guid = GUID.ToShaderSafeString();
@@ -59,7 +60,6 @@ public class RaymarchOperation : RaymarchBase
     return code;
   }
 
-#if UNITY_EDITOR
   public string GetShaderCode_CalcOperation(string objDistance, string objColour)
   {
     string guid = GUID.ToShaderSafeString();

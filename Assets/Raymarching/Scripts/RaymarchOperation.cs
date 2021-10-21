@@ -9,29 +9,12 @@ using UnityEditor;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchOperation : RaymarchBase
 {
-  public int StartIndex { get; set; }
-  public int EndIndex { get; set; }
-
   [SerializeField] public ShaderFeatureImpl<OperationShaderFeature> operation;
-
-  private struct ShaderIDs
-  {
-  }
-
-  private ShaderIDs shaderIDs;
-
-  private void InitShaderIDs()
-  {
-    string guid = GUID.ToShaderSafeString();
-
-    // shaderIDs.Position = Shader.PropertyToID($"_Position{guid}");
-  }
 
   public override void Awake()
   {
     operation.OnAwake(GUID);
 
-    InitShaderIDs();
     base.Awake();
   }
 
@@ -49,15 +32,19 @@ public class RaymarchOperation : RaymarchBase
   protected override void UploadShaderData(Material material)
   {
     operation.UploadShaderData(material);
+    base.UploadShaderData(material);
   }
-  
+
 #if UNITY_EDITOR
+  public int StartIndex { get; set; }
+  public int EndIndex { get; set; }
+
   public override string GetShaderCode_Variables()
   {
     // string guid = GUID.ToShaderSafeString();
 
     var code = operation.GetShaderVariables(GUID);
-    return code;
+    return string.Concat(code, base.GetShaderCode_Variables());
   }
 
   public string GetShaderCode_CalcOperation(string objDistance, string objColour)
@@ -65,6 +52,7 @@ public class RaymarchOperation : RaymarchBase
     string guid = GUID.ToShaderSafeString();
     string opDistance = $"distance{guid}";
     string opColour = $"colour{guid}";
+    string opIsActive = $"_IsActive{guid}";
 
     string parameters = $"{opDistance}, {opColour}, {objDistance}, {objColour}";
     for (int i = 0; i < operation.ShaderVariables.Count; i++)
@@ -72,26 +60,27 @@ public class RaymarchOperation : RaymarchBase
       parameters = string.Concat(parameters, ", ", operation.GetShaderVariableName(i, GUID));
     }
 
-    return
-      $"{operation.ShaderFeature.FunctionNameWithGuid}({parameters});";
+    return $"if ({opIsActive} > 0){ShaderGen.NewLine}{{{ShaderGen.NewLine}" +
+           $"{operation.ShaderFeature.FunctionNameWithGuid}({parameters});{ShaderGen.NewLine}" +
+           $"}}{ShaderGen.NewLine}else{ShaderGen.NewLine}{{{ShaderGen.NewLine}" +
+           $"if ({objDistance} < {opDistance}){ShaderGen.NewLine}" +
+           $"{{ {ShaderGen.NewLine}" +
+           $"{opDistance} = {objDistance};{ShaderGen.NewLine}" +
+           $"{opColour} = {objColour};{ShaderGen.NewLine}" +
+           $"}} {ShaderGen.NewLine}}}{ShaderGen.NewLine}";
   }
 #endif
 }
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(RaymarchOperation))]
-public class RaymarchOperationEditor : Editor
+public class RaymarchOperationEditor : RaymarchBaseEditor
 {
   private RaymarchOperation Target => target as RaymarchOperation;
 
-  public override void OnInspectorGUI()
+  protected override void DrawInspector()
   {
-    serializedObject.Update();
-
-    EditorGUI.BeginChangeCheck();
-
-    // DrawDefaultInspector();
-
+    EditorGUILayout.LabelField("Operation Function", BoldLabelStyle);
     EditorGUI.BeginChangeCheck();
     Target.operation.ShaderFeature =
       (OperationShaderFeature) EditorGUILayout.ObjectField(GUIContent.none, Target.operation.ShaderFeature,
@@ -104,14 +93,6 @@ public class RaymarchOperationEditor : Editor
     Target.operation =
       ShaderFeatureImpl<OperationShaderFeature>.Editor.ShaderVariableField(
         new GUIContent("Operation Variables"), Target.operation, Target);
-
-    if (EditorGUI.EndChangeCheck())
-    {
-      EditorUtility.SetDirty(Target);
-      ShaderGen.GenerateRaymarchShader();
-    }
-
-    serializedObject.ApplyModifiedProperties();
   }
 }
 #endif

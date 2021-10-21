@@ -72,7 +72,7 @@ public class ModifierShaderFeatureEditor : ShaderFeatureEditor
 
   private readonly string[] modifierTypeStrings = Enum.GetNames(typeof(ModifierType));
 
-  protected override void DrawShaderFeatureInspector()
+  protected override void DrawInspector()
   {
     EditorGUI.BeginChangeCheck();
     Target.ModifierType = (ModifierType) GUILayout.Toolbar((int) Target.ModifierType, modifierTypeStrings);
@@ -81,7 +81,7 @@ public class ModifierShaderFeatureEditor : ShaderFeatureEditor
       Target.SignalShaderFeatureUpdated();
     }
 
-    base.DrawShaderFeatureInspector();
+    base.DrawInspector();
   }
 }
 #endif

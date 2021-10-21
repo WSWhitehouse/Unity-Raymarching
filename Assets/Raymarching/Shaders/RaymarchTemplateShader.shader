@@ -1,210 +1,212 @@
 Shader "Raymarch/RaymarchTemplateShader"
 {
-    Properties
+  Properties
+  {
+    _MainTex ("Texture", 2D) = "white" {}
+  }
+  SubShader
+  {
+    Cull Off ZWrite Off ZTest Always
+
+    HLSLINCLUDE
+    // Unity Includes
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+
+    // Includes
+    #include "Assets/Raymarching/Shaders/Generated/SDFFunctions.hlsl"
+    #include "Assets/Raymarching/Shaders/Generated/MaterialFunctions.hlsl"
+    #include "Assets/Raymarching/Shaders/Generated/ModifierFunctions.hlsl"
+    #include "Assets/Raymarching/Shaders/Generated/OperationFunctions.hlsl"
+    #include "Assets/Raymarching/Shaders/Structs.hlsl"
+
+    #pragma vertex vert
+    #pragma fragment frag
+    #pragma target 3.0
+
+    struct appdata
     {
-        _MainTex ("Texture", 2D) = "white" {}
+      float4 vertex : POSITION;
+      float2 uv : TEXCOORD0;
+    };
+
+    struct v2f
+    {
+      float2 uv : TEXCOORD0;
+      float4 vertex : SV_POSITION;
+    };
+
+    // Camera
+    uniform float4x4 _CamToWorldMatrix;
+
+    // Raymarching
+    uniform float _RenderDistance;
+    uniform float _HitResolution;
+    uniform float _Relaxation;
+    uniform int _MaxIterations;
+
+    // Lighting & Shadows
+    uniform float4 _AmbientColour;
+    uniform float _ColourScalar;
+
+    // RAYMARCH VARS //
+
+    float3 Rotate3D(float3 pos, float3 rot)
+    {
+      pos.xz = mul(pos.xz, float2x2(cos(rot.y), sin(rot.y), -sin(rot.y), cos(rot.y)));
+      pos.yz = mul(pos.yz, float2x2(cos(rot.x), -sin(rot.x), sin(rot.x), cos(rot.x)));
+      pos.xy = mul(pos.xy, float2x2(cos(rot.z), -sin(rot.z), sin(rot.z), cos(rot.z)));
+      return pos;
     }
-    SubShader
+
+    ObjectDistanceResult GetDistanceFromObjects(float3 rayPos)
     {
-        Cull Off ZWrite Off ZTest Always
+      float resultDistance = _RenderDistance;
+      float4 resultColour = float4(1, 1, 1, 1);
 
-        HLSLINCLUDE
-        // Unity Includes
-        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+      // RAYMARCH CALC DISTANCE //
 
-        // Includes
-        #include "Assets/Raymarching/Shaders/Generated/SDFFunctions.hlsl"
-        #include "Assets/Raymarching/Shaders/Generated/MaterialFunctions.hlsl"
-        #include "Assets/Raymarching/Shaders/Generated/ModifierFunctions.hlsl"
-        #include "Assets/Raymarching/Shaders/Generated/OperationFunctions.hlsl"
-        #include "Assets/Raymarching/Shaders/Ray.hlsl"
+      return CreateObjectDistanceResult(resultDistance, resultColour);
+    }
 
-        #pragma vertex vert
-        #pragma fragment frag
-        #pragma target 3.0
+    float3 GetLight(float3 pos, float3 normal)
+    {
+      float3 light = float3(0, 0, 0);
 
-        struct appdata
+      // RAYMARCH CALC LIGHT //
+
+      return light;
+    }
+
+    float3 GetObjectNormal(float3 pos)
+    {
+      float2 offset = float2(0.01f, 0.0f);
+      float3 normal = float3(
+        GetDistanceFromObjects(pos + offset.xyy).Distance - GetDistanceFromObjects(pos - offset.xyy).Distance,
+        GetDistanceFromObjects(pos + offset.yxy).Distance - GetDistanceFromObjects(pos - offset.yxy).Distance,
+        GetDistanceFromObjects(pos + offset.yyx).Distance - GetDistanceFromObjects(pos - offset.yyx).Distance
+      );
+
+      return normalize(normal);
+    }
+
+    half4 CalculateLighting(Ray ray, half4 colour, float distance)
+    {
+      // Object Shading
+      float3 pos = ray.Origin + ray.Direction * distance;
+      float3 normal = GetObjectNormal(pos);
+
+      // Adding Light
+      half4 combinedColour = colour * _AmbientColour;
+      combinedColour += half4(GetLight(pos, normal).xyz, 1.0) * colour;
+
+      return combinedColour;
+    }
+
+    RaymarchResult Raymarch(Ray ray, float depth)
+    {
+      float relaxOmega = _Relaxation;
+      float distanceTraveled = _ProjectionParams.y; // near clip plane
+      float candidateError = _RenderDistance;
+      float candidateDistanceTraveled = distanceTraveled;
+      half4 candidateColour = half4(0, 0, 0, 0);
+      float prevRadius = 0;
+      float stepLength = 0;
+
+      float funcSign = GetDistanceFromObjects(ray.Origin).Distance < 0 ? +1 : +1;
+
+      [loop]
+      for (int i = 0; i < _MaxIterations; i++)
+      {
+        float3 pos = ray.Origin + ray.Direction * distanceTraveled;
+        ObjectDistanceResult objData = GetDistanceFromObjects(pos);
+
+        float signedRadius = funcSign * objData.Distance;
+        float radius = abs(signedRadius);
+
+        bool sorFail = relaxOmega > 1 && (radius + prevRadius) < stepLength;
+
+        [branch]
+        if (sorFail)
         {
-            float4 vertex : POSITION;
-            float2 uv : TEXCOORD0;
-        };
-
-        struct v2f
+          stepLength -= relaxOmega * stepLength;
+          relaxOmega = 1;
+        }
+        else
         {
-            float2 uv : TEXCOORD0;
-            float4 vertex : SV_POSITION;
-        };
-
-        // Camera
-        uniform float4x4 _CamToWorldMatrix;
-
-        // Raymarching
-        uniform float _RenderDistance;
-        uniform float _HitResolution;
-        uniform float _Relaxation;
-        uniform int _MaxIterations;
-
-        // Lighting & Shadows
-        uniform float3 _AmbientColour;
-
-        // RAYMARCH VARS //
-
-        float3 Rotate3D(float3 pos, float3 rot)
-        {
-            pos.xz = mul(pos.xz, float2x2(cos(rot.y), sin(rot.y), -sin(rot.y), cos(rot.y)));
-            pos.yz = mul(pos.yz, float2x2(cos(rot.x), -sin(rot.x), sin(rot.x), cos(rot.x)));
-            pos.xy = mul(pos.xy, float2x2(cos(rot.z), -sin(rot.z), sin(rot.z), cos(rot.z)));
-            return pos;
+          stepLength = signedRadius * relaxOmega;
         }
 
-        float4 GetDistanceFromObjects(float3 rayPos)
+        prevRadius = radius;
+
+        [branch]
+        if (sorFail)
         {
-            float resultDistance = _RenderDistance;
-            float4 resultColour = float4(1, 1, 1, 1);
-
-            // RAYMARCH CALC DISTANCE //
-
-            return float4(resultColour.xyz, resultDistance);
+          distanceTraveled += stepLength;
+          continue;
         }
 
-        float3 GetLight(float3 pos, float3 normal)
+        if (distanceTraveled > _RenderDistance || distanceTraveled >= depth) // Environment
         {
-            float3 light = float3(0, 0, 0);
-
-            // RAYMARCH CALC LIGHT //
-
-            return light;
+          return CreateRaymarchResult(0, half4(0, 0, 0, 0));
         }
 
-        float3 GetObjectNormal(float3 pos)
-        {
-            float2 offset = float2(0.01f, 0.0f);
-            float3 normal = float3(
-                GetDistanceFromObjects(pos + offset.xyy).w - GetDistanceFromObjects(pos - offset.xyy).w,
-                GetDistanceFromObjects(pos + offset.yxy).w - GetDistanceFromObjects(pos - offset.yxy).w,
-                GetDistanceFromObjects(pos + offset.yyx).w - GetDistanceFromObjects(pos - offset.yyx).w
-            );
+        float error = radius / distanceTraveled;
 
-            return normalize(normal);
+        if (error < candidateError)
+        {
+          candidateDistanceTraveled = distanceTraveled;
+          candidateColour = objData.Colour;
+          candidateError = error;
+
+          if (error < _HitResolution) break; // Hit Something
         }
 
-        float3 CalculateLighting(Ray ray, float3 colour, float distance)
-        {
-            // Object Shading
-            float3 pos = ray.Origin + ray.Direction * distance;
-            float3 normal = GetObjectNormal(pos);
+        distanceTraveled += stepLength;
+      }
 
-            // Adding Light
-            float3 combinedColour = colour * _AmbientColour;
-            combinedColour += GetLight(pos, normal) * colour;
+      return CreateRaymarchResult(1, CalculateLighting(ray, candidateColour, candidateDistanceTraveled));
+    }
+    ENDHLSL
 
-            return combinedColour;
-        }
+    Pass
+    {
+      HLSLPROGRAM
+      sampler2D _MainTex;
+      float4 _MainTex_ST;
 
-        half4 Raymarch(Ray ray, float depth)
-        {
-            float relaxOmega = _Relaxation;
-            float distanceTraveled = _ProjectionParams.y; // near clip plane
-            float candidateError = _RenderDistance;
-            float candidateDistanceTraveled = distanceTraveled;
-            float3 candidateColour = float3(0, 0, 0);
-            float prevRadius = 0;
-            float stepLength = 0;
+      v2f vert(appdata v)
+      {
+        #ifdef UNITY_UV_STARTS_AT_TOP
+        // v.uv.y = 1 - v.uv.y;
+        #endif
 
-            float funcSign = GetDistanceFromObjects(ray.Origin).w < 0 ? +1 : +1;
+        v2f o;
+        o.vertex = TransformObjectToHClip(v.vertex.xyz);
+        o.uv = UnityStereoTransformScreenSpaceTex(v.uv);
+        return o;
+      }
 
-            [loop]
-            for (int i = 0; i < _MaxIterations; i++)
-            {
-                float3 pos = ray.Origin + ray.Direction * distanceTraveled;
-                float4 combined = GetDistanceFromObjects(pos);
-                float3 colour = combined.xyz;
-                float distance = combined.w;
+      half4 frag(v2f i) : SV_Target0
+      {
+        Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
 
-                float signedRadius = funcSign * distance;
-                float radius = abs(signedRadius);
-
-                bool sorFail = relaxOmega > 1 && (radius + prevRadius) < stepLength;
-
-                [branch]
-                if (sorFail)
-                {
-                    stepLength -= relaxOmega * stepLength;
-                    relaxOmega = 1;
-                }
-                else
-                {
-                    stepLength = signedRadius * relaxOmega;
-                }
-
-                prevRadius = radius;
-
-                [branch]
-                if (sorFail)
-                {
-                    distanceTraveled += stepLength;
-                    continue;
-                }
-
-                if (distanceTraveled > _RenderDistance || distanceTraveled >= depth) // Environment
-                {
-                    return half4(ray.Direction, 0);
-                }
-
-                float error = radius / distanceTraveled;
-
-                if (error < candidateError)
-                {
-                    candidateDistanceTraveled = distanceTraveled;
-                    candidateColour = colour;
-                    candidateError = error;
-
-                    if (error < _HitResolution) break; // Hit Something
-                }
-
-                distanceTraveled += stepLength;
-            }
-
-            return half4(CalculateLighting(ray, candidateColour, candidateDistanceTraveled), 1);
-        }
-        ENDHLSL
-
-        Pass
-        {
-            HLSLPROGRAM
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
-            v2f vert(appdata v)
-            {
-                #ifdef UNITY_UV_STARTS_AT_TOP
-                // v.uv.y = 1 - v.uv.y;
-                #endif
-
-                v2f o;
-                o.vertex = TransformObjectToHClip(v.vertex.xyz);
-                o.uv = UnityStereoTransformScreenSpaceTex(v.uv);
-                return o;
-            }
-
-            half4 frag(v2f i) : SV_Target0
-            {
-                Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
-
-                #if UNITY_REVERSED_Z
-                float depth = SampleSceneDepth(i.uv);
-                #else
+        #if UNITY_REVERSED_Z
+        float depth = SampleSceneDepth(i.uv);
+        #else
                 // Adjust z to match NDC for OpenGL
                 float depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(i.uv));
-                #endif
+        #endif
 
-                depth = LinearEyeDepth(depth, _ZBufferParams) * ray.Length;
+        depth = LinearEyeDepth(depth, _ZBufferParams) * ray.Length;
 
-                half4 result = Raymarch(ray, depth);
-                return half4(tex2D(_MainTex, i.uv).xyz * (1.0 - result.w) + result.xyz * result.w, 1.0);
-            }
-            ENDHLSL
-        }
+        RaymarchResult raymarchResult = Raymarch(ray, depth);
+
+        return half4(
+          tex2D(_MainTex, i.uv) * (1.0 - raymarchResult.Succeeded) +
+          (raymarchResult.Colour * _ColourScalar) * raymarchResult.Succeeded);
+      }
+      ENDHLSL
     }
+  }
 }

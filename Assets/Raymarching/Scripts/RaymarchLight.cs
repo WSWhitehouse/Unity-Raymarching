@@ -111,13 +111,15 @@ public class RaymarchLight : RaymarchBase
     material.SetVector(shaderIDs.Colour, Colour);
     material.SetFloat(shaderIDs.Range, Range);
     material.SetFloat(shaderIDs.Intensity, Intensity);
+
+    base.UploadShaderData(material);
   }
-  
+
 #if UNITY_EDITOR
   public override string GetShaderCode_Variables()
   {
     if (LightMode == LightMode.Baked)
-      return base.GetShaderCode_Variables();
+      return string.Empty;
 
     string guid = GUID.ToShaderSafeString();
 
@@ -127,7 +129,7 @@ public class RaymarchLight : RaymarchBase
     code = $"{code}uniform float _Range{guid};{ShaderGen.NewLine}";
     code = $"{code}uniform float _Intensity{guid};{ShaderGen.NewLine}";
 
-    return code;
+    return string.Concat(code, base.GetShaderCode_Variables());
   }
 
   public string GetShaderCode_CalcLight()
@@ -147,9 +149,14 @@ public class RaymarchLight : RaymarchBase
       colour = ToShaderFloat3(new Vector3(Colour.r, Colour.g, Colour.b));
       range = Range.ToString(CultureInfo.InvariantCulture);
       intensity = Intensity.ToString(CultureInfo.InvariantCulture);
+
+      return GetLightTypeShaderCode(position, direction, colour, range, intensity);
     }
 
-    return GetLightTypeShaderCode(position, direction, colour, range, intensity);
+    string isActive = $"_IsActive{guid}";
+
+    return
+      $"if ({isActive} > 0){ShaderGen.NewLine}{{{ShaderGen.NewLine}{GetLightTypeShaderCode(position, direction, colour, range, intensity)}{ShaderGen.NewLine}}}{ShaderGen.NewLine}";
   }
 
   private string GetLightTypeShaderCode(string position, string direction,
@@ -186,25 +193,13 @@ public class RaymarchLight : RaymarchBase
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(RaymarchLight))]
-public class RaymarchLightEditor : Editor
+public class RaymarchLightEditor : RaymarchBaseEditor
 {
   private RaymarchLight Target => target as RaymarchLight;
 
-  public override void OnInspectorGUI()
+  protected override void DrawInspector()
   {
-    serializedObject.Update();
-    
-    EditorGUI.BeginChangeCheck();
-
     DrawDefaultInspector();
-    
-    if (EditorGUI.EndChangeCheck())
-    {
-      EditorUtility.SetDirty(Target);
-      ShaderGen.GenerateRaymarchShader();
-    }
-    
-    serializedObject.ApplyModifiedProperties();
   }
 }
 #endif

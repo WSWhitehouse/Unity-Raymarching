@@ -118,17 +118,20 @@ public class ShaderGen
       {
         string positionName = $"_Position{guid}";
         string rotationName = $"_Rotation{guid}";
-        string colourName = $"_Colour{guid}";
+        string isActiveName = $"_IsActive{guid}";
 
         string localDistName = $"distance{guid}";
         string localPosName = $"position{guid}";
 
         raymarchDistance =
           $"{raymarchDistance}{NewLine}float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}";
+        raymarchDistance = $"{raymarchDistance}float {localDistName} = _RenderDistance;{NewLine}";
+        raymarchDistance = $"{raymarchDistance}if ({isActiveName} > 0){NewLine}{{{NewLine}";
 
         raymarchDistance =
-          $"{raymarchDistance}{NewLine}{rmObject.GetShaderCode_CalcDistance()}{NewLine}";
-
+          $"{raymarchDistance}{rmObject.GetShaderCode_CalcDistance()}";
+        
+        raymarchDistance = $"{raymarchDistance}}}{NewLine}";
 
         if (operations.Count > 0)
         {
@@ -143,7 +146,7 @@ public class ShaderGen
           else
           {
             raymarchDistance = $"{raymarchDistance}{NewLine}float distance{opGuid} = {localDistName};";
-            raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{opGuid} = {rmObject.GetShaderCode_Material()};";
+            raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{opGuid} = {rmObject.GetShaderCode_Material()};{NewLine}";
           }
         }
         else

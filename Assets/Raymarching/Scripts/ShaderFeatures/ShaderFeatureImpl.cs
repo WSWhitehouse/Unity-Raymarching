@@ -18,8 +18,10 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
   {
     get => shaderFeature;
 #if UNITY_EDITOR
+    // NOTE(WSWhitehouse): Cannot change the shader feature during runtime, for editor only
     set
     {
+      if (Application.isPlaying) return;
       if (EqualityComparer<T>.Default.Equals(shaderFeature, value)) return;
 
       if (shaderFeature != null)
@@ -139,7 +141,7 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     for (int i = 0; i < ShaderVariables.Count; i++)
     {
       code =
-        $"{code}uniform {ShaderVariables[i].GetShaderType()} {GetShaderVariableName(i, guid)};  {ShaderGen.NewLine}";
+        $"{code}uniform {ShaderVariables[i].GetShaderType()} {GetShaderVariableName(i, guid)};{ShaderGen.NewLine}";
     }
 
     return code;
@@ -151,9 +153,9 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     if (ShaderFeature == null) return;
 
 #if UNITY_EDITOR
+    // NOTE(WSWhitehouse): This can happen when the scene is reloaded in edit mode
     if (ShaderVariables.Count != _shaderIDs.Length)
     {
-      // something has seriously gone wrong.
       Debug.LogError("Shader Variable count doesnt equal shader ID count!");
       InitShaderIDs(guid);
     }

@@ -75,11 +75,6 @@ public abstract class ShaderFeature : ScriptableObject
 #if UNITY_EDITOR
   public Action OnShaderValuesChanged;
 
-  // protected void Awake()
-  // {
-  //   SignalShaderFeatureUpdated();
-  // }
-
   public virtual void SignalShaderFeatureUpdated()
   {
     OnShaderValuesChanged?.Invoke();
@@ -104,8 +99,8 @@ public class ShaderFeatureEditor : Editor
   }
 
   // NOTE(WSWhitehouse): Do *NOT* override this function as it handles enabling/disabling
-  // of the GUI while in play mode. Instead, override "DrawShaderFeatureInspector()". The
-  // function is marked sealed to ensure it cannot be overriden.
+  // of the GUI while in play mode. Instead, override "DrawInspector()". The function is
+  // marked sealed to ensure it cannot be overriden.
   public sealed override void OnInspectorGUI()
   {
     if (Application.isPlaying)
@@ -115,18 +110,13 @@ public class ShaderFeatureEditor : Editor
     GUI.enabled = !Application.isPlaying;
 
     serializedObject.Update();
-    DrawShaderFeatureInspector();
+    DrawInspector();
     serializedObject.ApplyModifiedProperties();
 
     GUI.enabled = cachedGUIEnabled;
   }
 
-  private void OnDisable()
-  {
-    Debug.Log("disable");
-  }
-
-  protected virtual void DrawShaderFeatureInspector()
+  protected virtual void DrawInspector()
   {
     GUIStyle wordWrapStyle = EditorStyles.wordWrappedLabel;
     wordWrapStyle.fontStyle = FontStyle.Bold;

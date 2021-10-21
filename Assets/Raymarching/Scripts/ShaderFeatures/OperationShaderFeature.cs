@@ -43,9 +43,9 @@ public class OperationShaderFeatureEditor : ShaderFeatureEditor
 {
   private MaterialShaderFeature Target => target as MaterialShaderFeature;
   
-  protected override void DrawShaderFeatureInspector()
+  protected override void DrawInspector()
   {
-    base.DrawShaderFeatureInspector();
+    base.DrawInspector();
   }
 }
 #endif

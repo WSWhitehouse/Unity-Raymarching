@@ -41,9 +41,9 @@ public class SDFShaderFeatureEditor : ShaderFeatureEditor
 {
   private SDFShaderFeature Target => target as SDFShaderFeature;
 
-  protected override void DrawShaderFeatureInspector()
+  protected override void DrawInspector()
   {
-    base.DrawShaderFeatureInspector();
+    base.DrawInspector();
   }
 }
 #endif

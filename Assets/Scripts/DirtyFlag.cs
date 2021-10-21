@@ -9,7 +9,7 @@ public class DirtyFlag
     _objDirty = true;
   }
   
-  private Transform _transform;
+  private readonly Transform _transform;
   private bool _objDirty;
 
   public bool IsDirty => _objDirty || _transform.hasChanged;

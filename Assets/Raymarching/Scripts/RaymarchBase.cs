@@ -15,7 +15,7 @@ public abstract class RaymarchBase : MonoBehaviour
   [SerializeField, HideInInspector] private SerializableGuid guid;
   public SerializableGuid GUID => guid;
 
-  #endregion // GUID
+  #endregion GUID
   
   [SerializeField, HideInInspector] private bool isHardcoded = false;
 
@@ -132,6 +132,9 @@ public class RaymarchBaseEditor : Editor
 
   protected GUIStyle BoldLabelStyle;
 
+  // NOTE(WSWhitehouse): Do *NOT* override this function as it handles enabling/disabling
+  // of the GUI while in play mode. Instead, override "DrawInspector()". The function is
+  // marked sealed to ensure it cannot be overriden.
   public sealed override void OnInspectorGUI()
   {
     BoldLabelStyle = new GUIStyle(GUI.skin.GetStyle("label"))

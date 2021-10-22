@@ -47,7 +47,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
     // Lighting & Shadows
     uniform float4 _AmbientColour;
-    uniform float _ColourScalar;
+    uniform float _ColourMultiplier;
 
     // RAYMARCH VARS //
 
@@ -204,7 +204,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         return half4(
           tex2D(_MainTex, i.uv) * (1.0 - raymarchResult.Succeeded) +
-          (raymarchResult.Colour * _ColourScalar) * raymarchResult.Succeeded);
+          (raymarchResult.Colour * _ColourMultiplier) * raymarchResult.Succeeded);
       }
       ENDHLSL
     }

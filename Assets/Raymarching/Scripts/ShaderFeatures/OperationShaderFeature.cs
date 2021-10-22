@@ -12,9 +12,9 @@ public class OperationShaderFeature : ShaderFeature
     return "Oper";
   }
 
-  protected override string GetReturnType()
+  protected override ShaderType GetReturnType()
   {
-    return "void";
+    return ShaderType.Void;
   }
 
   protected override ShaderVariable[] GetDefaultParameters()

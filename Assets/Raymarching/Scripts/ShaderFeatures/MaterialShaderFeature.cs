@@ -12,9 +12,9 @@ public class MaterialShaderFeature : ShaderFeature
     return "Mat";
   }
 
-  protected override string GetReturnType()
+  protected override ShaderType GetReturnType()
   {
-    return "float4";
+    return ShaderType.Vector4;
   }
 
   protected override ShaderVariable[] GetDefaultParameters()

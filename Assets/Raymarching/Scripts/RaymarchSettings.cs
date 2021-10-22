@@ -19,7 +19,7 @@ public class RaymarchSettings : ScriptableObject
   public Color ambientColour = new Color(0.2117f, 0.2274f, 0.2588f, 1);
   
   [Tooltip("This scalar value is multiplied with the final colour result of all Raymarch Objects in the scene.")]
-  public float colourScalar = 1;
+  public float colourMultiplier = 1;
 
   public void UploadShaderData(Material material)
   {
@@ -28,7 +28,7 @@ public class RaymarchSettings : ScriptableObject
     material.SetFloat(RelaxationID, relaxation);
     material.SetInteger(MaxIterationsID, maxIterations);
     material.SetVector(AmbientColourID, ambientColour);
-    material.SetFloat(ColourScalarID, colourScalar);
+    material.SetFloat(ColourMultiplierID, colourMultiplier);
   }
 
   private static readonly int RenderDistanceID = Shader.PropertyToID("_RenderDistance");
@@ -36,7 +36,7 @@ public class RaymarchSettings : ScriptableObject
   private static readonly int RelaxationID = Shader.PropertyToID("_Relaxation");
   private static readonly int MaxIterationsID = Shader.PropertyToID("_MaxIterations");
   private static readonly int AmbientColourID = Shader.PropertyToID("_AmbientColour");
-  private static readonly int ColourScalarID = Shader.PropertyToID("_ColourScalar");
+  private static readonly int ColourMultiplierID = Shader.PropertyToID("_ColourMultiplier");
 }
 
 #if UNITY_EDITOR

@@ -24,6 +24,8 @@ public class ShaderIDs
   {
     // NOTE(WSWhitehouse): Using expression trees to speed up reflection, more info is available here:
     // http://geekswithblogs.net/Madman/archive/2008/06/27/faster-reflection-using-expression-trees.aspx
+    // https://dejanstojanovic.net/aspnet/2019/february/making-reflection-in-net-work-faster/
+    // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/
     // https://mattwarren.org/2016/12/14/Why-is-Reflection-slow/
 
     string guidString = guid.ToShaderSafeString();
@@ -138,6 +140,9 @@ public class ShaderIDs
 
           continue;
         }
+        // NOTE(WSWhitehouse): Don't upload void type to shader
+        case ShaderType.Void:
+          continue; 
         default:
           throw new NotSupportedException($"{shaderType.ToString()} is not supported in ShaderIDs::UploadShaderData.");
       }

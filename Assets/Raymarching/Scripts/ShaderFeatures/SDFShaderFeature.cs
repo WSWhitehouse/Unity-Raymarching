@@ -12,9 +12,9 @@ public class SDFShaderFeature : ShaderFeature
     return "SDF";
   }
 
-  protected override string GetReturnType()
+  protected override ShaderType GetReturnType()
   {
-    return "float";
+    return ShaderType.Float;
   }
 
   protected override ShaderVariable[] GetDefaultParameters()

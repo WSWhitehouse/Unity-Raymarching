@@ -27,12 +27,12 @@ public class ModifierShaderFeature : ShaderFeature
     return "Mod";
   }
 
-  protected override string GetReturnType()
+  protected override ShaderType GetReturnType()
   {
     return ModifierType switch
     {
-      ModifierType.PreSDF => "float3",
-      ModifierType.PostSDF => "float",
+      ModifierType.PreSDF => ShaderType.Vector3,
+      ModifierType.PostSDF => ShaderType.Float,
       _ => throw new ArgumentOutOfRangeException()
     };
   }

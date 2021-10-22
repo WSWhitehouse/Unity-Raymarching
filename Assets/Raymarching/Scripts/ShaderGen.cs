@@ -34,7 +34,7 @@ public class ShaderGen
     return string.Concat(EndIf, Comment, nameUpper, NewLine);
   }
 
-  #endregion // Shader Code
+  #endregion Shader Code
 
   #region Scene Raymarch Shader
 
@@ -100,12 +100,12 @@ public class ShaderGen
     string raymarchVars = raymarchBases.Aggregate($"// Raymarch Variables{NewLine}",
       (current, rmBase) => string.Concat(current, rmBase.GetShaderCode_Variables(), NewLine));
 
-    string raymarchDistance = string.Empty;
-    string raymarchLight = string.Empty;
+    StringBuilder raymarchDistance = new StringBuilder();
+    StringBuilder raymarchLight = new StringBuilder();
 
     List<RaymarchOperation> operations = new List<RaymarchOperation>();
 
-    for (var i = 0; i < raymarchBases.Count; i++)
+    for (int i = 0; i < raymarchBases.Count; i++)
     {
       string guid = raymarchBases[i].GUID.ToShaderSafeString();
 
@@ -123,15 +123,17 @@ public class ShaderGen
         string localDistName = $"distance{guid}";
         string localPosName = $"position{guid}";
 
-        raymarchDistance =
-          $"{raymarchDistance}{NewLine}float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}";
-        raymarchDistance = $"{raymarchDistance}float {localDistName} = _RenderDistance;{NewLine}";
-        raymarchDistance = $"{raymarchDistance}if ({isActiveName} > 0){NewLine}{{{NewLine}";
+        raymarchDistance.AppendLine($"{NewLine}");
+        raymarchDistance.AppendLine(
+          $"float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}");
+        raymarchDistance.AppendLine($"float {localDistName} = _RenderDistance;{NewLine}");
 
-        raymarchDistance =
-          $"{raymarchDistance}{rmObject.GetShaderCode_CalcDistance()}";
-        
-        raymarchDistance = $"{raymarchDistance}}}{NewLine}";
+        raymarchDistance.AppendLine($"if ({isActiveName} > 0){NewLine}");
+        raymarchDistance.AppendLine($"{{{NewLine}");
+        raymarchDistance.AppendLine(rmObject.GetShaderCode_CalcDistance());
+        raymarchDistance.AppendLine($"}}{NewLine}");
+
+        raymarchDistance.AppendLine($"{NewLine}");
 
         if (operations.Count > 0)
         {
@@ -140,28 +142,30 @@ public class ShaderGen
 
           if (i > operation.StartIndex)
           {
-            raymarchDistance =
-              $"{raymarchDistance}{NewLine}{operation.GetShaderCode_CalcOperation(localDistName, rmObject.GetShaderCode_Material())}{NewLine}";
+            raymarchDistance.AppendLine(
+              operation.GetShaderCode_CalcOperation(localDistName, rmObject.GetShaderCode_Material()));
+            raymarchDistance.AppendLine($"{NewLine}");
           }
           else
           {
-            raymarchDistance = $"{raymarchDistance}{NewLine}float distance{opGuid} = {localDistName};";
-            raymarchDistance = $"{raymarchDistance}{NewLine}float4 colour{opGuid} = {rmObject.GetShaderCode_Material()};{NewLine}";
+            raymarchDistance.AppendLine($"// Operation Start {opGuid}{NewLine}");
+            raymarchDistance.AppendLine($"float distance{opGuid} = {localDistName};{NewLine}");
+            raymarchDistance.AppendLine($"float4 colour{opGuid} = {rmObject.GetShaderCode_Material()};{NewLine}");
           }
         }
         else
         {
-          raymarchDistance = $"{raymarchDistance}{NewLine}if ({localDistName} < resultDistance){NewLine} " +
-                             $"{{ {NewLine}" +
-                             $"resultDistance = {localDistName};{NewLine}" +
-                             $"resultColour = {rmObject.GetShaderCode_Material()};{NewLine}" +
-                             $"}} {NewLine}";
+          raymarchDistance.AppendLine($"if ({localDistName} < resultDistance){NewLine}");
+          raymarchDistance.AppendLine($"{{{NewLine}");
+          raymarchDistance.AppendLine($"resultDistance = {localDistName};{NewLine}");
+          raymarchDistance.AppendLine($"resultColour   = {rmObject.GetShaderCode_Material()};{NewLine}");
+          raymarchDistance.AppendLine($"}}{NewLine}");
         }
       }
 
       if (raymarchBases[i] is RaymarchLight rmLight)
       {
-        raymarchLight = string.Concat(raymarchLight, rmLight.GetShaderCode_CalcLight());
+        raymarchLight.AppendLine(rmLight.GetShaderCode_CalcLight());
       }
 
       // End any operations that end on this index and remove them from the list
@@ -172,18 +176,22 @@ public class ShaderGen
 
         string opGuid = operation.GUID.ToShaderSafeString();
 
+        raymarchDistance.AppendLine($"{NewLine}");
+        raymarchDistance.AppendLine($"// Operation End {opGuid}{NewLine}");
+
+
         if (j > 0)
         {
-          raymarchDistance =
-            $"{raymarchDistance}{operations[j - 1].GetShaderCode_CalcOperation($"distance{opGuid}", $"colour{opGuid}")};{NewLine}";
+          raymarchDistance.AppendLine(
+            $"{operations[j - 1].GetShaderCode_CalcOperation($"distance{opGuid}", $"colour{opGuid}")};{NewLine}");
         }
         else
         {
-          raymarchDistance = $"{raymarchDistance}{NewLine}if (distance{opGuid} < resultDistance){NewLine} " +
-                             $"{{ {NewLine}" +
-                             $"resultDistance = distance{opGuid};{NewLine}" +
-                             $"resultColour = colour{opGuid};{NewLine}" +
-                             $"}} {NewLine}";
+          raymarchDistance.AppendLine($"if (distance{opGuid} < resultDistance){NewLine}");
+          raymarchDistance.AppendLine($"{{{NewLine}");
+          raymarchDistance.AppendLine($"resultDistance = distance{opGuid};{NewLine}");
+          raymarchDistance.AppendLine($"resultColour   = colour{opGuid};{NewLine}");
+          raymarchDistance.AppendLine($"}}{NewLine}");
         }
       }
 
@@ -194,8 +202,8 @@ public class ShaderGen
     string shader = File.ReadAllText(templatePath);
     shader = shader.Replace(RaymarchTemplateShaderTitle, shaderName)
       .Replace(RaymarchVars, raymarchVars)
-      .Replace(RaymarchCalcDistance, raymarchDistance)
-      .Replace(RaymarchCalcLights, raymarchLight);
+      .Replace(RaymarchCalcDistance, raymarchDistance.ToString())
+      .Replace(RaymarchCalcLights, raymarchLight.ToString());
 
     // Create shader
     FileStream file = File.Open(filePath, FileMode.OpenOrCreate);
@@ -265,16 +273,16 @@ public class ShaderGen
     }
   }
 
-  #endregion // Scene Raymarch Shader
+  #endregion Scene Raymarch Shader
 
   #region Util
 
   private const string UtilShaderPath = "Assets/Raymarching/Shaders/Generated/";
   private const string UtilShaderExtension = "hlsl";
 
-  private static string UnityShaderIncludes = $"{NewLine}// Unity Includes {NewLine}" +
-                                              $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl\"{NewLine}" +
-                                              $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl\"{NewLine}";
+  private static readonly string UnityShaderIncludes = $"{NewLine}// Unity Includes {NewLine}" +
+                                                       $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl\"{NewLine}" +
+                                                       $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl\"{NewLine}";
 
   public static void GenerateUtilShader<T>(string shaderName) where T : ShaderFeature
   {
@@ -291,7 +299,7 @@ public class ShaderGen
     string filePath = string.Concat(UtilShaderPath, shaderName, ".", UtilShaderExtension);
     string headerGuardName = string.Concat(shaderName.ToUpper().Replace(' ', '_'), "_", UtilShaderExtension.ToUpper());
 
-    // Should use AssetDatabase functions here, but they don't work reliably
+    // NOTE(WSWhitehouse): Should use AssetDatabase functions here, but they don't work reliably
     Directory.CreateDirectory(UtilShaderPath);
 
     if (File.Exists(filePath))
@@ -321,21 +329,20 @@ public class ShaderGen
   {
     DateTime now = DateTime.Now;
 
-    string result = string.Empty;
-    result = string.Concat(result, "//---------------------------------------------------------------------", NewLine);
-    result = string.Concat(result, "//    This code was generated by a tool.                               ", NewLine);
-    result = string.Concat(result, "//                                                                     ", NewLine);
-    result = string.Concat(result, "//    Changes to this file may cause incorrect behavior and will be    ", NewLine);
-    result = string.Concat(result, "//    lost if the code is regenerated.                                 ", NewLine);
-    result = string.Concat(result, "//                                                                     ", NewLine);
-    result = string.Concat(result, "//    Time Generated: ", now.ToString(CultureInfo.InvariantCulture), NewLine);
-    result = string.Concat(result, "//---------------------------------------------------------------------", NewLine,
-      NewLine);
+    StringBuilder result = new StringBuilder();
+    result.AppendLine($"//---------------------------------------------------------------------{NewLine}");
+    result.AppendLine($"//    This code was generated by a tool.                               {NewLine}");
+    result.AppendLine($"//                                                                     {NewLine}");
+    result.AppendLine($"//    Changes to this file may cause incorrect behavior and will be    {NewLine}");
+    result.AppendLine($"//    lost if the code is regenerated.                                 {NewLine}");
+    result.AppendLine($"//                                                                     {NewLine}");
+    result.AppendLine($"//    Time Generated: {now.ToString(CultureInfo.InvariantCulture)}     {NewLine}");
+    result.AppendLine($"//---------------------------------------------------------------------{NewLine}");
 
-    return result;
+    return result.ToString();
   }
 
-  #endregion // Util
+  #endregion Util
 }
 
 #endif

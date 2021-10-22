@@ -9,10 +9,9 @@ using UnityEditor;
 [Serializable]
 public class ShaderFeatureImpl<T> where T : ShaderFeature
 {
-  [SerializeField] private T shaderFeature;
-  [SerializeField] private List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
+  #region Shader Feature
 
-  private string postfix = string.Empty;
+  [SerializeField] private T shaderFeature;
 
   public T ShaderFeature
   {
@@ -26,7 +25,7 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
 
       if (shaderFeature != null)
       {
-        shaderFeature.OnShaderValuesChanged -= OnShaderValuesChanged;
+        shaderFeature.OnShaderVariablesChanged -= OnShaderVariablesChanged;
       }
 
       if (value == null)
@@ -37,16 +36,22 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
       else
       {
         shaderFeature = value;
-        OnShaderValuesChanged();
+        OnShaderVariablesChanged();
       }
 
       if (shaderFeature != null)
       {
-        shaderFeature.OnShaderValuesChanged += OnShaderValuesChanged;
+        shaderFeature.OnShaderVariablesChanged += OnShaderVariablesChanged;
       }
     }
 #endif
   }
+
+  #endregion Shader Feature
+
+  #region Shader Variables
+
+  [SerializeField] private List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
 
   public List<ShaderVariable> ShaderVariables => shaderVariables;
 
@@ -55,12 +60,98 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     return $"{ShaderVariables[index].GetShaderName(guid)}{postfix}";
   }
 
+  /// <summary>
+  /// Get index of variable from its name.
+  /// </summary>
+  /// <param name="name">name of shader variable</param>
+  /// <returns>index of shader variable in <see cref="ShaderVariables"/> list. Returns -1 if variable cannot be found</returns>
+  public int PropertyToID(string name)
+  {
+    return ShaderVariables.FindIndex(x => x.Name == name);
+  }
+
+  /// <summary>
+  /// Returns the shader variable at the ID
+  /// </summary>
+  /// <param name="id">ID of shader variable - use <see cref="PropertyToID"/> to get ID</param>
+  /// <seealso cref="PropertyToID"/>
+  public ShaderVariable GetShaderVariable(int id)
+  {
+    return ShaderVariables[id];
+  }
+
+  /// <summary>
+  /// Returns the shader variable with the given name - this performs no error checking, meaning if the variable
+  /// cannot be found an exception could be thrown. Use <see cref="GetShaderVariable(int)"/> instead.
+  /// </summary>
+  /// <param name="name">Name of shader variable</param>
+  public ShaderVariable GetShaderVariable(string name)
+  {
+    return ShaderVariables[PropertyToID(name)];
+  }
+
+#if UNITY_EDITOR
+  private void OnShaderVariablesChanged()
+  {
+    int count = ShaderFeature.ShaderVariables.Count;
+
+    var newVariables = new List<ShaderVariable>(count);
+
+    for (int i = 0; i < count; i++)
+    {
+      int index = ShaderVariables.FindIndex(x =>
+        x.Name == ShaderFeature.ShaderVariables[i].Name);
+
+      if (index < 0) // variable not found
+      {
+        newVariables.Add(ShaderFeature.ShaderVariables[i]);
+        continue;
+      }
+
+      newVariables.Add(shaderVariables[index].ShaderType != ShaderFeature.ShaderVariables[i].ShaderType
+        ? ShaderFeature.ShaderVariables[i]
+        : shaderVariables[index]);
+    }
+
+    shaderVariables = newVariables;
+  }
+#endif
+
+  #endregion Shader Variables
+
+  #region Shader IDs
+
+  private int[] _shaderIDs;
+
+#if UNITY_EDITOR
+  // NOTE(WSWhitehouse): Storing the guid of the object that is initialising the ShaderFeature, just in case
+  // the variables get updated and the IDs need to be regenerated - this only happens in the editor
+  private SerializableGuid guid;
+#endif
+
+  private void InitShaderIDs(SerializableGuid guid)
+  {
+#if UNITY_EDITOR
+    this.guid = guid;
+#endif
+
+    _shaderIDs = new int[ShaderVariables.Count];
+    for (int i = 0; i < _shaderIDs.Length; i++)
+    {
+      _shaderIDs[i] = Shader.PropertyToID(GetShaderVariableName(i, guid));
+    }
+  }
+
+  #endregion Shader IDs
+
+  private string postfix = string.Empty;
+
   public void OnAwake(SerializableGuid guid, string postfix = "")
   {
 #if UNITY_EDITOR
     if (ShaderFeature != null)
     {
-      ShaderFeature.OnShaderValuesChanged += OnShaderValuesChanged;
+      ShaderFeature.OnShaderVariablesChanged += OnShaderVariablesChanged;
     }
 #endif
 
@@ -79,55 +170,26 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
 #if UNITY_EDITOR
     if (ShaderFeature != null)
     {
-      ShaderFeature.OnShaderValuesChanged -= OnShaderValuesChanged;
+      ShaderFeature.OnShaderVariablesChanged -= OnShaderVariablesChanged;
     }
 #endif
   }
 
-#if UNITY_EDITOR
-  private void OnShaderValuesChanged()
+  public void UploadShaderData(Material material)
   {
-    int count = ShaderFeature.shaderVariables.Count;
+    if (ShaderFeature == null) return;
 
-    var newVariables = new List<ShaderVariable>(count);
-
-    for (int i = 0; i < count; i++)
+#if UNITY_EDITOR
+    // NOTE(WSWhitehouse): This can happen when the scene is reloaded in edit mode
+    if (ShaderVariables.Count != _shaderIDs.Length)
     {
-      int index = ShaderVariables.FindIndex(x =>
-        x.Name == ShaderFeature.shaderVariables[i].Name);
-
-      if (index < 0) // variable not found
-      {
-        newVariables.Add(ShaderFeature.shaderVariables[i]);
-        continue;
-      }
-
-      newVariables.Add(shaderVariables[index].ShaderType != ShaderFeature.shaderVariables[i].ShaderType
-        ? ShaderFeature.shaderVariables[i]
-        : shaderVariables[index]);
+      InitShaderIDs(guid);
     }
-
-    shaderVariables = newVariables;
-  }
 #endif
 
-  // Shader
-  private int[] _shaderIDs;
-
-#if UNITY_EDITOR
-  private SerializableGuid guid;
-#endif
-
-  private void InitShaderIDs(SerializableGuid guid)
-  {
-#if UNITY_EDITOR
-    this.guid = guid;
-#endif
-
-    _shaderIDs = new int[ShaderVariables.Count];
-    for (int i = 0; i < _shaderIDs.Length; i++)
+    for (int i = 0; i < ShaderVariables.Count; i++)
     {
-      _shaderIDs[i] = Shader.PropertyToID(GetShaderVariableName(i, guid));
+      ShaderVariables[i].UploadToShader(material, _shaderIDs[i]);
     }
   }
 
@@ -147,25 +209,6 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     return code;
   }
 #endif
-
-  public void UploadShaderData(Material material)
-  {
-    if (ShaderFeature == null) return;
-
-#if UNITY_EDITOR
-    // NOTE(WSWhitehouse): This can happen when the scene is reloaded in edit mode
-    if (ShaderVariables.Count != _shaderIDs.Length)
-    {
-      Debug.LogError("Shader Variable count doesnt equal shader ID count!");
-      InitShaderIDs(guid);
-    }
-#endif
-
-    for (int i = 0; i < ShaderVariables.Count; i++)
-    {
-      ShaderVariables[i].UploadToShader(material, _shaderIDs[i]);
-    }
-  }
 
 #if UNITY_EDITOR
   public static class Editor

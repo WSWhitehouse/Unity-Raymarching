@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
-using Action = System.Action;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,9 +9,14 @@ using UnityEditor;
 
 public abstract class ShaderFeature : ScriptableObject
 {
-  // GUID
+  #region GUID
+
   [SerializeField] private SerializableGuid guid;
   public SerializableGuid GUID => guid;
+
+  #endregion GUID
+
+  #region Shader Code
 
   public string FunctionName => $"{GetFunctionPrefix()}_{name.Replace(' ', '_')}";
   public string FunctionNameWithGuid => $"{FunctionName}_{GUID.ToShaderSafeString()}";
@@ -43,9 +48,10 @@ public abstract class ShaderFeature : ScriptableObject
     }
   }
 
-  public string FunctionPrototype => $"{GetReturnType()} {FunctionName}({FunctionParameters})";
+  public string FunctionPrototype => $"{GetReturnType().ToShaderString()} {FunctionName}({FunctionParameters})";
 
-  public string FunctionPrototypeWithGuid => $"{GetReturnType()} {FunctionNameWithGuid}({FunctionParameters})";
+  public string FunctionPrototypeWithGuid =>
+    $"{GetReturnType().ToShaderString()} {FunctionNameWithGuid}({FunctionParameters})";
 
   [SerializeField] private string functionBody = "return 0;";
 
@@ -55,29 +61,44 @@ public abstract class ShaderFeature : ScriptableObject
     set => functionBody = value;
   }
 
-  [SerializeField] public List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
+  /*
+   * NOTE(WSWhitehouse):
+   * The following abstract functions are used to set up a shader feature.
+   * They must all be overwritten but can return nothing - i.e. `string.Empty`,
+   * `Array.Empty<>()` or `ShaderType.void`. They are abstract to force inheriting
+   * shader features to implement them.
+   */
 
-  protected virtual string GetFunctionPrefix()
-  {
-    return string.Empty;
-  }
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  protected abstract string GetFunctionPrefix();
 
-  protected virtual string GetReturnType()
-  {
-    return string.Empty;
-  }
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  protected abstract ShaderType GetReturnType();
 
-  protected virtual ShaderVariable[] GetDefaultParameters()
-  {
-    return Array.Empty<ShaderVariable>();
-  }
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  protected abstract ShaderVariable[] GetDefaultParameters();
+
+  #endregion Shader Code
+
+  [SerializeField] private List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
 
 #if UNITY_EDITOR
-  public Action OnShaderValuesChanged;
+  // NOTE(WSWhitehouse): Only allow access in the editor, the ShaderVariables should not be updated at runtime.
+  public List<ShaderVariable> ShaderVariables => shaderVariables;
+
+  /*
+   * NOTE(WSWhitehouse):
+   * This event is invoked when this shader feature gets changed, it ensures that all implementations of
+   * a shader feature gets up to date variables and gets notified of a change. The event is only used in
+   * debug so don't subscribe to it during runtime.
+   */
+  public delegate void ShaderVariablesChanged();
+
+  public event ShaderVariablesChanged OnShaderVariablesChanged;
 
   public virtual void SignalShaderFeatureUpdated()
   {
-    OnShaderValuesChanged?.Invoke();
+    OnShaderVariablesChanged?.Invoke();
     EditorUtility.SetDirty(this);
   }
 #endif
@@ -161,17 +182,17 @@ public class ShaderFeatureEditor : Editor
     {
       EditorGUI.indentLevel++;
 
-      for (int i = 0; i < Target.shaderVariables.Count; i++)
+      for (int i = 0; i < Target.ShaderVariables.Count; i++)
       {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
         EditorGUI.BeginChangeCheck();
 
-        var value = ShaderVariable.Editor.EditableVariableField(Target.shaderVariables[i]);
+        var value = ShaderVariable.Editor.EditableVariableField(Target.ShaderVariables[i]);
 
         if (EditorGUI.EndChangeCheck())
         {
-          Target.shaderVariables[i] = value;
+          Target.ShaderVariables[i] = value;
           Target.SignalShaderFeatureUpdated();
         }
 
@@ -198,14 +219,14 @@ public class ShaderFeatureEditor : Editor
 
   private void RemoveValue(int index)
   {
-    Target.shaderVariables.RemoveAt(index);
+    Target.ShaderVariables.RemoveAt(index);
     Target.SignalShaderFeatureUpdated();
   }
 
   private void AddValue()
   {
-    Target.shaderVariables.Add(
-      new ShaderVariable($"Value_{Target.shaderVariables.Count.ToString()}", ShaderType.Float));
+    Target.ShaderVariables.Add(
+      new ShaderVariable($"Value_{Target.ShaderVariables.Count.ToString()}", ShaderType.Float));
     Target.SignalShaderFeatureUpdated();
   }
 }

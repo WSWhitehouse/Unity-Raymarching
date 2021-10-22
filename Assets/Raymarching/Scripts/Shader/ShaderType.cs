@@ -3,6 +3,7 @@ using UnityEngine;
 
 public enum ShaderType
 {
+  Void = -1,
   Float,
   Int,
   Bool,
@@ -19,6 +20,7 @@ public static class ShaderTypeExtensions
   {
     return shaderType switch
     {
+      ShaderType.Void => "void",
       ShaderType.Float => "float",
       ShaderType.Int => "int",
       ShaderType.Bool => "int",
@@ -33,6 +35,11 @@ public static class ShaderTypeExtensions
 
   public static ShaderType ToShaderType(this Type type)
   {
+    if (type == typeof(void))
+    {
+      return ShaderType.Void;
+    }
+    
     if (type == typeof(float))
     {
       return ShaderType.Float;

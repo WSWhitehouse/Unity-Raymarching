@@ -84,8 +84,11 @@ public class RaymarchScene : MonoBehaviour
 
   private void OnDestroy()
   {
-    if (ActiveInstance == this)
-      ActiveInstance = null;
+    if (ActiveInstance != this)
+      return;
+
+    ActiveInstance = null;
+    Raymarch.ResetData();
   }
 
 

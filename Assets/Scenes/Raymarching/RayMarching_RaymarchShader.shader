@@ -10,7 +10,7 @@
 
 //                                                                     
 
-//    Time Generated: 10/22/2021 18:47:20     
+//    Time Generated: 10/25/2021 20:10:06     
 
 //---------------------------------------------------------------------
 
@@ -88,6 +88,8 @@ uniform float3 _Dir065aa5c7754e4ee3bf1117f267e253f03;
 uniform float _Smooth10fc656da492424e9757568d34136d0e;
 uniform int _IsActive10fc656da492424e9757568d34136d0e;
 
+uniform int _IsActivea872404ed7bf43c1bb9524af347edfdb;
+
 uniform float3 _Position94a3c657384a49dcae537aad3cfd17ad;
 uniform float3 _Rotation94a3c657384a49dcae537aad3cfd17ad;
 uniform float3 _Scale94a3c657384a49dcae537aad3cfd17ad;
@@ -102,6 +104,29 @@ uniform float3 _Scale176c1ec3a1c64bb79ab34788ceb863d5;
 uniform float4 _Colour176c1ec3a1c64bb79ab34788ceb863d5;
 uniform float _MarchingStepAmount176c1ec3a1c64bb79ab34788ceb863d5;
 uniform int _IsActive176c1ec3a1c64bb79ab34788ceb863d5;
+
+uniform float3 _Positionb320a942164246c39a98c549464c0e2a;
+uniform float3 _Rotationb320a942164246c39a98c549464c0e2a;
+uniform float3 _Scaleb320a942164246c39a98c549464c0e2a;
+uniform float4 _Colourb320a942164246c39a98c549464c0e2a;
+uniform float _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
+uniform int _IsActiveb320a942164246c39a98c549464c0e2a;
+uniform float _TwistAmountXb320a942164246c39a98c549464c0e2a0;
+
+uniform float3 _Positionf041e9cb2fa4455d853ef9789ba6c70d;
+uniform float3 _Rotationf041e9cb2fa4455d853ef9789ba6c70d;
+uniform float3 _Scalef041e9cb2fa4455d853ef9789ba6c70d;
+uniform float4 _Colourf041e9cb2fa4455d853ef9789ba6c70d;
+uniform float _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
+uniform int _IsActivef041e9cb2fa4455d853ef9789ba6c70d;
+
+uniform float3 _Positiond30d7187114b45b68aabda807c282bc1;
+uniform float3 _Rotationd30d7187114b45b68aabda807c282bc1;
+uniform float3 _Scaled30d7187114b45b68aabda807c282bc1;
+uniform float4 _Colourd30d7187114b45b68aabda807c282bc1;
+uniform float _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
+uniform int _IsActived30d7187114b45b68aabda807c282bc1;
+uniform float _TwistAmountXd30d7187114b45b68aabda807c282bc10;
 
 uniform float3 _Position9909da39672d4c0a9ddbeec2369d040d;
 uniform float3 _Rotation9909da39672d4c0a9ddbeec2369d040d;
@@ -130,16 +155,10 @@ uniform float3 _Dir9909da39672d4c0a9ddbeec2369d040d1;
       float resultDistance = _RenderDistance;
       float4 resultColour = float4(1, 1, 1, 1);
 
-      
-
-float3 position065aa5c7754e4ee3bf1117f267e253f0 = Rotate3D(rayPos - _Position065aa5c7754e4ee3bf1117f267e253f0, _Rotation065aa5c7754e4ee3bf1117f267e253f0);
-
+      float3 position065aa5c7754e4ee3bf1117f267e253f0 = Rotate3D(rayPos - _Position065aa5c7754e4ee3bf1117f267e253f0, _Rotation065aa5c7754e4ee3bf1117f267e253f0);
 float distance065aa5c7754e4ee3bf1117f267e253f0 = _RenderDistance;
-
 if (_IsActive065aa5c7754e4ee3bf1117f267e253f0 > 0)
-
 {
-
 distance065aa5c7754e4ee3bf1117f267e253f0 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position065aa5c7754e4ee3bf1117f267e253f0, _Scale065aa5c7754e4ee3bf1117f267e253f0);
 distance065aa5c7754e4ee3bf1117f267e253f0 = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(position065aa5c7754e4ee3bf1117f267e253f0, distance065aa5c7754e4ee3bf1117f267e253f0, _Displacement065aa5c7754e4ee3bf1117f267e253f00);
 distance065aa5c7754e4ee3bf1117f267e253f0 = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position065aa5c7754e4ee3bf1117f267e253f0, distance065aa5c7754e4ee3bf1117f267e253f0, _Freq065aa5c7754e4ee3bf1117f267e253f01, _Amplitude065aa5c7754e4ee3bf1117f267e253f01, _Speed065aa5c7754e4ee3bf1117f267e253f01, _Dir065aa5c7754e4ee3bf1117f267e253f01);
@@ -149,98 +168,153 @@ distance065aa5c7754e4ee3bf1117f267e253f0 /= _MarchingStepAmount065aa5c7754e4ee3b
 
 }
 
-
-
 if (distance065aa5c7754e4ee3bf1117f267e253f0 < resultDistance)
-
 {
-
 resultDistance = distance065aa5c7754e4ee3bf1117f267e253f0;
-
 resultColour   = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position065aa5c7754e4ee3bf1117f267e253f0, _Colour065aa5c7754e4ee3bf1117f267e253f0, _Texture065aa5c7754e4ee3bf1117f267e253f0);
-
 }
 
+// Operation Start Oper_Blend 10fc656da492424e9757568d34136d0e
+float distance10fc656da492424e9757568d34136d0e = _RenderDistance;
+float4 colour10fc656da492424e9757568d34136d0e = float4(1,1,1,1);
 
+// Operation Start Oper_Cut a872404ed7bf43c1bb9524af347edfdb
+float distancea872404ed7bf43c1bb9524af347edfdb = _RenderDistance;
+float4 coloura872404ed7bf43c1bb9524af347edfdb = float4(1,1,1,1);
 
 float3 position94a3c657384a49dcae537aad3cfd17ad = Rotate3D(rayPos - _Position94a3c657384a49dcae537aad3cfd17ad, _Rotation94a3c657384a49dcae537aad3cfd17ad);
-
 float distance94a3c657384a49dcae537aad3cfd17ad = _RenderDistance;
-
 if (_IsActive94a3c657384a49dcae537aad3cfd17ad > 0)
-
 {
-
 position94a3c657384a49dcae537aad3cfd17ad = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(position94a3c657384a49dcae537aad3cfd17ad, _Scale94a3c657384a49dcae537aad3cfd17ad, _TwistAmountX94a3c657384a49dcae537aad3cfd17ad0);
 distance94a3c657384a49dcae537aad3cfd17ad = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position94a3c657384a49dcae537aad3cfd17ad, _Scale94a3c657384a49dcae537aad3cfd17ad);
 distance94a3c657384a49dcae537aad3cfd17ad /= _MarchingStepAmount94a3c657384a49dcae537aad3cfd17ad;
 
 }
 
-
-
-// Operation Start 10fc656da492424e9757568d34136d0e
-
-float distance10fc656da492424e9757568d34136d0e = distance94a3c657384a49dcae537aad3cfd17ad;
-
-float4 colour10fc656da492424e9757568d34136d0e = _Colour94a3c657384a49dcae537aad3cfd17ad;
-
-
+distancea872404ed7bf43c1bb9524af347edfdb = distance94a3c657384a49dcae537aad3cfd17ad;
+coloura872404ed7bf43c1bb9524af347edfdb = _Colour94a3c657384a49dcae537aad3cfd17ad;
 
 float3 position176c1ec3a1c64bb79ab34788ceb863d5 = Rotate3D(rayPos - _Position176c1ec3a1c64bb79ab34788ceb863d5, _Rotation176c1ec3a1c64bb79ab34788ceb863d5);
-
 float distance176c1ec3a1c64bb79ab34788ceb863d5 = _RenderDistance;
-
 if (_IsActive176c1ec3a1c64bb79ab34788ceb863d5 > 0)
-
 {
-
 distance176c1ec3a1c64bb79ab34788ceb863d5 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position176c1ec3a1c64bb79ab34788ceb863d5, _Scale176c1ec3a1c64bb79ab34788ceb863d5);
 distance176c1ec3a1c64bb79ab34788ceb863d5 /= _MarchingStepAmount176c1ec3a1c64bb79ab34788ceb863d5;
 
 }
 
-
-
-if (_IsActive10fc656da492424e9757568d34136d0e > 0)
+if (_IsActivea872404ed7bf43c1bb9524af347edfdb > 0)
 {
-Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distance10fc656da492424e9757568d34136d0e, colour10fc656da492424e9757568d34136d0e, distance176c1ec3a1c64bb79ab34788ceb863d5, _Colour176c1ec3a1c64bb79ab34788ceb863d5, _Smooth10fc656da492424e9757568d34136d0e);
+Oper_Cut_e668285f5b654bfab03360efeb593db7(distancea872404ed7bf43c1bb9524af347edfdb, coloura872404ed7bf43c1bb9524af347edfdb, distance176c1ec3a1c64bb79ab34788ceb863d5, _Colour176c1ec3a1c64bb79ab34788ceb863d5);
 }
 else
 {
-if (distance176c1ec3a1c64bb79ab34788ceb863d5 < distance10fc656da492424e9757568d34136d0e)
+if (distance176c1ec3a1c64bb79ab34788ceb863d5 < distancea872404ed7bf43c1bb9524af347edfdb)
 { 
-distance10fc656da492424e9757568d34136d0e = distance176c1ec3a1c64bb79ab34788ceb863d5;
-colour10fc656da492424e9757568d34136d0e = _Colour176c1ec3a1c64bb79ab34788ceb863d5;
+distancea872404ed7bf43c1bb9524af347edfdb = distance176c1ec3a1c64bb79ab34788ceb863d5;
+coloura872404ed7bf43c1bb9524af347edfdb = _Colour176c1ec3a1c64bb79ab34788ceb863d5;
 } 
 }
 
 
-
-
-
-// Operation End 10fc656da492424e9757568d34136d0e
-
-if (distance10fc656da492424e9757568d34136d0e < resultDistance)
-
+// Operation End a872404ed7bf43c1bb9524af347edfdb
+if (_IsActive10fc656da492424e9757568d34136d0e > 0)
 {
-
-resultDistance = distance10fc656da492424e9757568d34136d0e;
-
-resultColour   = colour10fc656da492424e9757568d34136d0e;
-
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distance10fc656da492424e9757568d34136d0e, colour10fc656da492424e9757568d34136d0e, distancea872404ed7bf43c1bb9524af347edfdb, coloura872404ed7bf43c1bb9524af347edfdb, _Smooth10fc656da492424e9757568d34136d0e);
+}
+else
+{
+if (distancea872404ed7bf43c1bb9524af347edfdb < distance10fc656da492424e9757568d34136d0e)
+{ 
+distance10fc656da492424e9757568d34136d0e = distancea872404ed7bf43c1bb9524af347edfdb;
+colour10fc656da492424e9757568d34136d0e = coloura872404ed7bf43c1bb9524af347edfdb;
+} 
 }
 
 
+float3 positionb320a942164246c39a98c549464c0e2a = Rotate3D(rayPos - _Positionb320a942164246c39a98c549464c0e2a, _Rotationb320a942164246c39a98c549464c0e2a);
+float distanceb320a942164246c39a98c549464c0e2a = _RenderDistance;
+if (_IsActiveb320a942164246c39a98c549464c0e2a > 0)
+{
+positionb320a942164246c39a98c549464c0e2a = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positionb320a942164246c39a98c549464c0e2a, _Scaleb320a942164246c39a98c549464c0e2a, _TwistAmountXb320a942164246c39a98c549464c0e2a0);
+distanceb320a942164246c39a98c549464c0e2a = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionb320a942164246c39a98c549464c0e2a, _Scaleb320a942164246c39a98c549464c0e2a);
+distanceb320a942164246c39a98c549464c0e2a /= _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
+
+}
+
+if (_IsActive10fc656da492424e9757568d34136d0e > 0)
+{
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distance10fc656da492424e9757568d34136d0e, colour10fc656da492424e9757568d34136d0e, distanceb320a942164246c39a98c549464c0e2a, _Colourb320a942164246c39a98c549464c0e2a, _Smooth10fc656da492424e9757568d34136d0e);
+}
+else
+{
+if (distanceb320a942164246c39a98c549464c0e2a < distance10fc656da492424e9757568d34136d0e)
+{ 
+distance10fc656da492424e9757568d34136d0e = distanceb320a942164246c39a98c549464c0e2a;
+colour10fc656da492424e9757568d34136d0e = _Colourb320a942164246c39a98c549464c0e2a;
+} 
+}
+
+
+float3 positionf041e9cb2fa4455d853ef9789ba6c70d = Rotate3D(rayPos - _Positionf041e9cb2fa4455d853ef9789ba6c70d, _Rotationf041e9cb2fa4455d853ef9789ba6c70d);
+float distancef041e9cb2fa4455d853ef9789ba6c70d = _RenderDistance;
+if (_IsActivef041e9cb2fa4455d853ef9789ba6c70d > 0)
+{
+distancef041e9cb2fa4455d853ef9789ba6c70d = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionf041e9cb2fa4455d853ef9789ba6c70d, _Scalef041e9cb2fa4455d853ef9789ba6c70d);
+distancef041e9cb2fa4455d853ef9789ba6c70d /= _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
+
+}
+
+if (_IsActive10fc656da492424e9757568d34136d0e > 0)
+{
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distance10fc656da492424e9757568d34136d0e, colour10fc656da492424e9757568d34136d0e, distancef041e9cb2fa4455d853ef9789ba6c70d, _Colourf041e9cb2fa4455d853ef9789ba6c70d, _Smooth10fc656da492424e9757568d34136d0e);
+}
+else
+{
+if (distancef041e9cb2fa4455d853ef9789ba6c70d < distance10fc656da492424e9757568d34136d0e)
+{ 
+distance10fc656da492424e9757568d34136d0e = distancef041e9cb2fa4455d853ef9789ba6c70d;
+colour10fc656da492424e9757568d34136d0e = _Colourf041e9cb2fa4455d853ef9789ba6c70d;
+} 
+}
+
+
+float3 positiond30d7187114b45b68aabda807c282bc1 = Rotate3D(rayPos - _Positiond30d7187114b45b68aabda807c282bc1, _Rotationd30d7187114b45b68aabda807c282bc1);
+float distanced30d7187114b45b68aabda807c282bc1 = _RenderDistance;
+if (_IsActived30d7187114b45b68aabda807c282bc1 > 0)
+{
+positiond30d7187114b45b68aabda807c282bc1 = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positiond30d7187114b45b68aabda807c282bc1, _Scaled30d7187114b45b68aabda807c282bc1, _TwistAmountXd30d7187114b45b68aabda807c282bc10);
+distanced30d7187114b45b68aabda807c282bc1 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positiond30d7187114b45b68aabda807c282bc1, _Scaled30d7187114b45b68aabda807c282bc1);
+distanced30d7187114b45b68aabda807c282bc1 /= _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
+
+}
+
+if (_IsActive10fc656da492424e9757568d34136d0e > 0)
+{
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distance10fc656da492424e9757568d34136d0e, colour10fc656da492424e9757568d34136d0e, distanced30d7187114b45b68aabda807c282bc1, _Colourd30d7187114b45b68aabda807c282bc1, _Smooth10fc656da492424e9757568d34136d0e);
+}
+else
+{
+if (distanced30d7187114b45b68aabda807c282bc1 < distance10fc656da492424e9757568d34136d0e)
+{ 
+distance10fc656da492424e9757568d34136d0e = distanced30d7187114b45b68aabda807c282bc1;
+colour10fc656da492424e9757568d34136d0e = _Colourd30d7187114b45b68aabda807c282bc1;
+} 
+}
+
+
+// Operation End 10fc656da492424e9757568d34136d0e
+if (distance10fc656da492424e9757568d34136d0e < resultDistance)
+{
+resultDistance = distance10fc656da492424e9757568d34136d0e;
+resultColour   = colour10fc656da492424e9757568d34136d0e;
+}
 
 float3 position9909da39672d4c0a9ddbeec2369d040d = Rotate3D(rayPos - _Position9909da39672d4c0a9ddbeec2369d040d, _Rotation9909da39672d4c0a9ddbeec2369d040d);
-
 float distance9909da39672d4c0a9ddbeec2369d040d = _RenderDistance;
-
 if (_IsActive9909da39672d4c0a9ddbeec2369d040d > 0)
-
 {
-
 distance9909da39672d4c0a9ddbeec2369d040d = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position9909da39672d4c0a9ddbeec2369d040d, _Scale9909da39672d4c0a9ddbeec2369d040d);
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_Displacement_1a61691f0be94ed6b83151f90f2fefb1(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Displacement9909da39672d4c0a9ddbeec2369d040d0);
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Freq9909da39672d4c0a9ddbeec2369d040d1, _Amplitude9909da39672d4c0a9ddbeec2369d040d1, _Speed9909da39672d4c0a9ddbeec2369d040d1, _Dir9909da39672d4c0a9ddbeec2369d040d1);
@@ -248,16 +322,10 @@ distance9909da39672d4c0a9ddbeec2369d040d /= _MarchingStepAmount9909da39672d4c0a9
 
 }
 
-
-
 if (distance9909da39672d4c0a9ddbeec2369d040d < resultDistance)
-
 {
-
 resultDistance = distance9909da39672d4c0a9ddbeec2369d040d;
-
 resultColour   = _Colour9909da39672d4c0a9ddbeec2369d040d;
-
 }
 
 

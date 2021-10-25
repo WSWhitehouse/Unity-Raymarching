@@ -123,6 +123,70 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &27486143
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 27486144}
+  - component: {fileID: 27486145}
+  m_Layer: 0
+  m_Name: RM Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &27486144
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27486143}
+  m_LocalRotation: {x: 0.35207632, y: -0.6284696, z: -0.603188, w: 0.3423923}
+  m_LocalPosition: {x: -1.511, y: 0.238, z: -6.858}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 209479511}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -31.136, y: -92.535, z: -88.366}
+--- !u!114 &27486145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27486143}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 57c6a3944a38dc49ae537aad3cfd17ad
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
+    shaderVariables:
+    - name: TwistAmountX
+      shaderType: 0
+      parameterType: 0
+      floatValue: 3.36
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  colour: {r: 1, g: 1, b: 1, a: 1}
+  marchingStepAmount: 1.92
 --- !u!1 &155378031
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +218,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 6d65fc1092a44e429757568d34136d0e
-  isHardcoded: 0
   operation:
     shaderFeature: {fileID: 11400000, guid: 25e623070afac8141a93080a379dfa8c, type: 2}
     shaderVariables:
@@ -177,11 +240,64 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 209479511}
   - {fileID: 1303356926}
   - {fileID: 1551371005}
+  - {fileID: 1859244690}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &209479510
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 209479511}
+  - component: {fileID: 209479512}
+  m_Layer: 0
+  m_Name: operation (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &209479511
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209479510}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 27486144}
+  - {fileID: 931377741}
+  m_Father: {fileID: 155378033}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &209479512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209479510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00193114080c480bac7489c858edda55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 4e4072a8bfd7c143bb9524af347edfdb
+  operation:
+    shaderFeature: {fileID: 11400000, guid: 7e4938dd30c4c414e93f2c5a790056d2, type: 2}
+    shaderVariables: []
 --- !u!1 &218824359
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +428,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 6a1913296cf3784f8661f592315628a5
-  isHardcoded: 0
   lightMode: 0
 --- !u!1 &491504017
 GameObject:
@@ -442,7 +557,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 39da09992d670a4c9ddbeec2369d040d
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -538,6 +652,61 @@ Transform:
   m_Father: {fileID: 491504019}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &931377740
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 931377741}
+  - component: {fileID: 931377742}
+  m_Layer: 0
+  m_Name: RM Cube (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &931377741
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931377740}
+  m_LocalRotation: {x: 0.35207632, y: -0.6284696, z: -0.603188, w: 0.3423923}
+  m_LocalPosition: {x: -1.5297905, y: 0.25520542, z: -6.8589735}
+  m_LocalScale: {x: 1.0469407, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 209479511}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: -31.136, y: -92.535, z: -88.366}
+--- !u!114 &931377742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931377740}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: c31e6c17c6a1b74b9ab34788ceb863d5
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods: []
+  colour: {r: 0, g: 0.21631074, b: 1, a: 1}
+  marchingStepAmount: 1
 --- !u!1 &1074769952
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,8 +907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 57c6a3944a38dc49ae537aad3cfd17ad
-  isHardcoded: 0
+    serializedGuid: 42a920b34216c3469a98c549464c0e2a
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -766,12 +934,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303356924}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.41, y: 0, z: -5.9}
+  m_LocalPosition: {x: -1.26, y: 0, z: -5.825}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 155378033}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1304010606
 GameObject:
@@ -952,7 +1120,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: c7a55a064e75e34ebf1117f267e253f0
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -1092,8 +1259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: c31e6c17c6a1b74b9ab34788ceb863d5
-  isHardcoded: 0
+    serializedGuid: cbe941f0a42f5d45853ef9789ba6c70d
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -1111,12 +1277,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551371003}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.41, y: 0, z: -5.9}
+  m_LocalPosition: {x: -1.265, y: 0, z: -5.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 155378033}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1559188885
 GameObject:
@@ -1527,3 +1693,67 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1859244689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1859244690}
+  - component: {fileID: 1859244691}
+  m_Layer: 0
+  m_Name: RM Cube (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1859244690
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859244689}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.264, y: 0, z: -6.375}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 155378033}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1859244691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859244689}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 87710dd34b11b6458aabda807c282bc1
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables: []
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
+    shaderVariables:
+    - name: TwistAmountX
+      shaderType: 0
+      parameterType: 0
+      floatValue: 3.36
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+  colour: {r: 1, g: 1, b: 1, a: 1}
+  marchingStepAmount: 1.92

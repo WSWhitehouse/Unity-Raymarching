@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Text;
 using UnityEditor;
 #endif
 
@@ -12,6 +13,7 @@ public class RaymarchObject : RaymarchBase
 {
   [SerializeField] public ShaderFeatureImpl<SDFShaderFeature> raymarchSDF;
   [SerializeField] public ShaderFeatureImpl<MaterialShaderFeature> raymarchMat;
+
   [SerializeField] public List<ShaderFeatureImpl<ModifierShaderFeature>> raymarchMods =
     new List<ShaderFeatureImpl<ModifierShaderFeature>>();
 
@@ -104,32 +106,31 @@ public class RaymarchObject : RaymarchBase
 
     string marchingStepAmountName = $"_MarchingStepAmount{guid}";
 
-    string result = string.Empty;
+    StringBuilder result = new StringBuilder();
 
     for (var i = 0; i < raymarchMods.Count; i++)
     {
       var modifier = raymarchMods[i];
       if (modifier.ShaderFeature.ModifierType != ModifierType.PreSDF) continue;
 
-      result =
-        $"{result}{localPosName} = {modifier.ShaderFeature.FunctionNameWithGuid}({GetModifierParameters(i)});{ShaderGen.NewLine}";
+      result.AppendLine($"{localPosName} = {modifier.ShaderFeature.FunctionNameWithGuid}({GetModifierParameters(i)});");
     }
 
-    result =
-      $"{result}{localDistName} = {raymarchSDF.ShaderFeature.FunctionNameWithGuid}({GetShaderDistanceParameters()});{ShaderGen.NewLine}";
+    result.AppendLine(
+      $"{localDistName} = {raymarchSDF.ShaderFeature.FunctionNameWithGuid}({GetShaderDistanceParameters()});");
 
     for (var i = 0; i < raymarchMods.Count; i++)
     {
       var modifier = raymarchMods[i];
       if (modifier.ShaderFeature.ModifierType != ModifierType.PostSDF) continue;
 
-      result =
-        $"{result}{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({GetModifierParameters(i)});{ShaderGen.NewLine}";
+      result.AppendLine(
+        $"{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({GetModifierParameters(i)});");
     }
 
-    result = $"{result}{localDistName} /= {marchingStepAmountName};{ShaderGen.NewLine}";
+    result.AppendLine($"{localDistName} /= {marchingStepAmountName};");
 
-    return result;
+    return result.ToString();
   }
 
   private string GetShaderDistanceParameters()

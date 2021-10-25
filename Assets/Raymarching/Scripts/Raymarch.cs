@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public static class Raymarch
 {
@@ -14,6 +15,19 @@ public static class Raymarch
 
       if (_shader == null)
       {
+#if UNITY_EDITOR
+        if (Application.isPlaying)
+        {
+          Object.Destroy(Material);
+        }
+        else
+        {
+          Object.DestroyImmediate(Material);
+        }
+#else
+        Object.Destroy(Material);
+#endif
+
         Material = null;
       }
       else
@@ -36,6 +50,12 @@ public static class Raymarch
   {
     OnUploadShaderData?.Invoke(Material);
     Settings.UploadShaderData(Material);
+  }
+
+  public static void ResetData()
+  {
+    Shader = null;
+    Settings = null;
   }
 
   public static bool ShouldRender()

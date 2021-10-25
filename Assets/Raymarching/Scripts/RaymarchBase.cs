@@ -16,27 +16,11 @@ public abstract class RaymarchBase : MonoBehaviour
   public SerializableGuid GUID => guid;
 
   #endregion GUID
-  
-  [SerializeField, HideInInspector] private bool isHardcoded = false;
 
-  public bool IsHardcoded
-  {
-    get => isHardcoded;
-
-#if UNITY_EDITOR
-    // NOTE(WSWhitehouse): Should not change this during runtime, for editor only
-    set
-    {
-      Assert.IsFalse(Application.isPlaying);
-      isHardcoded = value;
-    }
-#endif
-  }
-  
   [UploadToShader] public bool IsActive => gameObject.activeInHierarchy /*&& enabled*/;
-  
+
   private ShaderIDs _shaderIDs = new ShaderIDs();
-  
+
   public abstract bool IsValid();
 
   public virtual void Awake()
@@ -44,10 +28,6 @@ public abstract class RaymarchBase : MonoBehaviour
 #if UNITY_EDITOR
     Raymarch.OnUploadShaderData -= UploadShaderData;
 #endif
-
-    if (IsHardcoded)
-      return;
-
     Raymarch.OnUploadShaderData += UploadShaderData;
 
     _shaderIDs.Init(this, GUID);
@@ -122,14 +102,6 @@ public class RaymarchBaseEditor : Editor
 {
   private RaymarchBase Target => target as RaymarchBase;
 
-  private readonly GUIContent[] hardcodedToolbarContents = new[]
-  {
-    new GUIContent("Runtime Values",
-      "Values are uploaded to the shader during runtime, this is more expensive but allows this object to change during runtime."),
-    new GUIContent("Hardcoded Values",
-      "Values are hardcoded into the shader. This is less expensive but you CANNOT change the values at runtime.")
-  };
-
   protected GUIStyle BoldLabelStyle;
 
   // NOTE(WSWhitehouse): Do *NOT* override this function as it handles enabling/disabling
@@ -147,35 +119,22 @@ public class RaymarchBaseEditor : Editor
     EditorGUI.BeginChangeCheck(); // global change check
 
     bool guiEnabledCache = GUI.enabled;
-    if (Target.IsHardcoded && Application.isPlaying)
-    {
-      EditorGUILayout.HelpBox("You cannot edit hardcoded values during runtime.", MessageType.Info, true);
-      GUI.enabled = false;
-    }
-
-    // hardcoded toolbar
-    {
-      EditorGUILayout.LabelField("Raymarch Value Type", BoldLabelStyle);
-      bool ishardcoded = GUILayout.Toolbar(Target.IsHardcoded ? 1 : 0, hardcodedToolbarContents) == 1;
-
-      if (ishardcoded != Target.IsHardcoded && !Application.isPlaying)
-      {
-        Target.IsHardcoded = ishardcoded;
-      }
-    }
+    GUI.enabled = false;
+    EditorGUILayout.TextField(
+      new GUIContent("GUID", "You cannot change the GUID manually, this is only here for debug purposes."),
+      Target.GUID.ToShaderSafeString());
+    GUI.enabled = guiEnabledCache;
+    
+    EditorGUILayout.Space();
 
     DrawInspector();
 
     if (EditorGUI.EndChangeCheck()) // global change check
     {
       EditorUtility.SetDirty(Target);
-
-      if (Target.IsHardcoded)
-        ShaderGen.GenerateRaymarchShader();
+      ShaderGen.GenerateRaymarchShader();
     }
-
-    GUI.enabled = guiEnabledCache;
-
+    
     serializedObject.ApplyModifiedProperties();
   }
 

@@ -43,20 +43,6 @@ public class ShaderGen
   private const string RaymarchCalcDistance = "// RAYMARCH CALC DISTANCE //";
   private const string RaymarchCalcLights = "// RAYMARCH CALC LIGHT //";
 
-  private static void CheckForDuplicateGUIDS(ref List<RaymarchBase> rmBases)
-  {
-    for (int i = 0; i < rmBases.Count; i++)
-    {
-      for (int j = i + 1; j < rmBases.Count; j++)
-      {
-        if (rmBases[i].GUID.GUID == rmBases[j].GUID.GUID)
-        {
-          rmBases[i].GUID.ResetGUID();
-        }
-      }
-    }
-  }
-
   public static void GenerateRaymarchShader()
   {
     if (Application.isPlaying)
@@ -73,8 +59,6 @@ public class ShaderGen
 
     Scene activeScene = rmScene.gameObject.scene;
     var raymarchBases = GenerateRaymarchSceneHierarchy(activeScene);
-
-    CheckForDuplicateGUIDS(ref raymarchBases);
 
     string currentDir = Directory.GetCurrentDirectory();
 
@@ -112,6 +96,13 @@ public class ShaderGen
       if (raymarchBases[i] is RaymarchOperation rmOperation)
       {
         operations.Add(rmOperation);
+
+        var opGuid = rmOperation.GUID.ToShaderSafeString();
+
+        raymarchDistance.AppendLine($"// Operation Start {rmOperation.operation.ShaderFeature.FunctionName} {opGuid}");
+        raymarchDistance.AppendLine($"float distance{opGuid} = _RenderDistance;");
+        raymarchDistance.AppendLine($"float4 colour{opGuid} = float4(1,1,1,1);");
+        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
       }
 
       if (raymarchBases[i] is RaymarchObject rmObject)
@@ -123,17 +114,16 @@ public class ShaderGen
         string localDistName = $"distance{guid}";
         string localPosName = $"position{guid}";
 
-        raymarchDistance.AppendLine($"{NewLine}");
         raymarchDistance.AppendLine(
-          $"float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});{NewLine}");
-        raymarchDistance.AppendLine($"float {localDistName} = _RenderDistance;{NewLine}");
+          $"float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});");
+        raymarchDistance.AppendLine($"float {localDistName} = _RenderDistance;");
 
-        raymarchDistance.AppendLine($"if ({isActiveName} > 0){NewLine}");
-        raymarchDistance.AppendLine($"{{{NewLine}");
+        raymarchDistance.AppendLine($"if ({isActiveName} > 0)");
+        raymarchDistance.AppendLine($"{{");
         raymarchDistance.AppendLine(rmObject.GetShaderCode_CalcDistance());
-        raymarchDistance.AppendLine($"}}{NewLine}");
+        raymarchDistance.AppendLine($"}}");
 
-        raymarchDistance.AppendLine($"{NewLine}");
+        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
 
         if (operations.Count > 0)
         {
@@ -144,23 +134,23 @@ public class ShaderGen
           {
             raymarchDistance.AppendLine(
               operation.GetShaderCode_CalcOperation(localDistName, rmObject.GetShaderCode_Material()));
-            raymarchDistance.AppendLine($"{NewLine}");
           }
           else
           {
-            raymarchDistance.AppendLine($"// Operation Start {opGuid}{NewLine}");
-            raymarchDistance.AppendLine($"float distance{opGuid} = {localDistName};{NewLine}");
-            raymarchDistance.AppendLine($"float4 colour{opGuid} = {rmObject.GetShaderCode_Material()};{NewLine}");
+            raymarchDistance.AppendLine($"distance{opGuid} = {localDistName};");
+            raymarchDistance.AppendLine($"colour{opGuid} = {rmObject.GetShaderCode_Material()};");
           }
         }
         else
         {
-          raymarchDistance.AppendLine($"if ({localDistName} < resultDistance){NewLine}");
-          raymarchDistance.AppendLine($"{{{NewLine}");
-          raymarchDistance.AppendLine($"resultDistance = {localDistName};{NewLine}");
-          raymarchDistance.AppendLine($"resultColour   = {rmObject.GetShaderCode_Material()};{NewLine}");
-          raymarchDistance.AppendLine($"}}{NewLine}");
+          raymarchDistance.AppendLine($"if ({localDistName} < resultDistance)");
+          raymarchDistance.AppendLine($"{{");
+          raymarchDistance.AppendLine($"resultDistance = {localDistName};");
+          raymarchDistance.AppendLine($"resultColour   = {rmObject.GetShaderCode_Material()};");
+          raymarchDistance.AppendLine($"}}");
         }
+
+        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
       }
 
       if (raymarchBases[i] is RaymarchLight rmLight)
@@ -176,23 +166,23 @@ public class ShaderGen
 
         string opGuid = operation.GUID.ToShaderSafeString();
 
-        raymarchDistance.AppendLine($"{NewLine}");
-        raymarchDistance.AppendLine($"// Operation End {opGuid}{NewLine}");
-
+        raymarchDistance.AppendLine($"// Operation End {opGuid}");
 
         if (j > 0)
         {
           raymarchDistance.AppendLine(
-            $"{operations[j - 1].GetShaderCode_CalcOperation($"distance{opGuid}", $"colour{opGuid}")};{NewLine}");
+            $"{operations[j - 1].GetShaderCode_CalcOperation($"distance{opGuid}", $"colour{opGuid}")}");
         }
         else
         {
-          raymarchDistance.AppendLine($"if (distance{opGuid} < resultDistance){NewLine}");
-          raymarchDistance.AppendLine($"{{{NewLine}");
-          raymarchDistance.AppendLine($"resultDistance = distance{opGuid};{NewLine}");
-          raymarchDistance.AppendLine($"resultColour   = colour{opGuid};{NewLine}");
-          raymarchDistance.AppendLine($"}}{NewLine}");
+          raymarchDistance.AppendLine($"if (distance{opGuid} < resultDistance)");
+          raymarchDistance.AppendLine($"{{");
+          raymarchDistance.AppendLine($"resultDistance = distance{opGuid};");
+          raymarchDistance.AppendLine($"resultColour   = colour{opGuid};");
+          raymarchDistance.AppendLine($"}}");
         }
+
+        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
       }
 
       operations.RemoveAll(x => x.EndIndex == i);
@@ -227,6 +217,12 @@ public class ShaderGen
     {
       Debug.LogError("Generated shader is null!");
     }
+
+    // NOTE(WSWhitehouse): Enable all objects after generating shader.
+    foreach (RaymarchBase raymarchBase in raymarchBases)
+    {
+      raymarchBase.Awake();
+    }
   }
 
   private static List<RaymarchBase> GenerateRaymarchSceneHierarchy(Scene scene)
@@ -243,27 +239,32 @@ public class ShaderGen
 
     foreach (var rootGameObject in rootGameObjects)
     {
-      CheckObjectForRmBase(ref rmBases, rootGameObject);
+      CheckObjectForRaymarchBase(ref rmBases, rootGameObject);
     }
 
     return rmBases;
   }
 
-  private static void CheckObjectForRmBase(ref List<RaymarchBase> rmBases, GameObject gameObject)
+  private static void CheckObjectForRaymarchBase(ref List<RaymarchBase> rmBases, GameObject gameObject)
   {
     int currentIndex = rmBases.Count;
 
     RaymarchBase rmBase = gameObject.GetComponent<RaymarchBase>();
     if (rmBase != null && rmBase.IsValid())
     {
+      // NOTE(WSWhitehouse): Checks if this GUID already exists, if so generate a new one!
+      if (rmBases.FindIndex(x => x.GUID.ToShaderSafeString() == rmBase.GUID.ToShaderSafeString()) != -1)
+      {
+        rmBase.GUID.ResetGUID();
+      }
+
       rmBases.Add(rmBase);
-      rmBase.Awake();
     }
 
     for (int i = 0; i < gameObject.transform.childCount; i++)
     {
       Transform child = gameObject.transform.GetChild(i);
-      CheckObjectForRmBase(ref rmBases, child.gameObject);
+      CheckObjectForRaymarchBase(ref rmBases, child.gameObject);
     }
 
     if (rmBase is RaymarchOperation rmOperation && rmBase.IsValid())

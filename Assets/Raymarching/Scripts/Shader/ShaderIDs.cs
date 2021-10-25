@@ -36,7 +36,8 @@ public class ShaderIDs
     {
       if (property.GetCustomAttribute(typeof(UploadToShaderAttribute)) is not UploadToShaderAttribute) continue;
       if (IsPropertyIndexed(property)) return;
-
+      
+      
       Type type = property.PropertyType;
       ShaderType shaderType = type.ToShaderType();
       int id = Shader.PropertyToID($"_{property.Name}{guidString}");

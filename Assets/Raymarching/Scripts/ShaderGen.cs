@@ -43,6 +43,9 @@ public class ShaderGen
   private const string RaymarchCalcDistance = "// RAYMARCH CALC DISTANCE //";
   private const string RaymarchCalcLights = "// RAYMARCH CALC LIGHT //";
 
+  // NOTE(WSWhitehouse): string capacity that will be multiplied per object
+  private const int StringCapacityPerObject = 512;
+
   public static void GenerateRaymarchShader()
   {
     if (Application.isPlaying)
@@ -81,11 +84,14 @@ public class ShaderGen
       File.Delete(filePath);
     }
 
+    // NOTE(WSWhitehouse): Creating strings to hold shader code that will be inserted into the shader
     string raymarchVars = raymarchBases.Aggregate($"// Raymarch Variables{NewLine}",
       (current, rmBase) => string.Concat(current, rmBase.GetShaderCode_Variables(), NewLine));
 
-    StringBuilder raymarchDistance = new StringBuilder();
-    StringBuilder raymarchLight = new StringBuilder();
+    int capacity = StringCapacityPerObject * raymarchBases.Count;
+    
+    StringBuilder raymarchDistance = new StringBuilder(capacity);
+    StringBuilder raymarchLight = new StringBuilder(capacity);
 
     List<RaymarchOperation> operations = new List<RaymarchOperation>();
 
@@ -102,7 +108,7 @@ public class ShaderGen
         raymarchDistance.AppendLine($"// Operation Start {rmOperation.operation.ShaderFeature.FunctionName} {opGuid}");
         raymarchDistance.AppendLine($"float distance{opGuid} = _RenderDistance;");
         raymarchDistance.AppendLine($"float4 colour{opGuid} = float4(1,1,1,1);");
-        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
       }
 
       if (raymarchBases[i] is RaymarchObject rmObject)
@@ -123,7 +129,7 @@ public class ShaderGen
         raymarchDistance.AppendLine(rmObject.GetShaderCode_CalcDistance());
         raymarchDistance.AppendLine($"}}");
 
-        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
 
         if (operations.Count > 0)
         {
@@ -150,7 +156,7 @@ public class ShaderGen
           raymarchDistance.AppendLine($"}}");
         }
 
-        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
       }
 
       if (raymarchBases[i] is RaymarchLight rmLight)
@@ -182,7 +188,7 @@ public class ShaderGen
           raymarchDistance.AppendLine($"}}");
         }
 
-        raymarchDistance.AppendLine($""); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
       }
 
       operations.RemoveAll(x => x.EndIndex == i);

@@ -2,6 +2,7 @@
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Text;
 using UnityEditor;
 #endif
 
@@ -62,6 +63,9 @@ public class RaymarchLight : RaymarchBase
   public float Range => Light.range;
   public float Intensity => Light.intensity;
 
+  public float SpotAngle => Light.spotAngle * Mathf.Deg2Rad;
+  public float InnerSpotAngle => Light.innerSpotAngle * Mathf.Deg2Rad;
+
   private struct ShaderIDs
   {
     public int Position;
@@ -69,6 +73,8 @@ public class RaymarchLight : RaymarchBase
     public int Colour;
     public int Range;
     public int Intensity;
+    public int SpotAngle;
+    public int InnerSpotAngle;
   }
 
   private ShaderIDs shaderIDs;
@@ -82,6 +88,8 @@ public class RaymarchLight : RaymarchBase
     shaderIDs.Colour = Shader.PropertyToID($"_Colour{guid}");
     shaderIDs.Range = Shader.PropertyToID($"_Range{guid}");
     shaderIDs.Intensity = Shader.PropertyToID($"_Intensity{guid}");
+    shaderIDs.SpotAngle = Shader.PropertyToID($"_SpotAngle{guid}");
+    shaderIDs.InnerSpotAngle = Shader.PropertyToID($"_InnerSpotAngle{guid}");
   }
 
   public override void Awake()
@@ -111,6 +119,8 @@ public class RaymarchLight : RaymarchBase
     material.SetVector(shaderIDs.Colour, Colour);
     material.SetFloat(shaderIDs.Range, Range);
     material.SetFloat(shaderIDs.Intensity, Intensity);
+    material.SetFloat(shaderIDs.SpotAngle, SpotAngle);
+    material.SetFloat(shaderIDs.InnerSpotAngle, InnerSpotAngle);
 
     base.UploadShaderData(material);
   }
@@ -128,6 +138,8 @@ public class RaymarchLight : RaymarchBase
     code = $"{code}uniform float4 _Colour{guid};{ShaderGen.NewLine}";
     code = $"{code}uniform float _Range{guid};{ShaderGen.NewLine}";
     code = $"{code}uniform float _Intensity{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float _SpotAngle{guid};{ShaderGen.NewLine}";
+    code = $"{code}uniform float _InnerSpotAngle{guid};{ShaderGen.NewLine}";
 
     return string.Concat(code, base.GetShaderCode_Variables());
   }
@@ -141,43 +153,54 @@ public class RaymarchLight : RaymarchBase
     string colour = $"_Colour{guid}";
     string range = $"_Range{guid}";
     string intensity = $"_Intensity{guid}";
+    string spotAngle = $"_SpotAngle{guid}";
+    string innerSpotAngle = $"_InnerSpotAngle{guid}";
+    string isActive = $"_IsActive{guid}";
 
     if (LightMode == LightMode.Baked)
     {
+      if (!IsActive) return $"// Light{guid} (baked) is not active in scene";
+
       position = ToShaderFloat3(Position);
       direction = ToShaderFloat3(Direction);
-      colour = ToShaderFloat3(new Vector3(Colour.r, Colour.g, Colour.b));
+      colour = ToShaderFloat4(Colour);
       range = Range.ToString(CultureInfo.InvariantCulture);
       intensity = Intensity.ToString(CultureInfo.InvariantCulture);
-
-      return GetLightTypeShaderCode(position, direction, colour, range, intensity);
+      spotAngle = SpotAngle.ToString(CultureInfo.InvariantCulture);
+      innerSpotAngle = InnerSpotAngle.ToString(CultureInfo.InvariantCulture);
     }
 
-    string isActive = $"_IsActive{guid}";
+    StringBuilder result = new StringBuilder();
 
-    return
-      $"if ({isActive} > 0){ShaderGen.NewLine}{{{ShaderGen.NewLine}{GetLightTypeShaderCode(position, direction, colour, range, intensity)}{ShaderGen.NewLine}}}{ShaderGen.NewLine}";
-  }
-
-  private string GetLightTypeShaderCode(string position, string direction,
-    string colour, string range, string intensity)
-  {
-    string guid = GUID.ToShaderSafeString();
+    if (LightMode != LightMode.Baked)
+    {
+      result.AppendLine($"if ({isActive} > 0)");
+      result.AppendLine($"{{");
+    }
 
     switch (LightType)
     {
-      case LightType.Point: //http://forum.unity3d.com/threads/light-attentuation-equation.16006/
-        return
-          $"float3 toLight{guid} = pos - {position}; {ShaderGen.NewLine}" +
-          $"float range{guid} = clamp(length(toLight{guid}) / {range}, 0., 1.); {ShaderGen.NewLine}" +
-          $"float attenuation{guid} = 1.0 / (1.0 + 256.0 * range{guid} * range{guid}); {ShaderGen.NewLine}" +
-          $"light += max(0.0, {colour} * dot(-normal, normalize(toLight{guid}.xyz))) * {intensity} * attenuation{guid}; {ShaderGen.NewLine}";
-      case LightType.Spot:
-        return $"";
       case LightType.Directional:
+        result.AppendLine($"light += GetDirectionalLight(pos, normal, {colour}, {direction}, {intensity});");
+        break;
+      case LightType.Point:
+        result.AppendLine($"light += GetPointLight(pos, normal, {position}, {colour}, {range}, {intensity});");
+        break;
+      case LightType.Spot:
+        result.AppendLine(
+          $"light += GetSpotLight(pos, normal, {position}, {colour}, {direction}, {range}, {intensity}, {spotAngle}, {innerSpotAngle});");
+        break;
       default:
-        return $"light += {colour} * max(0.0, dot(-normal, {direction})) * {intensity}; {ShaderGen.NewLine}";
+        Debug.Log($"{LightType.ToString()} is currently not supported!");
+        return string.Empty;
     }
+
+    if (LightMode != LightMode.Baked)
+    {
+      result.AppendLine($"}}");
+    }
+
+    return result.ToString();
   }
 
   private string ToShaderFloat3(Vector3 vec)
@@ -186,6 +209,15 @@ public class RaymarchLight : RaymarchBase
       $"float3({vec.x.ToString(CultureInfo.InvariantCulture)}, " +
       $"{vec.y.ToString(CultureInfo.InvariantCulture)}, " +
       $"{vec.z.ToString(CultureInfo.InvariantCulture)})";
+  }
+  
+  private string ToShaderFloat4(Vector4 vec)
+  {
+    return
+      $"float4({vec.x.ToString(CultureInfo.InvariantCulture)}, " +
+      $"{vec.y.ToString(CultureInfo.InvariantCulture)}, " +
+      $"{vec.z.ToString(CultureInfo.InvariantCulture)}, " +
+      $"{vec.w.ToString(CultureInfo.InvariantCulture)})";
   }
 
 #endif

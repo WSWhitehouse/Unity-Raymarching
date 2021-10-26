@@ -19,6 +19,7 @@ Shader "Raymarch/RaymarchTemplateShader"
     #include "Assets/Raymarching/Shaders/Generated/ModifierFunctions.hlsl"
     #include "Assets/Raymarching/Shaders/Generated/OperationFunctions.hlsl"
     #include "Assets/Raymarching/Shaders/Structs.hlsl"
+    #include "Assets/Raymarching/Shaders/Light.hlsl"
 
     #pragma vertex vert
     #pragma fragment frag
@@ -69,18 +70,18 @@ Shader "Raymarch/RaymarchTemplateShader"
       return CreateObjectDistanceResult(resultDistance, resultColour);
     }
 
-    float3 GetLight(float3 pos, float3 normal)
+    float4 GetLight(float3 pos, float3 normal)
     {
       float3 light = float3(0, 0, 0);
 
       // RAYMARCH CALC LIGHT //
 
-      return light;
+      return float4(light.xyz, 1.0);
     }
 
     float3 GetObjectNormal(float3 pos)
     {
-      float2 offset = float2(0.01f, 0.0f);
+      float2 offset = float2(0.01, 0.0);
       float3 normal = float3(
         GetDistanceFromObjects(pos + offset.xyy).Distance - GetDistanceFromObjects(pos - offset.xyy).Distance,
         GetDistanceFromObjects(pos + offset.yxy).Distance - GetDistanceFromObjects(pos - offset.yxy).Distance,

@@ -10,7 +10,7 @@
 
 //                                                                     
 
-//    Time Generated: 10/25/2021 20:10:06     
+//    Time Generated: 10/26/2021 19:07:40     
 
 //---------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ Shader "Raymarch/RayMarching_RaymarchShader"
     #include "Assets/Raymarching/Shaders/Generated/ModifierFunctions.hlsl"
     #include "Assets/Raymarching/Shaders/Generated/OperationFunctions.hlsl"
     #include "Assets/Raymarching/Shaders/Structs.hlsl"
+    #include "Assets/Raymarching/Shaders/Light.hlsl"
 
     #pragma vertex vert
     #pragma fragment frag
@@ -66,6 +67,14 @@ Shader "Raymarch/RayMarching_RaymarchShader"
     uniform float _ColourMultiplier;
 
     // Raymarch Variables
+uniform float3 _Position2913196af36c4f788661f592315628a5;
+uniform float3 _Direction2913196af36c4f788661f592315628a5;
+uniform float4 _Colour2913196af36c4f788661f592315628a5;
+uniform float _Range2913196af36c4f788661f592315628a5;
+uniform float _Intensity2913196af36c4f788661f592315628a5;
+uniform float _SpotAngle2913196af36c4f788661f592315628a5;
+uniform float _InnerSpotAngle2913196af36c4f788661f592315628a5;
+uniform int _IsActive2913196af36c4f788661f592315628a5;
 
 uniform float3 _Position065aa5c7754e4ee3bf1117f267e253f0;
 uniform float3 _Rotation065aa5c7754e4ee3bf1117f267e253f0;
@@ -139,6 +148,15 @@ uniform float _Freq9909da39672d4c0a9ddbeec2369d040d1;
 uniform float _Amplitude9909da39672d4c0a9ddbeec2369d040d1;
 uniform float _Speed9909da39672d4c0a9ddbeec2369d040d1;
 uniform float3 _Dir9909da39672d4c0a9ddbeec2369d040d1;
+
+uniform float3 _Position8e893403f44d41de89c21cbb4d76539f;
+uniform float3 _Direction8e893403f44d41de89c21cbb4d76539f;
+uniform float4 _Colour8e893403f44d41de89c21cbb4d76539f;
+uniform float _Range8e893403f44d41de89c21cbb4d76539f;
+uniform float _Intensity8e893403f44d41de89c21cbb4d76539f;
+uniform float _SpotAngle8e893403f44d41de89c21cbb4d76539f;
+uniform float _InnerSpotAngle8e893403f44d41de89c21cbb4d76539f;
+uniform int _IsActive8e893403f44d41de89c21cbb4d76539f;
 
 
 
@@ -333,20 +351,28 @@ resultColour   = _Colour9909da39672d4c0a9ddbeec2369d040d;
       return CreateObjectDistanceResult(resultDistance, resultColour);
     }
 
-    float3 GetLight(float3 pos, float3 normal)
+    float4 GetLight(float3 pos, float3 normal)
     {
       float3 light = float3(0, 0, 0);
 
-      light += float3(1, 0.9568627, 0.8392157) * max(0.0, dot(-normal, float3(0.5337918, -0.6015774, 0.594282))) * 1; 
+      if (_IsActive2913196af36c4f788661f592315628a5 > 0)
+{
+light += GetDirectionalLight(pos, normal, _Colour2913196af36c4f788661f592315628a5, _Direction2913196af36c4f788661f592315628a5, _Intensity2913196af36c4f788661f592315628a5);
+}
+
+if (_IsActive8e893403f44d41de89c21cbb4d76539f > 0)
+{
+light += GetSpotLight(pos, normal, _Position8e893403f44d41de89c21cbb4d76539f, _Colour8e893403f44d41de89c21cbb4d76539f, _Direction8e893403f44d41de89c21cbb4d76539f, _Range8e893403f44d41de89c21cbb4d76539f, _Intensity8e893403f44d41de89c21cbb4d76539f, _SpotAngle8e893403f44d41de89c21cbb4d76539f, _InnerSpotAngle8e893403f44d41de89c21cbb4d76539f);
+}
 
 
 
-      return light;
+      return float4(light.xyz, 1.0);
     }
 
     float3 GetObjectNormal(float3 pos)
     {
-      float2 offset = float2(0.01f, 0.0f);
+      float2 offset = float2(0.01, 0.0);
       float3 normal = float3(
         GetDistanceFromObjects(pos + offset.xyy).Distance - GetDistanceFromObjects(pos - offset.xyy).Distance,
         GetDistanceFromObjects(pos + offset.yxy).Distance - GetDistanceFromObjects(pos - offset.yxy).Distance,

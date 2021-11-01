@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c992fa5b27b1504439742fa83be21c99, type: 3}
-  m_Name: Displacement
+  m_Name: Displacement4D
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 1f69611ae90bd64eb83151f90f2fefb1
-  functionBody: 'float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displacement*pos.z);
+  functionBody: 'float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displacement*pos.z)*sin(Displacement*pos.w);
 
 
     return

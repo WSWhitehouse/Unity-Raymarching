@@ -21,8 +21,7 @@ public class SDFShaderFeature : ShaderFeature
   {
     return new ShaderVariable[]
     {
-      new ShaderVariable("pos", ShaderType.Vector3),
-      new ShaderVariable("scale", ShaderType.Vector3)
+      new ShaderVariable("pos", ShaderType.Vector4)
     };
   }
 

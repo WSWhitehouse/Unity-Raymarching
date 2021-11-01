@@ -253,7 +253,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: b77840cf1bd6d645ace9948b40ccf2ae
-  isHardcoded: 0
   lightMode: 0
 --- !u!1 &201926615
 GameObject:
@@ -301,7 +300,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 532623d28120a24b99e3ea035de051f4
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 9a20fdda344ec1a4f83cfe968c26e738, type: 2}
     shaderVariables:
@@ -380,7 +378,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 446963abd5573448b7ea550dfcc959dd
-  isHardcoded: 0
   operation:
     shaderFeature: {fileID: 11400000, guid: 7e4938dd30c4c414e93f2c5a790056d2, type: 2}
     shaderVariables: []
@@ -430,7 +427,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: e41cc011fedc1647876d3f4e6b5e7037
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 9a20fdda344ec1a4f83cfe968c26e738, type: 2}
     shaderVariables:
@@ -490,7 +486,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5938843ce97542d9b6f7282bcbe170be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: a12468c52ae931b48be41f5f66490516, type: 2}
+  raymarchSettings:
+    renderDistance: 100
+    hitResolution: 0.001
+    relaxation: 1.2
+    maxIterations: 164
+  lightingSettings:
+    ambientColour: {r: 0.2117, g: 0.2274, b: 0.2588, a: 1}
+    colourMultiplier: 1
   shader: {fileID: 4800000, guid: a96ab68c2429aed488a79afd0882677c, type: 3}
   templateShader: {fileID: 4800000, guid: c6c888053f2af174fb0c96159bd003cd, type: 3}
 --- !u!4 &683181002
@@ -554,7 +557,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 72cc6a65124495439155b9e6545de517
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 9a20fdda344ec1a4f83cfe968c26e738, type: 2}
     shaderVariables:
@@ -631,7 +633,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: b78f51109e6e374d8c4899d9f6c3e2c9
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
     shaderVariables: []
@@ -790,7 +791,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: c5b484bafcb40b44a4e9604d566be8dc
-  isHardcoded: 0
   operation:
     shaderFeature: {fileID: 11400000, guid: 25e623070afac8141a93080a379dfa8c, type: 2}
     shaderVariables:
@@ -850,7 +850,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: b929625fe777234ea6188ffac9ca59bd
-  isHardcoded: 0
   operation:
     shaderFeature: {fileID: 11400000, guid: 25e623070afac8141a93080a379dfa8c, type: 2}
     shaderVariables:
@@ -925,7 +924,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 7c3ced43125cb34dbbf62a5add8b1d48
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables: []
@@ -966,7 +964,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: ff74a476de47e1448867d4da2622a330
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 67f9a2136eb814541a202ec5f8f5d1d2, type: 2}
     shaderVariables: []
@@ -1037,7 +1034,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 1fb20def28b35e43bac0fb203090cbd7
-  isHardcoded: 0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 9a20fdda344ec1a4f83cfe968c26e738, type: 2}
     shaderVariables:

@@ -21,29 +21,34 @@ MonoBehaviour:
     else if (Dir.y <= -1)\r\n        {\r\n            direction -= pos.y;\r\n       
     }\r\n\r\n        if (Dir.z >= 1)\r\n        {\r\n            direction += pos.z;\r\n       
     }\r\n        else if (Dir.z <= -1)\r\n        {\r\n            direction -= pos.z;\r\n       
-    }\r\n\r\n        return objDistance - sin(direction * Freq +\r (_Time.y * Speed))
-    * Amplitude;"
+    }\r\n\nif(Dir.w >=1)\n{\ndirection += pos.w;\n}\nelse if (Dir.w <= -1)\n{\ndirection
+    -= pos.w;\n}\n\r\n        return objDistance - sin(direction * Freq +\r (_Time.y
+    * Speed)) * Amplitude;"
   shaderVariables:
   - name: Freq
     shaderType: 0
+    parameterType: 0
     floatValue: 1
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
   - name: Amplitude
     shaderType: 0
+    parameterType: 0
     floatValue: 1
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
   - name: Speed
     shaderType: 0
+    parameterType: 0
     floatValue: 1
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
   - name: Dir
-    shaderType: 4
+    shaderType: 5
+    parameterType: 0
     floatValue: 0
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}

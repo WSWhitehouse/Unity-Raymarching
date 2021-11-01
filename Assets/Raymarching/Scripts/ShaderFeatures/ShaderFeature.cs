@@ -84,7 +84,11 @@ public abstract class ShaderFeature : ScriptableObject
 
 #if UNITY_EDITOR
   // NOTE(WSWhitehouse): Only allow access in the editor, the ShaderVariables should not be updated at runtime.
-  public List<ShaderVariable> ShaderVariables => shaderVariables;
+  public List<ShaderVariable> ShaderVariables
+  {
+    get => shaderVariables;
+    set => shaderVariables = value;
+  }
 
   /*
    * NOTE(WSWhitehouse):
@@ -113,10 +117,14 @@ public class ShaderFeatureEditor : Editor
   private bool _valuesDropDown = true;
 
   private string _functionBody;
+  private List<ShaderVariable> _shaderVariables;
+
+  private bool _changes = false;
 
   protected virtual void OnEnable()
   {
     _functionBody = Target.FunctionBody;
+    _shaderVariables = Target.ShaderVariables;
   }
 
   // NOTE(WSWhitehouse): Do *NOT* override this function as it handles enabling/disabling
@@ -145,32 +153,19 @@ public class ShaderFeatureEditor : Editor
     EditorGUILayout.BeginVertical(GUI.skin.box);
     EditorGUILayout.LabelField(Target.FunctionPrototype, wordWrapStyle);
     EditorGUILayout.LabelField("{");
+    
+    EditorGUI.BeginChangeCheck();
 
     EditorGUI.indentLevel++;
     _functionBody = EditorGUILayout.TextArea(_functionBody);
     EditorGUI.indentLevel--;
 
+    if (EditorGUI.EndChangeCheck())
+    {
+      _changes = true;
+    }
+
     EditorGUILayout.LabelField("}");
-
-    EditorGUILayout.BeginHorizontal();
-
-    bool guiEnableCache = GUI.enabled;
-    GUI.enabled = !_functionBody.Equals(Target.FunctionBody) && guiEnableCache;
-
-    if (GUILayout.Button("Apply"))
-    {
-      Target.FunctionBody = _functionBody;
-      Target.SignalShaderFeatureUpdated();
-    }
-
-    if (GUILayout.Button("Revert"))
-    {
-      _functionBody = Target.FunctionBody;
-    }
-
-    GUI.enabled = guiEnableCache;
-
-    EditorGUILayout.EndHorizontal();
 
     EditorGUILayout.EndVertical();
 
@@ -182,18 +177,19 @@ public class ShaderFeatureEditor : Editor
     {
       EditorGUI.indentLevel++;
 
-      for (int i = 0; i < Target.ShaderVariables.Count; i++)
+      for (int i = 0; i < _shaderVariables.Count; i++)
       {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
         EditorGUI.BeginChangeCheck();
 
-        var value = ShaderVariable.Editor.EditableVariableField(Target.ShaderVariables[i]);
+        var value = ShaderVariable.Editor.EditableVariableField(_shaderVariables[i]);
 
         if (EditorGUI.EndChangeCheck())
         {
-          Target.ShaderVariables[i] = value;
-          Target.SignalShaderFeatureUpdated();
+          _shaderVariables[i] = value;
+          _changes = true;
+          // Target.SignalShaderFeatureUpdated();
         }
 
         if (GUILayout.Button("Remove Value"))
@@ -215,19 +211,47 @@ public class ShaderFeatureEditor : Editor
     }
 
     EditorGUILayout.EndFoldoutHeaderGroup();
+
+    EditorGUILayout.Space();
+    EditorGUILayout.LabelField("Apply Changes to Shader Feature", wordWrapStyle);
+    EditorGUILayout.BeginHorizontal();
+
+    bool guiEnableCache = GUI.enabled;
+    GUI.enabled = _changes && guiEnableCache;
+
+    if (GUILayout.Button("Apply"))
+    {
+      _changes = false;
+      Target.FunctionBody = _functionBody;
+      Target.ShaderVariables = _shaderVariables;
+      Target.SignalShaderFeatureUpdated();
+    }
+
+    if (GUILayout.Button("Revert"))
+    {
+      _changes = false;
+      _functionBody = Target.FunctionBody;
+      _shaderVariables = Target.ShaderVariables;
+    }
+
+    GUI.enabled = guiEnableCache;
+
+    EditorGUILayout.EndHorizontal();
   }
 
   private void RemoveValue(int index)
   {
-    Target.ShaderVariables.RemoveAt(index);
-    Target.SignalShaderFeatureUpdated();
+    _shaderVariables.RemoveAt(index);
+    _changes = true;
+    // Target.SignalShaderFeatureUpdated();
   }
 
   private void AddValue()
   {
-    Target.ShaderVariables.Add(
+    _shaderVariables.Add(
       new ShaderVariable($"Value_{Target.ShaderVariables.Count.ToString()}", ShaderType.Float));
-    Target.SignalShaderFeatureUpdated();
+    _changes = true;
+    // Target.SignalShaderFeatureUpdated();
   }
 }
 #endif

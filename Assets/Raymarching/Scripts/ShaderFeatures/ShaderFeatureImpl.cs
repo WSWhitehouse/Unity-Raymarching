@@ -3,8 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Text;
 using UnityEditor;
 #endif
+
+/*
+ * NOTE(WSWhitehouse):
+ * This script is used to implement Shader Features on scene objects. It creates local copies
+ * of variables so they can be updated on a per-object basis by responding to the
+ * OnShaderVariablesChanged event in the Shader Feature. It also handles getting shader
+ * IDs and uploading the local Shader Feature variables to the shader. Also includes an editor
+ * class for useful OnInspectorGUI functions.
+ */
 
 [Serializable]
 public class ShaderFeatureImpl<T> where T : ShaderFeature
@@ -129,7 +139,7 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
   private SerializableGuid guid;
 #endif
 
-  private void InitShaderIDs(SerializableGuid guid)
+  protected virtual void InitShaderIDs(SerializableGuid guid)
   {
 #if UNITY_EDITOR
     this.guid = guid;
@@ -144,9 +154,13 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
 
   #endregion Shader IDs
 
-  private string postfix = string.Empty;
+  protected string postfix = string.Empty;
 
-  public void OnAwake(SerializableGuid guid, string postfix = "")
+  /// <param name="postfix">
+  /// This string will be appended to the names of any shader variables. Used to
+  /// distinguish between multiple of the same shader feature (i.e. a list/array of shader features)
+  /// </param>
+  public void Awake(SerializableGuid guid, string postfix = "")
   {
 #if UNITY_EDITOR
     if (ShaderFeature != null)
@@ -158,6 +172,7 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
     this.postfix = postfix;
 
     InitShaderIDs(guid);
+    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
   }
 
   public bool IsValid()
@@ -173,9 +188,11 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
       ShaderFeature.OnShaderVariablesChanged -= OnShaderVariablesChanged;
     }
 #endif
+    
+    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
   }
 
-  public void UploadShaderData(Material material)
+  protected virtual void UploadShaderData(Material material)
   {
     if (ShaderFeature == null) return;
 
@@ -194,41 +211,25 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
   }
 
 #if UNITY_EDITOR
-  public string GetShaderVariables(SerializableGuid guid)
+  public virtual string GetShaderVariables(SerializableGuid guid)
   {
     if (ShaderFeature == null) return string.Empty;
 
-    string code = string.Empty;
+    StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < ShaderVariables.Count; i++)
     {
-      code =
-        $"{code}uniform {ShaderVariables[i].GetShaderType()} {GetShaderVariableName(i, guid)};{ShaderGen.NewLine}";
+      result.AppendLine($"uniform {ShaderVariables[i].GetShaderType()} {GetShaderVariableName(i, guid)};");
     }
 
-    return code;
+    return result.ToString();
   }
 #endif
 
 #if UNITY_EDITOR
   public static class Editor
   {
-    public static ShaderFeatureImpl<T> ShaderFeatureField(GUIContent guiContent, ShaderFeatureImpl<T> shaderFeature,
-      UnityEngine.Object target)
-    {
-      EditorGUI.BeginChangeCheck();
-      shaderFeature.ShaderFeature =
-        (T) EditorGUILayout.ObjectField(guiContent, shaderFeature.ShaderFeature, typeof(T), false);
-      if (EditorGUI.EndChangeCheck())
-      {
-        EditorUtility.SetDirty(target);
-      }
-
-      return shaderFeature;
-    }
-
-    public static ShaderFeatureImpl<T> ShaderVariableField(GUIContent guiContent, ShaderFeatureImpl<T> shaderFeature,
-      UnityEngine.Object target)
+    public static ShaderFeatureImpl<T> ShaderVariableField(GUIContent guiContent, ShaderFeatureImpl<T> shaderFeature)
     {
       if (shaderFeature.shaderVariables.Count <= 0)
       {
@@ -252,7 +253,6 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
         if (EditorGUI.EndChangeCheck())
         {
           shaderFeature.ShaderVariables[i] = variable;
-          EditorUtility.SetDirty(target);
         }
       }
 

@@ -6,13 +6,6 @@ using System.Text;
 using UnityEditor;
 #endif
 
-public enum LightType
-{
-  Directional,
-  Point,
-  Spot
-}
-
 public enum LightMode
 {
   Baked,
@@ -39,22 +32,7 @@ public class RaymarchLight : RaymarchBase
 
   [SerializeField] private LightMode lightMode;
   public LightMode LightMode => lightMode;
-
-  public LightType LightType
-  {
-    get
-    {
-      switch (Light.type)
-      {
-        case UnityEngine.LightType.Spot: return LightType.Spot;
-        case UnityEngine.LightType.Point: return LightType.Point;
-        case UnityEngine.LightType.Directional:
-        case UnityEngine.LightType.Area:
-        case UnityEngine.LightType.Disc:
-        default: return LightType.Directional;
-      }
-    }
-  }
+  public LightType LightType => Light.type;
 
   public Vector3 Position => transform.position;
   public Vector3 Direction => transform.forward;
@@ -77,19 +55,19 @@ public class RaymarchLight : RaymarchBase
     public int InnerSpotAngle;
   }
 
-  private ShaderIDs shaderIDs;
+  private ShaderIDs _shaderIDs = new ShaderIDs();
 
   private void InitShaderIDs()
   {
     string guid = GUID.ToShaderSafeString();
 
-    shaderIDs.Position = Shader.PropertyToID($"_Position{guid}");
-    shaderIDs.Direction = Shader.PropertyToID($"_Direction{guid}");
-    shaderIDs.Colour = Shader.PropertyToID($"_Colour{guid}");
-    shaderIDs.Range = Shader.PropertyToID($"_Range{guid}");
-    shaderIDs.Intensity = Shader.PropertyToID($"_Intensity{guid}");
-    shaderIDs.SpotAngle = Shader.PropertyToID($"_SpotAngle{guid}");
-    shaderIDs.InnerSpotAngle = Shader.PropertyToID($"_InnerSpotAngle{guid}");
+    _shaderIDs.Position = Shader.PropertyToID($"_Position{guid}");
+    _shaderIDs.Direction = Shader.PropertyToID($"_Direction{guid}");
+    _shaderIDs.Colour = Shader.PropertyToID($"_Colour{guid}");
+    _shaderIDs.Range = Shader.PropertyToID($"_Range{guid}");
+    _shaderIDs.Intensity = Shader.PropertyToID($"_Intensity{guid}");
+    _shaderIDs.SpotAngle = Shader.PropertyToID($"_SpotAngle{guid}");
+    _shaderIDs.InnerSpotAngle = Shader.PropertyToID($"_InnerSpotAngle{guid}");
   }
 
   public override void Awake()
@@ -97,6 +75,7 @@ public class RaymarchLight : RaymarchBase
     if (LightMode == LightMode.Realtime)
     {
       InitShaderIDs();
+      Raymarch.UploadShaderDataAddCallback(UploadShaderData);
       base.Awake();
     }
   }
@@ -104,7 +83,10 @@ public class RaymarchLight : RaymarchBase
   protected override void OnDestroy()
   {
     if (LightMode == LightMode.Realtime)
+    {
+      Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
       base.OnDestroy();
+    }
   }
 
   public override bool IsValid()
@@ -112,119 +94,41 @@ public class RaymarchLight : RaymarchBase
     return true;
   }
 
-  protected override void UploadShaderData(Material material)
+  private void UploadShaderData(Material material)
   {
-    material.SetVector(shaderIDs.Position, Position);
-    material.SetVector(shaderIDs.Direction, Direction);
-    material.SetVector(shaderIDs.Colour, Colour);
-    material.SetFloat(shaderIDs.Range, Range);
-    material.SetFloat(shaderIDs.Intensity, Intensity);
-    material.SetFloat(shaderIDs.SpotAngle, SpotAngle);
-    material.SetFloat(shaderIDs.InnerSpotAngle, InnerSpotAngle);
-
-    base.UploadShaderData(material);
+    material.SetVector(_shaderIDs.Position, Position);
+    material.SetVector(_shaderIDs.Direction, Direction);
+    material.SetVector(_shaderIDs.Colour, Colour);
+    material.SetFloat(_shaderIDs.Range, Range);
+    material.SetFloat(_shaderIDs.Intensity, Intensity);
+    material.SetFloat(_shaderIDs.SpotAngle, SpotAngle);
+    material.SetFloat(_shaderIDs.InnerSpotAngle, InnerSpotAngle);
   }
 
 #if UNITY_EDITOR
-  public override string GetShaderCode_Variables()
+  protected override string GetShaderVariablesImpl()
   {
     if (LightMode == LightMode.Baked)
       return string.Empty;
 
     string guid = GUID.ToShaderSafeString();
-
-    var code = $"uniform float3 _Position{guid};{ShaderGen.NewLine}";
-    code = $"{code}uniform float3 _Direction{guid};{ShaderGen.NewLine}";
-    code = $"{code}uniform float4 _Colour{guid};{ShaderGen.NewLine}";
-    code = $"{code}uniform float _Range{guid};{ShaderGen.NewLine}";
-    code = $"{code}uniform float _Intensity{guid};{ShaderGen.NewLine}";
-    code = $"{code}uniform float _SpotAngle{guid};{ShaderGen.NewLine}";
-    code = $"{code}uniform float _InnerSpotAngle{guid};{ShaderGen.NewLine}";
-
-    return string.Concat(code, base.GetShaderCode_Variables());
-  }
-
-  public string GetShaderCode_CalcLight()
-  {
-    string guid = GUID.ToShaderSafeString();
-
-    string position = $"_Position{guid}";
-    string direction = $"_Direction{guid}";
-    string colour = $"_Colour{guid}";
-    string range = $"_Range{guid}";
-    string intensity = $"_Intensity{guid}";
-    string spotAngle = $"_SpotAngle{guid}";
-    string innerSpotAngle = $"_InnerSpotAngle{guid}";
-    string isActive = $"_IsActive{guid}";
-
-    if (LightMode == LightMode.Baked)
-    {
-      if (!IsActive) return $"// Light{guid} (baked) is not active in scene";
-
-      position = ToShaderFloat3(Position);
-      direction = ToShaderFloat3(Direction);
-      colour = ToShaderFloat4(Colour);
-      range = Range.ToString(CultureInfo.InvariantCulture);
-      intensity = Intensity.ToString(CultureInfo.InvariantCulture);
-      spotAngle = SpotAngle.ToString(CultureInfo.InvariantCulture);
-      innerSpotAngle = InnerSpotAngle.ToString(CultureInfo.InvariantCulture);
-    }
-
     StringBuilder result = new StringBuilder();
 
-    if (LightMode != LightMode.Baked)
-    {
-      result.AppendLine($"if ({isActive} > 0)");
-      result.AppendLine($"{{");
-    }
-
-    switch (LightType)
-    {
-      case LightType.Directional:
-        result.AppendLine($"light += GetDirectionalLight(pos, normal, {colour}, {direction}, {intensity});");
-        break;
-      case LightType.Point:
-        result.AppendLine($"light += GetPointLight(pos, normal, {position}, {colour}, {range}, {intensity});");
-        break;
-      case LightType.Spot:
-        result.AppendLine(
-          $"light += GetSpotLight(pos, normal, {position}, {colour}, {direction}, {range}, {intensity}, {spotAngle}, {innerSpotAngle});");
-        break;
-      default:
-        Debug.Log($"{LightType.ToString()} is currently not supported!");
-        return string.Empty;
-    }
-
-    if (LightMode != LightMode.Baked)
-    {
-      result.AppendLine($"}}");
-    }
+    result.AppendLine($"uniform float3 _Position{guid};");
+    result.AppendLine($"uniform float3 _Direction{guid};");
+    result.AppendLine($"uniform float4 _Colour{guid};");
+    result.AppendLine($"uniform float  _Range{guid};");
+    result.AppendLine($"uniform float  _Intensity{guid};");
+    result.AppendLine($"uniform float  _SpotAngle{guid};");
+    result.AppendLine($"uniform float  _InnerSpotAngle{guid};");
 
     return result.ToString();
   }
-
-  private string ToShaderFloat3(Vector3 vec)
-  {
-    return
-      $"float3({vec.x.ToString(CultureInfo.InvariantCulture)}, " +
-      $"{vec.y.ToString(CultureInfo.InvariantCulture)}, " +
-      $"{vec.z.ToString(CultureInfo.InvariantCulture)})";
-  }
-  
-  private string ToShaderFloat4(Vector4 vec)
-  {
-    return
-      $"float4({vec.x.ToString(CultureInfo.InvariantCulture)}, " +
-      $"{vec.y.ToString(CultureInfo.InvariantCulture)}, " +
-      $"{vec.z.ToString(CultureInfo.InvariantCulture)}, " +
-      $"{vec.w.ToString(CultureInfo.InvariantCulture)})";
-  }
-
 #endif
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(RaymarchLight))]
+[CustomEditor(typeof(RaymarchLight)), CanEditMultipleObjects]
 public class RaymarchLightEditor : RaymarchBaseEditor
 {
   private RaymarchLight Target => target as RaymarchLight;

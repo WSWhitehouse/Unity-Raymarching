@@ -1,10 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Text;
 using UnityEditor;
-using UnityEngine.Assertions;
 #endif
 
 [DisallowMultipleComponent, ExecuteAlways]
@@ -17,7 +16,12 @@ public abstract class RaymarchBase : MonoBehaviour
 
   #endregion GUID
 
-  [UploadToShader] public bool IsActive => gameObject.activeInHierarchy /*&& enabled*/;
+  public bool IsActive => gameObject.activeInHierarchy /*&& enabled*/;
+
+  private struct ShaderIDs
+  {
+    public int IsActive;
+  }
 
   private ShaderIDs _shaderIDs = new ShaderIDs();
 
@@ -25,79 +29,42 @@ public abstract class RaymarchBase : MonoBehaviour
 
   public virtual void Awake()
   {
-#if UNITY_EDITOR
-    Raymarch.OnUploadShaderData -= UploadShaderData;
-#endif
-    Raymarch.OnUploadShaderData += UploadShaderData;
+    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
 
-    _shaderIDs.Init(this, GUID);
+    string guid = GUID.ToShaderSafeString();
+    _shaderIDs.IsActive = Shader.PropertyToID($"_{nameof(IsActive)}{guid}");
   }
 
   protected virtual void OnDestroy()
   {
-    Raymarch.OnUploadShaderData -= UploadShaderData;
+    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
   }
 
-  protected virtual void UploadShaderData(Material material)
+  private void UploadShaderData(Material material)
   {
-    _shaderIDs.UploadShaderData(this, material);
+    material.SetInteger(_shaderIDs.IsActive, IsActive ? 1 : 0);
   }
 
 #if UNITY_EDITOR
-  public virtual string GetShaderCode_Variables()
+  public string GetShaderVariables()
   {
-    string GetTypeToShaderType(Type type)
-    {
-      if (type == typeof(float))
-      {
-        return "float";
-      }
-
-      if (type == typeof(int) ||
-          type == typeof(bool))
-      {
-        return "int";
-      }
-
-      if (type == typeof(Vector2))
-      {
-        return "float2";
-      }
-
-      if (type == typeof(Vector3))
-      {
-        return "float3";
-      }
-
-      if (type == typeof(Vector4) ||
-          type == typeof(Color))
-      {
-        return "float4";
-      }
-
-      return "UNKNOWN_TYPE";
-    }
-
-    var properties = GetType().GetProperties();
-
     string guid = GUID.ToShaderSafeString();
-    string variables = string.Empty;
-    foreach (var property in properties)
-    {
-      if (property.GetCustomAttribute(typeof(UploadToShaderAttribute)) is UploadToShaderAttribute)
-      {
-        variables = String.Concat(variables,
-          $"uniform {GetTypeToShaderType(property.PropertyType)} _{property.Name}{guid};{ShaderGen.NewLine}");
-      }
-    }
+    StringBuilder result = new StringBuilder();
 
-    return variables;
+    result.AppendLine($"uniform int _{nameof(IsActive)}{guid};");
+
+    return string.Concat(result.ToString(), GetShaderVariablesImpl());
+  }
+
+  protected virtual string GetShaderVariablesImpl()
+  {
+    return string.Empty;
   }
 #endif
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(RaymarchBase))]
+[CustomEditor(typeof(RaymarchBase)), CanEditMultipleObjects]
 public class RaymarchBaseEditor : Editor
 {
   private RaymarchBase Target => target as RaymarchBase;
@@ -124,17 +91,18 @@ public class RaymarchBaseEditor : Editor
       new GUIContent("GUID", "You cannot change the GUID manually, this is only here for debug purposes."),
       Target.GUID.ToShaderSafeString());
     GUI.enabled = guiEnabledCache;
-    
+
     EditorGUILayout.Space();
 
     DrawInspector();
 
     if (EditorGUI.EndChangeCheck()) // global change check
     {
+      Undo.RecordObject(Target, Target.name);
       EditorUtility.SetDirty(Target);
-      ShaderGen.GenerateRaymarchShader();
+      // NOTE(WSWhitehouse): Don't generate shader here, only on some select variable fields (e.g. SDF, material and modifiers)!
     }
-    
+
     serializedObject.ApplyModifiedProperties();
   }
 

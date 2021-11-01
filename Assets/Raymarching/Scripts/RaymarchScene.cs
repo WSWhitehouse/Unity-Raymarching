@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,25 +9,30 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
+[Serializable]
+public class RaymarchSettings
+{
+  public float renderDistance = 100.0f;
+  public float hitResolution = 0.001f;
+  public float relaxation = 1.2f;
+  public int maxIterations = 164;
+}
+
+[Serializable]
+public class LightingSettings
+{
+  public Color ambientColour = new Color(0.2117f, 0.2274f, 0.2588f, 1);
+  public float colourMultiplier = 1f;
+}
+
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchScene : MonoBehaviour
 {
-  // Raymarch Settings
-  [SerializeField] private RaymarchSettings settings;
+  [SerializeField] private RaymarchSettings raymarchSettings = new RaymarchSettings();
+  public RaymarchSettings RaymarchSettings => raymarchSettings;
 
-  public RaymarchSettings Settings
-  {
-    get => settings;
-    set
-    {
-      settings = value;
-      UpdateRaymarchData();
-
-#if UNITY_EDITOR
-      EditorUtility.SetDirty(this);
-#endif
-    }
-  }
+  [SerializeField] private LightingSettings lightingSettings = new LightingSettings();
+  public LightingSettings LightingSettings => lightingSettings;
 
   // Active Raymarch Shader
   [SerializeField] private Shader shader;
@@ -46,7 +53,6 @@ public class RaymarchScene : MonoBehaviour
 
   private void UpdateRaymarchData()
   {
-    Raymarch.Settings = settings;
     Raymarch.Shader = shader;
   }
 
@@ -91,7 +97,6 @@ public class RaymarchScene : MonoBehaviour
     Raymarch.ResetData();
   }
 
-
 #if UNITY_EDITOR
 
   [SerializeField] public Shader templateShader;
@@ -112,7 +117,7 @@ public class RaymarchScene : MonoBehaviour
 
   private void OnSceneSaving(Scene scene, string path)
   {
-    if (scene != gameObject.scene) return; // not saving *this* scene 
+    if (scene != gameObject.scene) return; // not saving this scene 
 
     UpdateRaymarchData();
   }
@@ -125,57 +130,30 @@ public class RaymarchScene : MonoBehaviour
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(RaymarchScene))]
+[CustomEditor(typeof(RaymarchScene)), CanEditMultipleObjects]
 public class RaymarchSceneEditor : Editor
 {
   private RaymarchScene Target => target as RaymarchScene;
 
-  private RaymarchSettingsEditor _settingsEditor;
-
   // Serialized Properties
   private SerializedProperty _shaderProperty;
   private SerializedProperty _templateShaderProperty;
+  private SerializedProperty _raymarchSettingsProperty;
+  private SerializedProperty _lightingSettingsProperty;
+  private SerializedProperty _skyboxSettingsProperty;
+
+  // Dropdowns
+  private static bool _raymarchSettingsDropDown = false;
+  private static bool _lightingSettingsDropDown = false;
+  private static bool _skyboxSettingsDropDown = false;
 
   private void OnEnable()
   {
-    UpdateSettingsEditor();
-
     _shaderProperty = serializedObject.FindProperty("shader");
     _templateShaderProperty = serializedObject.FindProperty("templateShader");
-  }
-
-  private void OnDisable()
-  {
-    if (_settingsEditor != null)
-    {
-      DestroyImmediate(_settingsEditor);
-    }
-  }
-
-  private void UpdateSettingsEditor()
-  {
-    if (_settingsEditor != null)
-    {
-      DestroyImmediate(_settingsEditor);
-    }
-
-    if (Target.Settings != null)
-    {
-      _settingsEditor = (RaymarchSettingsEditor) CreateEditor(Target.Settings);
-    }
-  }
-
-  private void DrawSettingsEditor()
-  {
-    UpdateSettingsEditor();
-
-    if (_settingsEditor == null) return;
-
-    EditorGUILayout.Space();
-
-    EditorGUILayout.BeginVertical(GUI.skin.box);
-    _settingsEditor.OnInspectorGUI();
-    EditorGUILayout.EndVertical();
+    _raymarchSettingsProperty = serializedObject.FindProperty("raymarchSettings");
+    _lightingSettingsProperty = serializedObject.FindProperty("lightingSettings");
+    _skyboxSettingsProperty = serializedObject.FindProperty("skyboxSettings");
   }
 
   public override void OnInspectorGUI()
@@ -219,17 +197,44 @@ public class RaymarchSceneEditor : Editor
 
     EditorGUILayout.Space();
 
-    EditorGUILayout.LabelField("Raymarch Settings", wordWrapStyle);
-    EditorGUI.BeginChangeCheck();
-    var settings = (RaymarchSettings) EditorGUILayout.ObjectField(Target.Settings, typeof(RaymarchSettings), false);
-    if (EditorGUI.EndChangeCheck())
+    // EditorGUILayout.PropertyField(_raymarchSettingsProperty, new GUIContent("Raymarch Settings"), true);
+    // EditorGUILayout.PropertyField(_lightingSettingsProperty, new GUIContent("Lighting Settings"), true);
+
+    _raymarchSettingsDropDown =
+      EditorGUILayout.BeginFoldoutHeaderGroup(_raymarchSettingsDropDown, new GUIContent("Raymarch Settings"));
+    if (_raymarchSettingsDropDown)
     {
-      Target.Settings = settings;
+      EditorGUILayout.BeginVertical(GUI.skin.box);
+
+      var raymarchSettings = _raymarchSettingsProperty.GetChildren().ToArray();
+      foreach (var raymarchSetting in raymarchSettings)
+      {
+        EditorGUILayout.PropertyField(raymarchSetting,
+          new GUIContent(raymarchSetting.displayName, raymarchSetting.tooltip), true);
+      }
+
+      EditorGUILayout.EndVertical();
     }
 
-    DrawSettingsEditor();
+    EditorGUILayout.EndFoldoutHeaderGroup();
 
-    EditorGUILayout.Space();
+    _lightingSettingsDropDown =
+      EditorGUILayout.BeginFoldoutHeaderGroup(_lightingSettingsDropDown, new GUIContent("Lighting Settings"));
+    if (_lightingSettingsDropDown)
+    {
+      EditorGUILayout.BeginVertical(GUI.skin.box);
+
+      var lightingSettings = _lightingSettingsProperty.GetChildren().ToArray();
+      foreach (var lightingSetting in lightingSettings)
+      {
+        EditorGUILayout.PropertyField(lightingSetting,
+          new GUIContent(lightingSetting.displayName, lightingSetting.tooltip), true);
+      }
+
+      EditorGUILayout.EndVertical();
+    }
+
+    EditorGUILayout.EndFoldoutHeaderGroup();
 
     if (EditorGUI.EndChangeCheck())
     {

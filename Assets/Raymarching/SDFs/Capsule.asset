@@ -14,30 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: e8acd96d81ea8d46a4fe7ff03e5332bb
-  functionBody: 'float3 pa = pos - a;
-
-    float3 ba = b - a;
-
-    float h = clamp(dot(pa,ba)/dot(ba,ba),
-    0.0, 1.0 );
-
-    return length( pa - ba*h ) - r;'
+  functionBody: "//Height = max(0, Height -1);\n\nfloat3 pa = pos - float3(0, abs(Height)
+    * 0.5, 0);\r\nfloat3 ba = float3(0, -abs(Height) * 0.5, 0) - float3(0, abs(Height)
+    * 0.5, 0);\r\n\nfloat h = clamp(dot(pa, ba) / dot(ba, ba),\r 0.0, 1.0);\r\nreturn
+    length( pa - ba*h ) - Radius;"
   shaderVariables:
-  - name: a
-    shaderType: 4
+  - name: Height
+    shaderType: 0
     parameterType: 0
     floatValue: 0
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
-  - name: b
-    shaderType: 4
-    parameterType: 0
-    floatValue: 0
-    intValue: 0
-    vectorValue: {x: 0, y: 0, z: 0, w: 0}
-    textureValue: {fileID: 0}
-  - name: r
+  - name: Radius
     shaderType: 0
     parameterType: 0
     floatValue: 0

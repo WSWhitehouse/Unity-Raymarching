@@ -10,9 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1d47c79d4ab4cc64692a822c84963803, type: 3}
-  m_Name: Test
+  m_Name: Hypercube
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 6cfcb77892dfbf4e90ce9825f126d7f5
-  functionBody: 'return 0; '
-  shaderVariables: []
+  functionBody: "    float4 d = abs(pos) - Dimensions;\r\n    return min(max(d.x,
+    max(d.y, max(d.z, d.w))), 0.0) + length(max(d, 0.0));"
+  shaderVariables:
+  - name: Dimensions
+    shaderType: 5
+    parameterType: 0
+    floatValue: 0
+    intValue: 0
+    vectorValue: {x: 1, y: 1, z: 1, w: 1}
+    textureValue: {fileID: 0}

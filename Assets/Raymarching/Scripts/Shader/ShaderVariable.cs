@@ -276,6 +276,8 @@ public struct ShaderVariable
           variable.SetTexture2D((Texture2D) EditorGUILayout.ObjectField(guiContent, variable.GetTexture2D(),
             typeof(Texture2D), false));
           break;
+        case ShaderType.Void:
+          break;
         default:
           throw new ArgumentOutOfRangeException();
       }

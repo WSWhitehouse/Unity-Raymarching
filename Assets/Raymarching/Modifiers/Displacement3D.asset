@@ -9,17 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d47c79d4ab4cc64692a822c84963803, type: 3}
-  m_Name: Sphere
+  m_Script: {fileID: 11500000, guid: c992fa5b27b1504439742fa83be21c99, type: 3}
+  m_Name: Displacement3D
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: 0d935c5a93ece247970ec043d92e6116
-  functionBody: return length(pos) - Radius;
+    serializedGuid: 1f69611ae90bd64eb83151f90f2fefb1
+  functionBody: 'float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displacement*pos.z);
+
+
+    return
+    objDistance + displacement;'
   shaderVariables:
-  - name: Radius
+  - name: Displacement
     shaderType: 0
     parameterType: 0
     floatValue: 1
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}
     textureValue: {fileID: 0}
+  modifierType: 1

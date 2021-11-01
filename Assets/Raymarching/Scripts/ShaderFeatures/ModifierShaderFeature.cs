@@ -31,7 +31,7 @@ public class ModifierShaderFeature : ShaderFeature
   {
     return ModifierType switch
     {
-      ModifierType.PreSDF => ShaderType.Vector3,
+      ModifierType.PreSDF => ShaderType.Vector4,
       ModifierType.PostSDF => ShaderType.Float,
       _ => throw new ArgumentOutOfRangeException()
     };
@@ -43,12 +43,11 @@ public class ModifierShaderFeature : ShaderFeature
     {
       ModifierType.PreSDF => new ShaderVariable[]
       {
-        new ShaderVariable("pos", ShaderType.Vector3),
-        new ShaderVariable("scale", ShaderType.Vector3)
+        new ShaderVariable("pos", ShaderType.Vector4)
       },
       ModifierType.PostSDF => new ShaderVariable[]
       {
-        new ShaderVariable("pos", ShaderType.Vector3),
+        new ShaderVariable("pos", ShaderType.Vector4),
         new ShaderVariable("objDistance", ShaderType.Float)
       },
       _ => throw new ArgumentOutOfRangeException()

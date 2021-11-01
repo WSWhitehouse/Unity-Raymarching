@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 0f272c802c4045489b9597d4fb74dba8
-  functionBody: return fmod(pos + 0.5 * RepPeriod, RepPeriod) - 0.5 * RepPeriod;
+  functionBody: return float4(fmod(pos + 0.5 * RepPeriod, RepPeriod) - 0.5 * RepPeriod,
+    0);
   shaderVariables:
   - name: RepPeriod
     shaderType: 4
+    parameterType: 0
     floatValue: 0
     intValue: 0
     vectorValue: {x: 0, y: 0, z: 0, w: 0}

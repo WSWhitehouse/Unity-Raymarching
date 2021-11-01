@@ -62,7 +62,7 @@ public class RaymarchRenderPass : ScriptableRenderPass
     CommandBuffer cmd = CommandBufferPool.Get(_profilerTag);
 
     Raymarch.Material.SetMatrix(Shader.PropertyToID("_CamToWorldMatrix"), camera.cameraToWorldMatrix);
-    Raymarch.InvokeUploadShaderData();
+    Raymarch.UploadShaderDataInvoke();
 
     cmd.Blit(cameraColourTexture, _destination, Raymarch.Material);
     cmd.Blit(_destination, cameraColourTexture);

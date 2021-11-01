@@ -11,43 +11,29 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-public class ShaderGen
+public static class ShaderGen
 {
-  #region Shader Code
-
-  public const string Comment = "// ";
-  public const string NewLine = "\r\n";
-
-  public const string IfnDef = "#ifndef ";
-  public const string Define = "#define ";
-  public const string EndIf = "#endif ";
-
-  private static string HeaderGuardStart(string name)
-  {
-    var nameUpper = name.ToUpper().Replace(' ', '_');
-    return string.Concat(IfnDef, nameUpper, NewLine, Define, nameUpper, NewLine);
-  }
-
-  private static string HeaderGuardEnd(string name)
-  {
-    var nameUpper = name.ToUpper();
-    return string.Concat(EndIf, Comment, nameUpper, NewLine);
-  }
-
-  #endregion Shader Code
-
   #region Scene Raymarch Shader
 
   private const string RaymarchTemplateShaderTitle = "RaymarchTemplateShader";
+
   private const string RaymarchVars = "// RAYMARCH VARS //";
   private const string RaymarchCalcDistance = "// RAYMARCH CALC DISTANCE //";
   private const string RaymarchCalcLights = "// RAYMARCH CALC LIGHT //";
 
+  private const string RaymarchSettingsStart = "// RAYMARCH SETTINGS START //";
+  private const string RaymarchSettingsEnd = "// RAYMARCH SETTINGS END //";
+
+  private const string LightingSettingsStart = "// LIGHTING SETTINGS START //";
+  private const string LightingSettingsEnd = "// LIGHTING SETTINGS END //";
+  
   // NOTE(WSWhitehouse): string capacity that will be multiplied per object
   private const int StringCapacityPerObject = 512;
 
   public static void GenerateRaymarchShader()
   {
+    Debug.Log("Generate Raymarch Shader called");
+
     if (Application.isPlaying)
     {
       Debug.LogWarning("Generate Raymarch Shader called during runtime!");
@@ -85,13 +71,16 @@ public class ShaderGen
     }
 
     // NOTE(WSWhitehouse): Creating strings to hold shader code that will be inserted into the shader
-    string raymarchVars = raymarchBases.Aggregate($"// Raymarch Variables{NewLine}",
-      (current, rmBase) => string.Concat(current, rmBase.GetShaderCode_Variables(), NewLine));
-
     int capacity = StringCapacityPerObject * raymarchBases.Count;
-    
+    StringBuilder raymarchVars = new StringBuilder(capacity);
     StringBuilder raymarchDistance = new StringBuilder(capacity);
     StringBuilder raymarchLight = new StringBuilder(capacity);
+
+    raymarchVars.AppendLine("// Raymarch Variables");
+    foreach (RaymarchBase raymarchBase in raymarchBases)
+    {
+      raymarchVars.AppendLine(raymarchBase.GetShaderVariables());
+    }
 
     List<RaymarchOperation> operations = new List<RaymarchOperation>();
 
@@ -108,28 +97,39 @@ public class ShaderGen
         raymarchDistance.AppendLine($"// Operation Start {rmOperation.operation.ShaderFeature.FunctionName} {opGuid}");
         raymarchDistance.AppendLine($"float distance{opGuid} = _RenderDistance;");
         raymarchDistance.AppendLine($"float4 colour{opGuid} = float4(1,1,1,1);");
-        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine();
       }
 
       if (raymarchBases[i] is RaymarchObject rmObject)
       {
-        string positionName = $"_Position{guid}";
-        string rotationName = $"_Rotation{guid}";
+        string positionName = $"_{nameof(rmObject.Position)}{guid}";
+        string rotationName = $"_{nameof(rmObject.RotationRotor3D)}{guid}";
+        string rotation4DName = $"_{nameof(rmObject.Rotation4D)}{guid}";
+        string scaleName = $"_{nameof(rmObject.Scale)}{guid}";
+        string transform4DEnabledName = $"_{nameof(rmObject.Transform4DEnabled)}{guid}";
         string isActiveName = $"_IsActive{guid}";
 
         string localDistName = $"distance{guid}";
         string localPosName = $"position{guid}";
 
         raymarchDistance.AppendLine(
-          $"float3 {localPosName} = Rotate3D(rayPos - {positionName}, {rotationName});");
+          $"float4 {localPosName} = (rayPos4D - {positionName}) / {scaleName};");
+        raymarchDistance.AppendLine(
+          $"{localPosName} = float4(Rotate3D({localPosName}.xyz, {rotationName}), {localPosName}.w);");
+
+        raymarchDistance.AppendLine($"if ({transform4DEnabledName} > 0)");
+        raymarchDistance.AppendLine("{");
+        raymarchDistance.AppendLine($"{localPosName} = Rotate4D({localPosName}, {rotation4DName});");
+        raymarchDistance.AppendLine("}");
+
         raymarchDistance.AppendLine($"float {localDistName} = _RenderDistance;");
 
         raymarchDistance.AppendLine($"if ({isActiveName} > 0)");
         raymarchDistance.AppendLine($"{{");
-        raymarchDistance.AppendLine(rmObject.GetShaderCode_CalcDistance());
+        raymarchDistance.Append(RaymarchObjectDistanceShaderCode(rmObject));
         raymarchDistance.AppendLine($"}}");
 
-        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine();
 
         if (operations.Count > 0)
         {
@@ -139,12 +139,12 @@ public class ShaderGen
           if (i > operation.StartIndex)
           {
             raymarchDistance.AppendLine(
-              operation.GetShaderCode_CalcOperation(localDistName, rmObject.GetShaderCode_Material()));
+              RaymarchOperationShaderCode(operation, localDistName, RaymarchObjectMaterialShaderCode(rmObject)));
           }
           else
           {
             raymarchDistance.AppendLine($"distance{opGuid} = {localDistName};");
-            raymarchDistance.AppendLine($"colour{opGuid} = {rmObject.GetShaderCode_Material()};");
+            raymarchDistance.AppendLine($"colour{opGuid} = {RaymarchObjectMaterialShaderCode(rmObject)};");
           }
         }
         else
@@ -152,16 +152,16 @@ public class ShaderGen
           raymarchDistance.AppendLine($"if ({localDistName} < resultDistance)");
           raymarchDistance.AppendLine($"{{");
           raymarchDistance.AppendLine($"resultDistance = {localDistName};");
-          raymarchDistance.AppendLine($"resultColour   = {rmObject.GetShaderCode_Material()};");
+          raymarchDistance.AppendLine($"resultColour   = {RaymarchObjectMaterialShaderCode(rmObject)};");
           raymarchDistance.AppendLine($"}}");
         }
 
-        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine();
       }
 
       if (raymarchBases[i] is RaymarchLight rmLight)
       {
-        raymarchLight.AppendLine(rmLight.GetShaderCode_CalcLight());
+        raymarchLight.AppendLine(RaymarchLightShaderCode(rmLight));
       }
 
       // End any operations that end on this index and remove them from the list
@@ -177,7 +177,7 @@ public class ShaderGen
         if (j > 0)
         {
           raymarchDistance.AppendLine(
-            $"{operations[j - 1].GetShaderCode_CalcOperation($"distance{opGuid}", $"colour{opGuid}")}");
+            RaymarchOperationShaderCode(operations[j - 1], $"distance{opGuid}", $"colour{opGuid}"));
         }
         else
         {
@@ -188,7 +188,7 @@ public class ShaderGen
           raymarchDistance.AppendLine($"}}");
         }
 
-        raymarchDistance.AppendLine(); // NOTE(WSWhitehouse): New line
+        raymarchDistance.AppendLine();
       }
 
       operations.RemoveAll(x => x.EndIndex == i);
@@ -196,15 +196,34 @@ public class ShaderGen
 
     // Read template shader and replace placeholders
     string shader = File.ReadAllText(templatePath);
+
+    // Raymarch Settings
+    string raymarchSettings = RaymarchSettingsShaderCode(rmScene.RaymarchSettings);
+    int raymarchSettingsStart = shader.IndexOf(RaymarchSettingsStart, StringComparison.Ordinal);
+    int raymarchSettingsEnd = shader.IndexOf(RaymarchSettingsEnd, StringComparison.Ordinal);
+
+    shader = shader.Remove(raymarchSettingsStart, raymarchSettingsEnd - raymarchSettingsStart);
+    shader = shader.Insert(raymarchSettingsStart, raymarchSettings);
+
+    // Lighting Settings
+    string lightingSettings = LightingSettingsShaderCode(rmScene.LightingSettings);
+    int lightingSettingsStart = shader.IndexOf(LightingSettingsStart, StringComparison.Ordinal);
+    int lightingSettingsEnd = shader.IndexOf(LightingSettingsEnd, StringComparison.Ordinal);
+
+    shader = shader.Remove(lightingSettingsStart, lightingSettingsEnd - lightingSettingsStart);
+    shader = shader.Insert(lightingSettingsStart, lightingSettings);
+
+    // Other
     shader = shader.Replace(RaymarchTemplateShaderTitle, shaderName)
-      .Replace(RaymarchVars, raymarchVars)
+      .Replace(RaymarchVars, raymarchVars.ToString())
       .Replace(RaymarchCalcDistance, raymarchDistance.ToString())
       .Replace(RaymarchCalcLights, raymarchLight.ToString());
+
 
     // Create shader
     FileStream file = File.Open(filePath, FileMode.OpenOrCreate);
 
-    file.Write(Encoding.ASCII.GetBytes(AutoGeneratedComment()));
+    file.Write(Encoding.ASCII.GetBytes(Util.AutoGeneratedComment()));
     file.Write(Encoding.ASCII.GetBytes(shader));
 
     file.Close();
@@ -229,6 +248,201 @@ public class ShaderGen
     {
       raymarchBase.Awake();
     }
+  }
+
+  private static string RaymarchObjectDistanceShaderCode(RaymarchObject rmObject)
+  {
+    string guid = rmObject.GUID.ToShaderSafeString();
+
+    string localDistName = $"distance{guid}";
+    string localPosName = $"position{guid}";
+    string scaleName = $"_{nameof(rmObject.Scale)}{guid}";
+
+    string marchingStepAmountName = $"_{nameof(rmObject.MarchingStepAmount)}{guid}";
+
+    StringBuilder result = new StringBuilder();
+
+    foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
+    {
+      if (modifier.ShaderFeature.ModifierType != ModifierType.PreSDF) continue;
+
+      string modifierParams = localPosName;
+      for (int i = 0; i < modifier.ShaderVariables.Count; i++)
+      {
+        modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
+      }
+
+      result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
+      result.AppendLine("{");
+      result.AppendLine($"{localPosName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
+      result.AppendLine("}");
+    }
+
+    string parameters = localPosName;
+    for (int i = 0; i < rmObject.raymarchSDF.ShaderVariables.Count; i++)
+    {
+      parameters = string.Concat(parameters, ", ", rmObject.raymarchSDF.GetShaderVariableName(i, rmObject.GUID));
+    }
+
+    result.AppendLine(
+      $"{localDistName} = {rmObject.raymarchSDF.ShaderFeature.FunctionNameWithGuid}({parameters}) * {scaleName};");
+
+    foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
+    {
+      if (modifier.ShaderFeature.ModifierType != ModifierType.PostSDF) continue;
+
+      string modifierParams = $"position{guid}, {localDistName}";
+      for (int i = 0; i < modifier.ShaderVariables.Count; i++)
+      {
+        modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
+      }
+
+      result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
+      result.AppendLine("{");
+      result.AppendLine(
+        $"{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
+      result.AppendLine("}");
+    }
+
+    result.AppendLine($"{localDistName} /= {marchingStepAmountName};");
+
+    return result.ToString();
+  }
+
+  private static string RaymarchObjectMaterialShaderCode(RaymarchObject rmObject)
+  {
+    string guid = rmObject.GUID.ToShaderSafeString();
+
+    if (rmObject.raymarchMat.ShaderFeature == null)
+    {
+      return $"_{nameof(rmObject.Colour)}{guid}";
+    }
+
+    string parameters = $"position{guid}, _{nameof(rmObject.Colour)}{guid}";
+    for (int i = 0; i < rmObject.raymarchMat.ShaderVariables.Count; i++)
+    {
+      parameters = string.Concat(parameters, ", ", rmObject.raymarchMat.GetShaderVariableName(i, rmObject.GUID));
+    }
+
+    return $"{rmObject.raymarchMat.ShaderFeature.FunctionNameWithGuid}({parameters})";
+  }
+
+  private static string RaymarchOperationShaderCode(RaymarchOperation rmOperation, string objDistance, string objColour)
+  {
+    string guid = rmOperation.GUID.ToShaderSafeString();
+    StringBuilder result = new StringBuilder();
+
+    string opDistance = $"distance{guid}";
+    string opColour = $"colour{guid}";
+    string opIsActive = $"_IsActive{guid}";
+
+    string parameters = $"{opDistance}, {opColour}, {objDistance}, {objColour}";
+    for (int i = 0; i < rmOperation.operation.ShaderVariables.Count; i++)
+    {
+      parameters = string.Concat(parameters, ", ", rmOperation.operation.GetShaderVariableName(i, rmOperation.GUID));
+    }
+
+    result.AppendLine($"if ({opIsActive} > 0)");
+    result.AppendLine($"{{");
+    result.AppendLine($"{rmOperation.operation.ShaderFeature.FunctionNameWithGuid}({parameters});");
+    result.AppendLine($"}}");
+    result.AppendLine($"else");
+    result.AppendLine($"{{");
+    result.AppendLine($"if ({objDistance} < {opDistance})");
+    result.AppendLine($"{{");
+    result.AppendLine($"{opDistance} = {objDistance};");
+    result.AppendLine($"{opColour} = {objColour};");
+    result.AppendLine($"}}");
+    result.AppendLine($"}}");
+
+    return result.ToString();
+  }
+
+  private static string RaymarchLightShaderCode(RaymarchLight rmLight)
+  {
+    string guid = rmLight.GUID.ToShaderSafeString();
+
+    string position = $"_Position{guid}";
+    string direction = $"_Direction{guid}";
+    string colour = $"_Colour{guid}";
+    string range = $"_Range{guid}";
+    string intensity = $"_Intensity{guid}";
+    string spotAngle = $"_SpotAngle{guid}";
+    string innerSpotAngle = $"_InnerSpotAngle{guid}";
+    string isActive = $"_IsActive{guid}";
+
+    if (rmLight.LightMode == LightMode.Baked)
+    {
+      if (!rmLight.IsActive) return $"// Light{guid} (baked) is not active in scene";
+
+      position = Util.ToShaderVector(rmLight.Position);
+      direction = Util.ToShaderVector(rmLight.Direction);
+      colour = Util.ToShaderVector(rmLight.Colour);
+      range = rmLight.Range.ToString(CultureInfo.InvariantCulture);
+      intensity = rmLight.Intensity.ToString(CultureInfo.InvariantCulture);
+      spotAngle = rmLight.SpotAngle.ToString(CultureInfo.InvariantCulture);
+      innerSpotAngle = rmLight.InnerSpotAngle.ToString(CultureInfo.InvariantCulture);
+    }
+
+    StringBuilder result = new StringBuilder();
+
+    if (rmLight.LightMode != LightMode.Baked)
+    {
+      result.AppendLine($"if ({isActive} > 0)");
+      result.AppendLine($"{{");
+    }
+
+    switch (rmLight.LightType)
+    {
+      case LightType.Directional:
+        result.AppendLine($"light += GetDirectionalLight(pos, normal, {colour}, {direction}, {intensity});");
+        break;
+      case LightType.Point:
+        result.AppendLine($"light += GetPointLight(pos, normal, {position}, {colour}, {range}, {intensity});");
+        break;
+      case LightType.Spot:
+        result.AppendLine(
+          $"light += GetSpotLight(pos, normal, {position}, {colour}, {direction}, {range}, {intensity}, {spotAngle}, {innerSpotAngle});");
+        break;
+      case LightType.Area:
+      case LightType.Disc:
+      default:
+        Debug.Log($"{rmLight.LightType.ToString()} is currently not supported!");
+        return string.Empty;
+    }
+
+    if (rmLight.LightMode != LightMode.Baked)
+    {
+      result.AppendLine($"}}");
+    }
+
+    return result.ToString();
+  }
+
+  private static string RaymarchSettingsShaderCode(RaymarchSettings raymarchSettings)
+  {
+    StringBuilder result = new StringBuilder();
+    result.AppendLine("// Raymarch Settings");
+    result.AppendLine(
+      $"static const float _RenderDistance = {raymarchSettings.renderDistance.ToString(CultureInfo.InvariantCulture)};");
+    result.AppendLine(
+      $"static const float _HitResolution = {raymarchSettings.hitResolution.ToString(CultureInfo.InvariantCulture)};");
+    result.AppendLine(
+      $"static const float _Relaxation = {raymarchSettings.relaxation.ToString(CultureInfo.InvariantCulture)};");
+    result.AppendLine($"static const int _MaxIterations = {raymarchSettings.maxIterations.ToString()};");
+
+    return result.ToString();
+  }
+
+  private static string LightingSettingsShaderCode(LightingSettings lightingSettings)
+  {
+    StringBuilder result = new StringBuilder();
+    result.AppendLine("// Lighting Settings");
+    result.AppendLine($"static const float4 _AmbientColour = {Util.ToShaderVector(lightingSettings.ambientColour)};");
+    result.AppendLine(
+      $"static const float _ColourMultiplier = {lightingSettings.colourMultiplier.ToString(CultureInfo.InvariantCulture)};");
+
+    return result.ToString();
   }
 
   private static List<RaymarchBase> GenerateRaymarchSceneHierarchy(Scene scene)
@@ -282,14 +496,10 @@ public class ShaderGen
 
   #endregion Scene Raymarch Shader
 
-  #region Util
+  #region Util Shader
 
   private const string UtilShaderPath = "Assets/Raymarching/Shaders/Generated/";
   private const string UtilShaderExtension = "hlsl";
-
-  private static readonly string UnityShaderIncludes = $"{NewLine}// Unity Includes {NewLine}" +
-                                                       $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl\"{NewLine}" +
-                                                       $"#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl\"{NewLine}";
 
   public static void GenerateUtilShader<T>(string shaderName) where T : ShaderFeature
   {
@@ -299,9 +509,15 @@ public class ShaderGen
     shaderFeatures.AddRange(guids.Select(guid =>
       AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid))));
 
-    var functions = shaderFeatures.Aggregate(String.Empty,
-      (current, feature) => string.Concat(current, NewLine, feature.FunctionPrototypeWithGuid, NewLine, "{",
-        NewLine, feature.FunctionBody, NewLine, "}", NewLine));
+    StringBuilder functions = new StringBuilder();
+    foreach (T shaderFeature in shaderFeatures)
+    {
+      functions.AppendLine(shaderFeature.FunctionPrototypeWithGuid);
+      functions.AppendLine("{");
+      functions.AppendLine(shaderFeature.FunctionBody);
+      functions.AppendLine("}");
+      functions.AppendLine();
+    }
 
     string filePath = string.Concat(UtilShaderPath, shaderName, ".", UtilShaderExtension);
     string headerGuardName = string.Concat(shaderName.ToUpper().Replace(' ', '_'), "_", UtilShaderExtension.ToUpper());
@@ -316,14 +532,13 @@ public class ShaderGen
 
     FileStream file = File.Open(filePath, FileMode.OpenOrCreate);
 
-    file.Write(Encoding.ASCII.GetBytes(AutoGeneratedComment()));
-    file.Write(Encoding.ASCII.GetBytes(HeaderGuardStart(headerGuardName)));
+    file.Write(Encoding.ASCII.GetBytes(Util.AutoGeneratedComment()));
+    file.Write(Encoding.ASCII.GetBytes(Util.HeaderGuardStart(headerGuardName)));
 
-    file.Write(Encoding.ASCII.GetBytes(UnityShaderIncludes));
-    file.Write(Encoding.ASCII.GetBytes(functions));
+    file.Write(Encoding.ASCII.GetBytes(Util.UnityShaderIncludes()));
+    file.Write(Encoding.ASCII.GetBytes(functions.ToString()));
 
-    file.Write(Encoding.ASCII.GetBytes(NewLine));
-    file.Write(Encoding.ASCII.GetBytes(HeaderGuardEnd(headerGuardName)));
+    file.Write(Encoding.ASCII.GetBytes(Util.HeaderGuardEnd(headerGuardName)));
 
     file.Close();
     AssetDatabase.Refresh();
@@ -332,24 +547,79 @@ public class ShaderGen
     EditorUtility.SetDirty(shader);
   }
 
-  private static string AutoGeneratedComment()
+  #endregion Util Shader
+
+  private static class Util
   {
-    DateTime now = DateTime.Now;
+    public static string AutoGeneratedComment()
+    {
+      string now = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
-    StringBuilder result = new StringBuilder();
-    result.AppendLine($"//---------------------------------------------------------------------{NewLine}");
-    result.AppendLine($"//    This code was generated by a tool.                               {NewLine}");
-    result.AppendLine($"//                                                                     {NewLine}");
-    result.AppendLine($"//    Changes to this file may cause incorrect behavior and will be    {NewLine}");
-    result.AppendLine($"//    lost if the code is regenerated.                                 {NewLine}");
-    result.AppendLine($"//                                                                     {NewLine}");
-    result.AppendLine($"//    Time Generated: {now.ToString(CultureInfo.InvariantCulture)}     {NewLine}");
-    result.AppendLine($"//---------------------------------------------------------------------{NewLine}");
+      StringBuilder result = new StringBuilder(650);
+      result.AppendLine("//---------------------------------------------------------------------");
+      result.AppendLine("//    This code was generated by a tool.");
+      result.AppendLine("//");
+      result.AppendLine("//    Changes to this file may cause incorrect behavior and will be ");
+      result.AppendLine("//    lost if the code is regenerated.");
+      result.AppendLine("//");
+      result.AppendLine($"//    Time Generated: {now}");
+      result.AppendLine("//---------------------------------------------------------------------");
+      result.AppendLine();
 
-    return result.ToString();
+      return result.ToString();
+    }
+
+    public static string UnityShaderIncludes()
+    {
+      StringBuilder result = new StringBuilder(200);
+      result.AppendLine("// Unity Includes");
+
+      result.AppendLine(
+        "#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl\"");
+      result.AppendLine(
+        "#include \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl\"");
+
+      result.AppendLine();
+
+      return result.ToString();
+    }
+
+    public static string HeaderGuardStart(string name)
+    {
+      var nameUpper = name.ToUpper().Replace(' ', '_');
+
+      StringBuilder result = new StringBuilder(16 + (nameUpper.Length * 2));
+      result.AppendLine($"#ifndef {nameUpper}");
+      result.AppendLine($"#define {nameUpper}");
+      result.AppendLine();
+
+      return result.ToString();
+    }
+
+    public static string HeaderGuardEnd(string name)
+    {
+      var nameUpper = name.ToUpper().Replace(' ', '_');
+      return $"#endif // {nameUpper}";
+    }
+
+    public static string ToShaderVector(Vector2 vec2)
+    {
+      return
+        $"float2({vec2.x.ToString(CultureInfo.InvariantCulture)}, {vec2.y.ToString(CultureInfo.InvariantCulture)})";
+    }
+
+    public static string ToShaderVector(Vector3 vec3)
+    {
+      return
+        $"float3({vec3.x.ToString(CultureInfo.InvariantCulture)}, {vec3.y.ToString(CultureInfo.InvariantCulture)}, {vec3.z.ToString(CultureInfo.InvariantCulture)})";
+    }
+
+    public static string ToShaderVector(Vector4 vec4)
+    {
+      return
+        $"float4({vec4.x.ToString(CultureInfo.InvariantCulture)}, {vec4.y.ToString(CultureInfo.InvariantCulture)}, {vec4.z.ToString(CultureInfo.InvariantCulture)}, {vec4.w.ToString(CultureInfo.InvariantCulture)})";
+    }
   }
-
-  #endregion Util
 }
 
 #endif

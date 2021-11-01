@@ -20,13 +20,13 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.2, g: 0.011764706, b: 0.078431375, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
-  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientGroundColor: {r: 0.062745094, g: 0.023529412, b: 0.10980392, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 38757f4619292a8439c1a1022c8e11ec, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18317696, g: 0.22883588, b: 0.3065214, a: 1}
+  m_IndirectSpecularColor: {r: 0.2397016, g: 0.08510695, b: 0.22591034, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 33703ed2ed2bd7c44bde0bde95ee2301, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 5488ed4ab2bce6247afa59d90e30d888, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 53efb1dc3f68f754bb939ea16af7c5a5, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -123,70 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &27486143
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 27486144}
-  - component: {fileID: 27486145}
-  m_Layer: 0
-  m_Name: RM Cube
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &27486144
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 27486143}
-  m_LocalRotation: {x: 0.35207632, y: -0.6284696, z: -0.603188, w: 0.3423923}
-  m_LocalPosition: {x: -1.511, y: 0.238, z: -6.858}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 209479511}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -31.136, y: -92.535, z: -88.366}
---- !u!114 &27486145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 27486143}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  guid:
-    serializedGuid: 57c6a3944a38dc49ae537aad3cfd17ad
-  raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
-  raymarchMat:
-    shaderFeature: {fileID: 0}
-    shaderVariables: []
-  raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
-    shaderVariables:
-    - name: TwistAmountX
-      shaderType: 0
-      parameterType: 0
-      floatValue: 3.36
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 1.92
 --- !u!1 &155378031
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +160,7 @@ MonoBehaviour:
     - name: Smooth
       shaderType: 0
       parameterType: 0
-      floatValue: 0.28
+      floatValue: 1.07
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -240,64 +176,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 209479511}
   - {fileID: 1303356926}
   - {fileID: 1551371005}
   - {fileID: 1859244690}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &209479510
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 209479511}
-  - component: {fileID: 209479512}
-  m_Layer: 0
-  m_Name: operation (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &209479511
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 209479510}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 27486144}
-  - {fileID: 931377741}
-  m_Father: {fileID: 155378033}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &209479512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 209479510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00193114080c480bac7489c858edda55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  guid:
-    serializedGuid: 4e4072a8bfd7c143bb9524af347edfdb
-  operation:
-    shaderFeature: {fileID: 11400000, guid: 7e4938dd30c4c414e93f2c5a790056d2, type: 2}
-    shaderVariables: []
 --- !u!1 &218824359
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,7 +312,87 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid:
     serializedGuid: 6a1913296cf3784f8661f592315628a5
-  lightMode: 1
+  lightMode: 0
+--- !u!1 &391752652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 391752655}
+  - component: {fileID: 391752654}
+  - component: {fileID: 391752653}
+  m_Layer: 0
+  m_Name: RM Hypercube (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &391752653
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391752652}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &391752654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391752652}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: 4ffcbb5ec235f24d9be3937f93a35c80
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 4
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      textureValue: {fileID: 0}
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods: []
+  transform4DEnabled: 1
+  positionW: 0
+  rotation4D: {x: 0.63, y: 3.67, z: 4.24}
+  scaleW: 1
+  colour: {r: 0.43921566, g: 1, b: 0, a: 1}
+  marchingStepAmount: 1
+--- !u!4 &391752655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391752652}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.06, y: 1.734, z: 8.23}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &491504017
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +487,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5938843ce97542d9b6f7282bcbe170be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: a12468c52ae931b48be41f5f66490516, type: 2}
+  raymarchSettings:
+    renderDistance: 100
+    hitResolution: 0.001
+    relaxation: 1.2
+    maxIterations: 164
+  lightingSettings:
+    ambientColour: {r: 0.2117, g: 0.2274, b: 0.2588, a: 1}
+    colourMultiplier: 2
   shader: {fileID: 4800000, guid: db974a8866b6f0b4d8efca1152c14ccf, type: 3}
   templateShader: {fileID: 4800000, guid: c6c888053f2af174fb0c96159bd003cd, type: 3}
 --- !u!1 &605198479
@@ -559,7 +530,14 @@ MonoBehaviour:
     serializedGuid: 39da09992d670a4c9ddbeec2369d040d
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 4
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
@@ -573,6 +551,7 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
+    isEnabled: 1
   - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
@@ -597,14 +576,50 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - name: Dir
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
+    isEnabled: 1
+  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+    shaderVariables:
+    - name: Freq
+      shaderType: 0
+      parameterType: 0
+      floatValue: 1.3
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Amplitude
+      shaderType: 0
+      parameterType: 0
+      floatValue: 0.72
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Speed
+      shaderType: 0
+      parameterType: 0
+      floatValue: 2.9
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - name: Dir
+      shaderType: 5
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    isEnabled: 1
+  transform4DEnabled: 0
+  positionW: 0
+  rotation4D: {x: 0, y: 0, z: 0}
+  scaleW: 1
   colour: {r: 0, g: 0.22745098, b: 1, a: 1}
-  marchingStepAmount: 5.35
+  marchingStepAmount: 10.19
 --- !u!4 &605198481
 Transform:
   m_ObjectHideFlags: 0
@@ -652,61 +667,6 @@ Transform:
   m_Father: {fileID: 491504019}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &931377740
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 931377741}
-  - component: {fileID: 931377742}
-  m_Layer: 0
-  m_Name: RM Cube (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &931377741
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 931377740}
-  m_LocalRotation: {x: 0.35207632, y: -0.6284696, z: -0.603188, w: 0.3423923}
-  m_LocalPosition: {x: -1.5297905, y: 0.25520542, z: -6.8589735}
-  m_LocalScale: {x: 1.0469407, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 209479511}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -31.136, y: -92.535, z: -88.366}
---- !u!114 &931377742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 931377740}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  guid:
-    serializedGuid: c31e6c17c6a1b74b9ab34788ceb863d5
-  raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
-  raymarchMat:
-    shaderFeature: {fileID: 0}
-    shaderVariables: []
-  raymarchMods: []
-  colour: {r: 0, g: 0.21631074, b: 1, a: 1}
-  marchingStepAmount: 1
 --- !u!1 &1074769952
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,137 +837,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!1 &1212752967
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1212752971}
-  - component: {fileID: 1212752970}
-  - component: {fileID: 1212752969}
-  - component: {fileID: 1212752968}
-  m_Layer: 0
-  m_Name: Spot Light
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1212752968
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212752967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b59b367701734e09a4cf052069c6479c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  guid:
-    serializedGuid: 0334898e4df4de4189c21cbb4d76539f
-  lightMode: 1
---- !u!114 &1212752969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212752967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 1
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
---- !u!108 &1212752970
-Light:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212752967}
-  m_Enabled: 1
-  serializedVersion: 10
-  m_Type: 0
-  m_Shape: 0
-  m_Color: {r: 1, g: 0, b: 0.046096325, a: 1}
-  m_Intensity: 190
-  m_Range: 11.651468
-  m_SpotAngle: 34.01344
-  m_InnerSpotAngle: 16.918468
-  m_CookieSize: 10
-  m_Shadows:
-    m_Type: 2
-    m_Resolution: -1
-    m_CustomResolution: -1
-    m_Strength: 1
-    m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
-    m_CullingMatrixOverride:
-      e00: 1
-      e01: 0
-      e02: 0
-      e03: 0
-      e10: 0
-      e11: 1
-      e12: 0
-      e13: 0
-      e20: 0
-      e21: 0
-      e22: 1
-      e23: 0
-      e30: 0
-      e31: 0
-      e32: 0
-      e33: 1
-    m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 0}
-  m_DrawHalo: 0
-  m_Flare: {fileID: 0}
-  m_RenderMode: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingLayerMask: 1
-  m_Lightmapping: 4
-  m_LightShadowCasterMode: 0
-  m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
-  m_ColorTemperature: 6570
-  m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
-  m_ShadowRadius: 0
-  m_ShadowAngle: 0
---- !u!4 &1212752971
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212752967}
-  m_LocalRotation: {x: 0.5683489, y: -0.42057288, z: 0.4743211, w: 0.5245164}
-  m_LocalPosition: {x: 0.010000572, y: 6.58, z: -0.18999998}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 84.378, y: -270.115, z: -191.49}
 --- !u!1 &1303356924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,7 +870,14 @@ MonoBehaviour:
     serializedGuid: 42a920b34216c3469a98c549464c0e2a
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 4
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
@@ -1055,8 +891,13 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
+    isEnabled: 1
+  transform4DEnabled: 0
+  positionW: 0
+  rotation4D: {x: 0, y: 0, z: 0}
+  scaleW: 1
   colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 1.92
+  marchingStepAmount: 1
 --- !u!4 &1303356926
 Transform:
   m_ObjectHideFlags: 0
@@ -1065,12 +906,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303356924}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.26, y: 0, z: -5.825}
+  m_LocalPosition: {x: -1.26, y: 1.149, z: -5.825}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 155378033}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1304010606
 GameObject:
@@ -1230,6 +1071,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1405943643}
   - component: {fileID: 1405943642}
+  - component: {fileID: 1405943644}
   m_Layer: 0
   m_Name: RM Floor
   m_TagString: Untagged
@@ -1253,7 +1095,14 @@ MonoBehaviour:
     serializedGuid: c7a55a064e75e34ebf1117f267e253f0
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 4
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 100, y: 1, z: 100, w: 0}
+      textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 11400000, guid: 68533ef4ca7169043bf7d7199392d505, type: 2}
     shaderVariables:
@@ -1264,87 +1113,13 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
-  raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
-    shaderVariables:
-    - name: Displacement
-      shaderType: 0
-      parameterType: 0
-      floatValue: 2.85
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
-    shaderVariables:
-    - name: Freq
-      shaderType: 0
-      parameterType: 0
-      floatValue: 1
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Amplitude
-      shaderType: 0
-      parameterType: 0
-      floatValue: 0.2
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Speed
-      shaderType: 0
-      parameterType: 0
-      floatValue: 1
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Dir
-      shaderType: 4
-      parameterType: 0
-      floatValue: 0
-      intValue: 0
-      vectorValue: {x: 1, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
-    shaderVariables:
-    - name: Displacement
-      shaderType: 0
-      parameterType: 0
-      floatValue: 1.65
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
-    shaderVariables:
-    - name: Freq
-      shaderType: 0
-      parameterType: 0
-      floatValue: 5.98
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Amplitude
-      shaderType: 0
-      parameterType: 0
-      floatValue: -0.05
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Speed
-      shaderType: 0
-      parameterType: 0
-      floatValue: 0.5
-      intValue: 0
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - name: Dir
-      shaderType: 4
-      parameterType: 0
-      floatValue: 0
-      intValue: 0
-      vectorValue: {x: -1, y: 0, z: -1, w: 0}
-      textureValue: {fileID: 0}
-  colour: {r: 0.43921566, g: 1, b: 0, a: 1}
-  marchingStepAmount: 3.45
+  raymarchMods: []
+  transform4DEnabled: 0
+  positionW: 0
+  rotation4D: {x: 0, y: 0, z: 0}
+  scaleW: 1
+  colour: {r: 0.5209379, g: 0, b: 1, a: 1}
+  marchingStepAmount: 1
 --- !u!4 &1405943643
 Transform:
   m_ObjectHideFlags: 0
@@ -1353,13 +1128,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405943641}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.25, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1405943644
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405943641}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 100, y: 0.1, z: 100}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1551371003
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,11 +1181,22 @@ MonoBehaviour:
     serializedGuid: cbe941f0a42f5d45853ef9789ba6c70d
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 4
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 0.84, y: 9.98, z: 1, w: 0}
+      textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
   raymarchMods: []
+  transform4DEnabled: 0
+  positionW: 0
+  rotation4D: {x: 0, y: 0, z: 0}
+  scaleW: 1
   colour: {r: 0, g: 0.21631074, b: 1, a: 1}
   marchingStepAmount: 1
 --- !u!4 &1551371005
@@ -1408,12 +1207,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551371003}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.265, y: 0, z: -5.8}
+  m_LocalPosition: {x: -0.46, y: 1.149, z: -6.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 155378033}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1559188885
 GameObject:
@@ -1505,7 +1304,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1559188885}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.31, y: 0, z: 3.44}
+  m_LocalPosition: {x: 3.73, y: 0, z: 8.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1526,6 +1325,7 @@ GameObject:
   - component: {fileID: 1566595697}
   - component: {fileID: 1566595696}
   - component: {fileID: 1566595698}
+  - component: {fileID: 1566595699}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1691,6 +1491,20 @@ MonoBehaviour:
   m_TrackingType: 0
   m_UpdateType: 0
   m_UseRelativeTransform: 0
+--- !u!114 &1566595699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566595692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 766863855fb6432b906ab64dfd2492d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraPositionW: 0
+  cameraRotation4D: {x: 0, y: 0, z: 0}
 --- !u!1 &1745839856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1848,14 +1662,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1859244689}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.264, y: 0, z: -6.375}
+  m_LocalRotation: {x: -0.23840377, y: -0.062793896, z: -0.039685436, w: 0.9683211}
+  m_LocalPosition: {x: 0.215, y: 1.215, z: -6.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 155378033}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -27.819, y: -6.667, z: -3.041}
 --- !u!114 &1859244691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1872,7 +1686,14 @@ MonoBehaviour:
     serializedGuid: 87710dd34b11b6458aabda807c282bc1
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
-    shaderVariables: []
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 4
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
     shaderVariables: []
@@ -1882,9 +1703,104 @@ MonoBehaviour:
     - name: TwistAmountX
       shaderType: 0
       parameterType: 0
-      floatValue: 3.36
+      floatValue: 135.27
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
+    isEnabled: 1
+  transform4DEnabled: 1
+  positionW: 0
+  rotation4D: {x: 1.49, y: 0, z: 0}
+  scaleW: 2.85
   colour: {r: 1, g: 1, b: 1, a: 1}
-  marchingStepAmount: 1.92
+  marchingStepAmount: 7.81
+--- !u!1 &2100360757
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100360760}
+  - component: {fileID: 2100360759}
+  - component: {fileID: 2100360758}
+  m_Layer: 0
+  m_Name: RM Hypercube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &2100360758
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100360757}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2100360759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100360757}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid:
+    serializedGuid: b0d686e53cb646499245b80324e6f590
+  raymarchSDF:
+    shaderFeature: {fileID: 11400000, guid: 59488ebdc037ce74b896d1e921c667a1, type: 2}
+    shaderVariables:
+    - name: Dimensions
+      shaderType: 5
+      parameterType: 0
+      floatValue: 0
+      intValue: 0
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
+      textureValue: {fileID: 0}
+  raymarchMat:
+    shaderFeature: {fileID: 0}
+    shaderVariables: []
+  raymarchMods:
+  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+    shaderVariables:
+    - name: Displacement
+      shaderType: 0
+      parameterType: 0
+      floatValue: 2.73
+      intValue: 0
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    isEnabled: 1
+  transform4DEnabled: 1
+  positionW: 0.62
+  rotation4D: {x: 6.01, y: 0.7, z: 21.6}
+  scaleW: 23.02
+  colour: {r: 0.43921566, g: 1, b: 0, a: 1}
+  marchingStepAmount: 9.9
+--- !u!4 &2100360760
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100360757}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.491, y: 1.734, z: 7.502}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

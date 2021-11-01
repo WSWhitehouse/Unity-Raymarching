@@ -37,31 +37,73 @@ Shader "Raymarch/RaymarchTemplateShader"
       float4 vertex : SV_POSITION;
     };
 
-    // Camera
+    // RAYMARCH SETTINGS START //
+    static const float _RenderDistance = 100;
+    static const float _HitResolution = 0.001;
+    static const float _Relaxation = 1.2;
+    static const int _MaxIterations = 164;
+    // RAYMARCH SETTINGS END //
+
+    // LIGHTING SETTINGS START //
+    static const float4 _AmbientColour = float4(0.2117, 0.2274, 0.2588, 1);
+    static const float _ColourMultiplier = 1;
+    // LIGHTING SETTINGS END //
+
+    // Camera Settings
     uniform float4x4 _CamToWorldMatrix;
-
-    // Raymarching
-    uniform float _RenderDistance;
-    uniform float _HitResolution;
-    uniform float _Relaxation;
-    uniform int _MaxIterations;
-
-    // Lighting & Shadows
-    uniform float4 _AmbientColour;
-    uniform float _ColourMultiplier;
+    uniform float _CamPositionW;
+    uniform float3 _CamRotation4D;
 
     // RAYMARCH VARS //
 
-    float3 Rotate3D(float3 pos, float3 rot)
+    float3 Rotate3D(in float3 pos, in float4 rotor)
     {
-      pos.xz = mul(pos.xz, float2x2(cos(rot.y), sin(rot.y), -sin(rot.y), cos(rot.y)));
-      pos.yz = mul(pos.yz, float2x2(cos(rot.x), -sin(rot.x), sin(rot.x), cos(rot.x)));
-      pos.xy = mul(pos.xy, float2x2(cos(rot.z), -sin(rot.z), sin(rot.z), cos(rot.z)));
+      /*
+       * bi-vector components of the rotor
+       * rotor.x = bivector xy = b01
+       * rotor.y = bivector xz = b02
+       * rotor.z = bivector yz = b12
+       */
+
+      // NOTE(zack): v = basis vectors in 3 dimensions
+      float3 v;
+      v.x = rotor.a * pos.x + pos.y * rotor.x + pos.z * rotor.y;
+      v.y = rotor.a * pos.y - pos.x * rotor.x + pos.z * rotor.z;
+      v.z = rotor.a * pos.z - pos.x * rotor.y - pos.y * rotor.z;
+
+      float triVec = pos.x * rotor.z - pos.y * rotor.y + pos.z * rotor.x;
+
+      //NOTE(zack): Reflection formula vector and bivector multiplication table
+      float3 result;
+      result.x = rotor.a * v.x + v.y * rotor.x + v.z * rotor.y + triVec * rotor.z;
+      result.y = rotor.a * v.y - v.x * rotor.x - triVec * rotor.y + v.z * rotor.z;
+      result.z = rotor.a * v.z + triVec * rotor.x - v.x * rotor.y - v.y * rotor.z;
+
+      return result;
+    }
+
+    float4 Rotate4D(float4 pos, float3 rot)
+    {
+      pos.xw = mul(pos.xw, float2x2(cos(rot.x), sin(rot.x), -sin(rot.x), cos(rot.x)));
+      pos.yw = mul(pos.yw, float2x2(cos(rot.y), -sin(rot.y), sin(rot.y), cos(rot.y)));
+      pos.zw = mul(pos.zw, float2x2(cos(rot.z), -sin(rot.z), sin(rot.z), cos(rot.z)));
+
       return pos;
     }
 
     ObjectDistanceResult GetDistanceFromObjects(float3 rayPos)
     {
+      float4 rayPos4D = float4(rayPos, _CamPositionW);
+      if (length(_CamRotation4D) != 0)
+      {
+        rayPos4D.xw = mul(rayPos4D.xw, float2x2(cos(_CamRotation4D.x), -sin(_CamRotation4D.x),
+                                                sin(_CamRotation4D.x), cos(_CamRotation4D.x)));
+        rayPos4D.yw = mul(rayPos4D.yw, float2x2(cos(_CamRotation4D.y), -sin(_CamRotation4D.y),
+                                                sin(_CamRotation4D.y), cos(_CamRotation4D.y)));
+        rayPos4D.zw = mul(rayPos4D.zw, float2x2(cos(_CamRotation4D.z), -sin(_CamRotation4D.z),
+                                                sin(_CamRotation4D.z), cos(_CamRotation4D.z)));
+      }
+
       float resultDistance = _RenderDistance;
       float4 resultColour = float4(1, 1, 1, 1);
 
@@ -193,19 +235,22 @@ Shader "Raymarch/RaymarchTemplateShader"
         Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
 
         #if UNITY_REVERSED_Z
-        float depth = SampleSceneDepth(i.uv);
+        float sceneDepth = SampleSceneDepth(i.uv);
         #else
-                // Adjust z to match NDC for OpenGL
-                float depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(i.uv));
+        // Adjust z to match NDC for OpenGL
+        float sceneDepth = lerp(UNITY_NEAR_CLIP_VALUE, 1, SampleSceneDepth(i.uv));
         #endif
 
-        depth = LinearEyeDepth(depth, _ZBufferParams) * ray.Length;
+        float depth = LinearEyeDepth(sceneDepth, _ZBufferParams) * ray.Length;
 
         RaymarchResult raymarchResult = Raymarch(ray, depth);
 
-        return half4(
-          tex2D(_MainTex, i.uv) * (1.0 - raymarchResult.Succeeded) +
-          (raymarchResult.Colour * _ColourMultiplier) * raymarchResult.Succeeded);
+        if (raymarchResult.Succeeded > 0)
+        {
+          return half4(raymarchResult.Colour * _ColourMultiplier);
+        }
+
+        return half4(tex2D(_MainTex, i.uv));
       }
       ENDHLSL
     }

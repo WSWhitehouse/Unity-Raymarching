@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/01/2021 14:42:54
+//    Time Generated: 11/02/2021 09:42:58
 //---------------------------------------------------------------------
 
 #ifndef SDFFUNCTIONS_HLSL
@@ -25,9 +25,9 @@ float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
 return length( pa - ba*h ) - Radius;
 }
 
-float SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(float4 pos, float3 Dimensions)
+float SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(float4 pos, float4 Dimensions)
 {
-float4 o = abs(pos) - float4(Dimensions, 0);
+float4 o = abs(pos) - Dimensions;
 return length(max(o, 0.0)) + min(max(o.x, max(o.y, o.z)), 0.0);
 }
 

@@ -126,6 +126,27 @@ public class RaymarchScene : MonoBehaviour
   {
     InitSingleton();
   }
+
+  public static void ForceRenderScene()
+  {
+    if (ActiveInstance == null)
+    {
+      Debug.LogError($"You don't have an active {nameof(RaymarchScene)} in the scene {SceneManager.GetActiveScene().name}");
+      return;
+    }
+    
+    var rmBases = FindObjectsOfType<RaymarchBase>();
+    foreach (var rmBase in rmBases)
+    {
+      rmBase.Awake();
+    }
+    
+    var rmCameras = FindObjectsOfType<RaymarchCamera>();
+    foreach (var rmCamera in rmCameras)
+    {
+      rmCamera.Awake();
+    }
+  }
 #endif
 }
 
@@ -140,12 +161,10 @@ public class RaymarchSceneEditor : Editor
   private SerializedProperty _templateShaderProperty;
   private SerializedProperty _raymarchSettingsProperty;
   private SerializedProperty _lightingSettingsProperty;
-  private SerializedProperty _skyboxSettingsProperty;
 
   // Dropdowns
   private static bool _raymarchSettingsDropDown = false;
   private static bool _lightingSettingsDropDown = false;
-  private static bool _skyboxSettingsDropDown = false;
 
   private void OnEnable()
   {
@@ -153,7 +172,6 @@ public class RaymarchSceneEditor : Editor
     _templateShaderProperty = serializedObject.FindProperty("templateShader");
     _raymarchSettingsProperty = serializedObject.FindProperty("raymarchSettings");
     _lightingSettingsProperty = serializedObject.FindProperty("lightingSettings");
-    _skyboxSettingsProperty = serializedObject.FindProperty("skyboxSettings");
   }
 
   public override void OnInspectorGUI()
@@ -182,12 +200,7 @@ public class RaymarchSceneEditor : Editor
     if (GUILayout.Button(new GUIContent("Force Render Scene",
       "If the objects aren't rendering in the scene, press this button.")))
     {
-      var objects = FindObjectsOfType<RaymarchBase>();
-
-      foreach (var rmBase in objects)
-      {
-        rmBase.Awake();
-      }
+     RaymarchScene.ForceRenderScene();
     }
 
     EditorGUILayout.Space();
@@ -196,9 +209,6 @@ public class RaymarchSceneEditor : Editor
     EditorGUILayout.PropertyField(_templateShaderProperty, GUIContent.none, true);
 
     EditorGUILayout.Space();
-
-    // EditorGUILayout.PropertyField(_raymarchSettingsProperty, new GUIContent("Raymarch Settings"), true);
-    // EditorGUILayout.PropertyField(_lightingSettingsProperty, new GUIContent("Lighting Settings"), true);
 
     _raymarchSettingsDropDown =
       EditorGUILayout.BeginFoldoutHeaderGroup(_raymarchSettingsDropDown, new GUIContent("Raymarch Settings"));

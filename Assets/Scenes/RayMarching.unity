@@ -362,11 +362,11 @@ MonoBehaviour:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -374,7 +374,7 @@ MonoBehaviour:
   raymarchMods: []
   transform4DEnabled: 1
   positionW: 0
-  rotation4D: {x: 0.63, y: 3.67, z: 4.24}
+  rotation4D: {x: 0, y: 0, z: 0}
   scaleW: 1
   colour: {r: 0.43921566, g: 1, b: 0, a: 1}
   marchingStepAmount: 1
@@ -521,7 +521,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 605198479}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -532,11 +532,11 @@ MonoBehaviour:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -552,6 +552,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
+    EDITOR_ToggleHarcodedModifier: 1
   - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
@@ -583,6 +584,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
+    EDITOR_ToggleHarcodedModifier: 1
   - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
@@ -614,6 +616,7 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
+    EDITOR_ToggleHarcodedModifier: 0
   transform4DEnabled: 0
   positionW: 0
   rotation4D: {x: 0, y: 0, z: 0}
@@ -872,11 +875,11 @@ MonoBehaviour:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -892,6 +895,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
+    EDITOR_ToggleHarcodedModifier: 1
   transform4DEnabled: 0
   positionW: 0
   rotation4D: {x: 0, y: 0, z: 0}
@@ -1092,16 +1096,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid:
-    serializedGuid: c7a55a064e75e34ebf1117f267e253f0
+    serializedGuid: 5a2267f005c62a46a1f01a9c504f97b1
   raymarchSDF:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 100, y: 1, z: 100, w: 0}
+      vectorValue: {x: 100, y: 1, z: 100, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 11400000, guid: 68533ef4ca7169043bf7d7199392d505, type: 2}
@@ -1183,11 +1187,11 @@ MonoBehaviour:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 0.84, y: 9.98, z: 1, w: 0}
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -1688,11 +1692,11 @@ MonoBehaviour:
     shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
-      shaderType: 4
+      shaderType: 5
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1, y: 1, z: 1, w: 0}
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -1708,6 +1712,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
+    EDITOR_ToggleHarcodedModifier: 1
   transform4DEnabled: 1
   positionW: 0
   rotation4D: {x: 1.49, y: 0, z: 0}
@@ -1767,7 +1772,7 @@ MonoBehaviour:
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1, y: 1, z: 1, w: 1}
+      vectorValue: {x: 1.91, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -1783,6 +1788,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
+    EDITOR_ToggleHarcodedModifier: 0
   transform4DEnabled: 1
   positionW: 0.62
   rotation4D: {x: 6.01, y: 0.7, z: 21.6}

@@ -27,7 +27,7 @@ public class RaymarchCamera : MonoBehaviour
 
   private ShaderIDs _shaderIDs = new ShaderIDs();
   
-  private void Awake()
+  public void Awake()
   {
     Raymarch.UploadShaderDataAddCallback(UploadShaderData);
 

@@ -55,15 +55,8 @@ public static class Raymarch
 
   #endregion Raymarch Shader
 
-  #region Camera
-
-  public static float CameraPositionW { get; set; } = 0.0f;
-  public static Vector3 CameraRotation4D { get; set; } = Vector3.zero;
-
-  #endregion
-
   #region Upload Shader Data Event
-
+  
   public delegate void UploadShaderData(Material material);
 
   private static event UploadShaderData OnUploadShaderData;

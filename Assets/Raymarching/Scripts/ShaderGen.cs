@@ -26,7 +26,7 @@ public static class ShaderGen
 
   private const string LightingSettingsStart = "// LIGHTING SETTINGS START //";
   private const string LightingSettingsEnd = "// LIGHTING SETTINGS END //";
-  
+
   // NOTE(WSWhitehouse): string capacity that will be multiplied per object
   private const int StringCapacityPerObject = 512;
 
@@ -262,6 +262,7 @@ public static class ShaderGen
 
     StringBuilder result = new StringBuilder();
 
+    // NOTE(WSWhitehouse): Pre Modifiers
     foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
     {
       if (modifier.ShaderFeature.ModifierType != ModifierType.PreSDF) continue;
@@ -272,12 +273,21 @@ public static class ShaderGen
         modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
       }
 
-      result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
-      result.AppendLine("{");
+      if (!modifier.EDITOR_ToggleHarcodedModifier)
+      {
+        result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
+        result.AppendLine("{");
+      }
+
       result.AppendLine($"{localPosName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
-      result.AppendLine("}");
+
+      if (!modifier.EDITOR_ToggleHarcodedModifier)
+      {
+        result.AppendLine("}");
+      }
     }
 
+    // NOTE(WSWhitehouse): Signed Distance Field
     string parameters = localPosName;
     for (int i = 0; i < rmObject.raymarchSDF.ShaderVariables.Count; i++)
     {
@@ -287,6 +297,7 @@ public static class ShaderGen
     result.AppendLine(
       $"{localDistName} = {rmObject.raymarchSDF.ShaderFeature.FunctionNameWithGuid}({parameters}) * {scaleName};");
 
+    // NOTE(WSWhitehouse): Post Modifiers
     foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
     {
       if (modifier.ShaderFeature.ModifierType != ModifierType.PostSDF) continue;
@@ -296,12 +307,19 @@ public static class ShaderGen
       {
         modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
       }
+      
+      if (!modifier.EDITOR_ToggleHarcodedModifier)
+      {
+        result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
+        result.AppendLine("{");
+      }
+      
+      result.AppendLine($"{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
 
-      result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
-      result.AppendLine("{");
-      result.AppendLine(
-        $"{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
-      result.AppendLine("}");
+      if (!modifier.EDITOR_ToggleHarcodedModifier)
+      {
+        result.AppendLine("}");
+      }
     }
 
     result.AppendLine($"{localDistName} /= {marchingStepAmountName};");

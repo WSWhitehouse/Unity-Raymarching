@@ -5,6 +5,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 using System.Text;
 using UnityEditor;
+using UnityEngine.InputSystem;
 #endif
 
 [DisallowMultipleComponent, ExecuteAlways]
@@ -201,9 +202,29 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
   private static bool _materialDropDown = false;
   private static bool _modifierDropDown = false;
 
-  private readonly string[] _transformTypeNames = new[] {"3D Transform", "4D Transform"};
+  private readonly string[] _transformTypeNames = {"3D Transform", "4D Transform"};
 
   protected override void DrawInspector()
+  {
+    /* NOTE(WSWhitehouse):
+     * Each section is split up into functions below, this should help organise and
+     * help you follow the code as this can look quite a mess in some places.
+     * But it all seems to work...
+     */
+    
+    DrawTransformInspector();
+
+    EditorGUILayout.Space();
+
+    DrawSDFInspector();
+
+    EditorGUILayout.Space();
+
+    DrawMaterialInspector();
+    DrawModifierInspector();
+  }
+
+  private void DrawTransformInspector()
   {
     EditorGUILayout.LabelField("Transform", BoldLabelStyle);
     Target.Transform4DEnabled = GUILayout.Toolbar(Target.Transform4DEnabled ? 1 : 0, _transformTypeNames) == 1;
@@ -216,9 +237,10 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
       Target.LossyScaleW = EditorGUILayout.FloatField(
         new GUIContent("4D Scale", "This is the 'w' scale"), Target.LossyScaleW);
     }
+  }
 
-    EditorGUILayout.Space();
-
+  private void DrawSDFInspector()
+  {
     EditorGUILayout.LabelField("Signed Distance Function", BoldLabelStyle);
 
     EditorGUI.BeginChangeCheck();
@@ -239,9 +261,10 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
           "Increase this value to reduce visual glitches (especially useful when using modifiers). " +
           "However, increasing this value also reduces the performance - so it's a fine balance between what looks good and the performance."),
         Target.MarchingStepAmount);
+  }
 
-    EditorGUILayout.Space();
-
+  private void DrawMaterialInspector()
+  {
     _materialDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_materialDropDown, new GUIContent("Material"));
     if (_materialDropDown)
     {
@@ -270,7 +293,18 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
     }
 
     EditorGUILayout.EndFoldoutHeaderGroup();
+  }
 
+  private void DrawModifierInspector()
+  {
+    void MoveRaymarchMods(int oldIndex, int newIndex)
+    {
+      var item = Target.raymarchMods[oldIndex];
+      Target.raymarchMods.RemoveAt(oldIndex);
+      Target.raymarchMods.Insert(newIndex, item);
+      ShaderGen.GenerateRaymarchShader();
+    }
+    
     _modifierDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_modifierDropDown, new GUIContent("Modifiers"));
     if (_modifierDropDown)
     {
@@ -285,18 +319,71 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
       {
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
-        // Target.raymarchMods[i].IsEnabled = EditorGUILayout.Toggle(Target.raymarchMods[i].IsEnabled);
-
         string label = $"[{i.ToString()}] ";
         if (Target.raymarchMods[i].ShaderFeature != null)
         {
-          label += Target.raymarchMods[i].ShaderFeature.name;
+          label = string.Concat(label, Target.raymarchMods[i].ShaderFeature.name);
         }
 
-        // EditorGUILayout.LabelField(label, BoldLabelStyle);
+        EditorGUILayout.BeginHorizontal();
 
-        Target.raymarchMods[i].IsEnabled =
-          EditorGUILayout.ToggleLeft(new GUIContent(label), Target.raymarchMods[i].IsEnabled, BoldLabelStyle);
+        Rect toolbarRect = EditorGUILayout.GetControlRect();
+        Rect toggleAndNameRect = toolbarRect;
+        Rect nameRect = toolbarRect;
+        Rect menuButtonRect = toolbarRect;
+
+        toggleAndNameRect.width -= toolbarRect.height;
+        nameRect.x += 15f; // NOTE(WSWhitehouse): Magic Number - width of toggle box!
+
+        menuButtonRect.width = toolbarRect.height;
+        menuButtonRect.x += toggleAndNameRect.width;
+
+        if (Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier)
+        {
+          bool guiEnabledCached = GUI.enabled;
+          GUI.enabled = !Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier;
+
+          EditorGUI.Toggle(toggleAndNameRect, true);
+
+          GUI.enabled = guiEnabledCached;
+        }
+        else
+        {
+          Target.raymarchMods[i].IsEnabled = EditorGUI.Toggle(toggleAndNameRect, Target.raymarchMods[i].IsEnabled);
+        }
+
+        GUI.Label(nameRect, new GUIContent(label), BoldLabelStyle);
+
+        if (Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier)
+        {
+          Rect hardcodedRect = nameRect;
+          hardcodedRect.width = 80f; // NOTE(WSWhitehouse): Magic Number - width of "HARDCODED" (see code below)!
+          hardcodedRect.x = menuButtonRect.x - hardcodedRect.width;
+
+          GUI.Label(hardcodedRect, new GUIContent("HARDCODED"));
+        }
+
+        if (GUI.Button(menuButtonRect, new GUIContent(EditorGUIUtility.FindTexture("_Menu")), GUIStyle.none))
+        {
+          void onToggleHardcodedModifier(object modifier)
+          {
+            if (modifier is ToggleableShaderFeatureImpl<ModifierShaderFeature> modifierAs)
+            {
+              modifierAs.EDITOR_ToggleHarcodedModifier = !modifierAs.EDITOR_ToggleHarcodedModifier;
+              modifierAs.IsEnabled = true;
+              ShaderGen.GenerateRaymarchShader();
+            }
+          }
+
+          // NOTE(WSWhitehouse): Setting up modifier Options Menu
+          GenericMenu menu = new GenericMenu();
+          menu.AddItem(new GUIContent("Hardcoded Modifier"), Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier,
+            onToggleHardcodedModifier, Target.raymarchMods[i]);
+
+          menu.ShowAsContext();
+        }
+
+        EditorGUILayout.EndHorizontal();
 
         EditorGUI.BeginChangeCheck();
         Target.raymarchMods[i].ShaderFeature =
@@ -327,7 +414,7 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
 
         GUIStyle leftStyle = GUI.skin.FindStyle($"{GUI.skin.button.name}left");
         GUIStyle rightStyle = GUI.skin.FindStyle($"{GUI.skin.button.name}right");
-        
+
         if (GUI.Button(arrowButtonsRect, "▲", leftStyle))
         {
           MoveRaymarchMods(i, i - 1);
@@ -372,14 +459,6 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
     }
 
     EditorGUILayout.EndFoldoutHeaderGroup();
-  }
-
-  private void MoveRaymarchMods(int oldIndex, int newIndex)
-  {
-    var item = Target.raymarchMods[oldIndex];
-    Target.raymarchMods.RemoveAt(oldIndex);
-    Target.raymarchMods.Insert(newIndex, item);
-    ShaderGen.GenerateRaymarchShader();
   }
 }
 #endif

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 #if UNITY_EDITOR
 using System.Text;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 #endif
 
 [DisallowMultipleComponent, ExecuteAlways]
@@ -59,6 +59,19 @@ public abstract class RaymarchBase : MonoBehaviour
   protected virtual string GetShaderVariablesImpl()
   {
     return string.Empty;
+  }
+
+  [MenuItem("CONTEXT/RaymarchBase/Force Render Scene")]
+  private static void ForceRenderScene()
+  {
+    RaymarchScene.ForceRenderScene();
+  }
+
+  [MenuItem("CONTEXT/RaymarchBase/Reset GUID")]
+  private static void ResetGUID(MenuCommand command)
+  {
+    if (command.context is RaymarchBase rmBase)
+      rmBase.guid.ResetGUIDWithShaderGen();
   }
 #endif
 }

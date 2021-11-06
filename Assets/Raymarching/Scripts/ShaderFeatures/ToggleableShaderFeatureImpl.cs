@@ -43,6 +43,9 @@ public sealed class ToggleableShaderFeatureImpl<T> : ShaderFeatureImpl<T> where 
   }
   
 #if UNITY_EDITOR
+  
+  [SerializeField] public bool EDITOR_ToggleHarcodedModifier = false;
+
   public string GetIsEnabledShaderName(SerializableGuid guid)
   {
    return $"_IsEnabled{guid.ToShaderSafeString()}{postfix}";

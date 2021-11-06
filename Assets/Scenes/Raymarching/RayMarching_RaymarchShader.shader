@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/01/2021 14:47:40
+//    Time Generated: 11/05/2021 23:48:06
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -66,24 +66,24 @@ static const float _ColourMultiplier = 2;
     // Raymarch Variables
 uniform int _IsActive2913196af36c4f788661f592315628a5;
 
-uniform int _IsActive065aa5c7754e4ee3bf1117f267e253f0;
-uniform float3 _Dimensions065aa5c7754e4ee3bf1117f267e253f0;
+uniform int _IsActivef067225ac605462aa1f01a9c504f97b1;
+uniform float4 _Dimensionsf067225ac605462aa1f01a9c504f97b1;
 
-uniform sampler2D _Texture065aa5c7754e4ee3bf1117f267e253f0;
+uniform sampler2D _Texturef067225ac605462aa1f01a9c504f97b1;
 
-uniform float4 _Position065aa5c7754e4ee3bf1117f267e253f0;
-uniform float4 _RotationRotor3D065aa5c7754e4ee3bf1117f267e253f0;
-uniform float3 _Rotation4D065aa5c7754e4ee3bf1117f267e253f0;
-uniform float4 _Scale065aa5c7754e4ee3bf1117f267e253f0;
-uniform float4 _Colour065aa5c7754e4ee3bf1117f267e253f0;
-uniform float _MarchingStepAmount065aa5c7754e4ee3bf1117f267e253f0;
-uniform int _Transform4DEnabled065aa5c7754e4ee3bf1117f267e253f0;
+uniform float4 _Positionf067225ac605462aa1f01a9c504f97b1;
+uniform float4 _RotationRotor3Df067225ac605462aa1f01a9c504f97b1;
+uniform float3 _Rotation4Df067225ac605462aa1f01a9c504f97b1;
+uniform float4 _Scalef067225ac605462aa1f01a9c504f97b1;
+uniform float4 _Colourf067225ac605462aa1f01a9c504f97b1;
+uniform float _MarchingStepAmountf067225ac605462aa1f01a9c504f97b1;
+uniform int _Transform4DEnabledf067225ac605462aa1f01a9c504f97b1;
 
 uniform int _IsActive10fc656da492424e9757568d34136d0e;
 uniform float _Smooth10fc656da492424e9757568d34136d0e;
 
 uniform int _IsActiveb320a942164246c39a98c549464c0e2a;
-uniform float3 _Dimensionsb320a942164246c39a98c549464c0e2a;
+uniform float4 _Dimensionsb320a942164246c39a98c549464c0e2a;
 
 
 uniform float _TwistAmountXb320a942164246c39a98c549464c0e2a0;
@@ -98,7 +98,7 @@ uniform float _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
 uniform int _Transform4DEnabledb320a942164246c39a98c549464c0e2a;
 
 uniform int _IsActivef041e9cb2fa4455d853ef9789ba6c70d;
-uniform float3 _Dimensionsf041e9cb2fa4455d853ef9789ba6c70d;
+uniform float4 _Dimensionsf041e9cb2fa4455d853ef9789ba6c70d;
 
 
 uniform float4 _Positionf041e9cb2fa4455d853ef9789ba6c70d;
@@ -110,7 +110,7 @@ uniform float _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
 uniform int _Transform4DEnabledf041e9cb2fa4455d853ef9789ba6c70d;
 
 uniform int _IsActived30d7187114b45b68aabda807c282bc1;
-uniform float3 _Dimensionsd30d7187114b45b68aabda807c282bc1;
+uniform float4 _Dimensionsd30d7187114b45b68aabda807c282bc1;
 
 
 uniform float _TwistAmountXd30d7187114b45b68aabda807c282bc10;
@@ -125,7 +125,7 @@ uniform float _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
 uniform int _Transform4DEnabledd30d7187114b45b68aabda807c282bc1;
 
 uniform int _IsActive9909da39672d4c0a9ddbeec2369d040d;
-uniform float3 _Dimensions9909da39672d4c0a9ddbeec2369d040d;
+uniform float4 _Dimensions9909da39672d4c0a9ddbeec2369d040d;
 
 
 uniform float _Displacement9909da39672d4c0a9ddbeec2369d040d0;
@@ -167,7 +167,7 @@ uniform float _MarchingStepAmounte586d6b0b63c49469245b80324e6f590;
 uniform int _Transform4DEnablede586d6b0b63c49469245b80324e6f590;
 
 uniform int _IsActive5ebbfc4f35c24df29be3937f93a35c80;
-uniform float3 _Dimensions5ebbfc4f35c24df29be3937f93a35c80;
+uniform float4 _Dimensions5ebbfc4f35c24df29be3937f93a35c80;
 
 
 uniform float4 _Position5ebbfc4f35c24df29be3937f93a35c80;
@@ -231,23 +231,23 @@ uniform int _Transform4DEnabled5ebbfc4f35c24df29be3937f93a35c80;
       float resultDistance = _RenderDistance;
       float4 resultColour = float4(1, 1, 1, 1);
 
-      float4 position065aa5c7754e4ee3bf1117f267e253f0 = (rayPos4D - _Position065aa5c7754e4ee3bf1117f267e253f0) / _Scale065aa5c7754e4ee3bf1117f267e253f0;
-position065aa5c7754e4ee3bf1117f267e253f0 = float4(Rotate3D(position065aa5c7754e4ee3bf1117f267e253f0.xyz, _RotationRotor3D065aa5c7754e4ee3bf1117f267e253f0), position065aa5c7754e4ee3bf1117f267e253f0.w);
-if (_Transform4DEnabled065aa5c7754e4ee3bf1117f267e253f0 > 0)
+      float4 positionf067225ac605462aa1f01a9c504f97b1 = (rayPos4D - _Positionf067225ac605462aa1f01a9c504f97b1) / _Scalef067225ac605462aa1f01a9c504f97b1;
+positionf067225ac605462aa1f01a9c504f97b1 = float4(Rotate3D(positionf067225ac605462aa1f01a9c504f97b1.xyz, _RotationRotor3Df067225ac605462aa1f01a9c504f97b1), positionf067225ac605462aa1f01a9c504f97b1.w);
+if (_Transform4DEnabledf067225ac605462aa1f01a9c504f97b1 > 0)
 {
-position065aa5c7754e4ee3bf1117f267e253f0 = Rotate4D(position065aa5c7754e4ee3bf1117f267e253f0, _Rotation4D065aa5c7754e4ee3bf1117f267e253f0);
+positionf067225ac605462aa1f01a9c504f97b1 = Rotate4D(positionf067225ac605462aa1f01a9c504f97b1, _Rotation4Df067225ac605462aa1f01a9c504f97b1);
 }
-float distance065aa5c7754e4ee3bf1117f267e253f0 = _RenderDistance;
-if (_IsActive065aa5c7754e4ee3bf1117f267e253f0 > 0)
+float distancef067225ac605462aa1f01a9c504f97b1 = _RenderDistance;
+if (_IsActivef067225ac605462aa1f01a9c504f97b1 > 0)
 {
-distance065aa5c7754e4ee3bf1117f267e253f0 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position065aa5c7754e4ee3bf1117f267e253f0, _Dimensions065aa5c7754e4ee3bf1117f267e253f0) * _Scale065aa5c7754e4ee3bf1117f267e253f0;
-distance065aa5c7754e4ee3bf1117f267e253f0 /= _MarchingStepAmount065aa5c7754e4ee3bf1117f267e253f0;
+distancef067225ac605462aa1f01a9c504f97b1 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionf067225ac605462aa1f01a9c504f97b1, _Dimensionsf067225ac605462aa1f01a9c504f97b1) * _Scalef067225ac605462aa1f01a9c504f97b1;
+distancef067225ac605462aa1f01a9c504f97b1 /= _MarchingStepAmountf067225ac605462aa1f01a9c504f97b1;
 }
 
-if (distance065aa5c7754e4ee3bf1117f267e253f0 < resultDistance)
+if (distancef067225ac605462aa1f01a9c504f97b1 < resultDistance)
 {
-resultDistance = distance065aa5c7754e4ee3bf1117f267e253f0;
-resultColour   = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(position065aa5c7754e4ee3bf1117f267e253f0, _Colour065aa5c7754e4ee3bf1117f267e253f0, _Texture065aa5c7754e4ee3bf1117f267e253f0);
+resultDistance = distancef067225ac605462aa1f01a9c504f97b1;
+resultColour   = Mat_TextureMaterial_c3735437331f4f80a12534d02a465e6a(positionf067225ac605462aa1f01a9c504f97b1, _Colourf067225ac605462aa1f01a9c504f97b1, _Texturef067225ac605462aa1f01a9c504f97b1);
 }
 
 // Operation Start Oper_Blend 10fc656da492424e9757568d34136d0e
@@ -263,10 +263,7 @@ positionb320a942164246c39a98c549464c0e2a = Rotate4D(positionb320a942164246c39a98
 float distanceb320a942164246c39a98c549464c0e2a = _RenderDistance;
 if (_IsActiveb320a942164246c39a98c549464c0e2a > 0)
 {
-if (_IsEnabledb320a942164246c39a98c549464c0e2a0 > 0)
-{
 positionb320a942164246c39a98c549464c0e2a = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positionb320a942164246c39a98c549464c0e2a, _TwistAmountXb320a942164246c39a98c549464c0e2a0);
-}
 distanceb320a942164246c39a98c549464c0e2a = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionb320a942164246c39a98c549464c0e2a, _Dimensionsb320a942164246c39a98c549464c0e2a) * _Scaleb320a942164246c39a98c549464c0e2a;
 distanceb320a942164246c39a98c549464c0e2a /= _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
 }
@@ -310,10 +307,7 @@ positiond30d7187114b45b68aabda807c282bc1 = Rotate4D(positiond30d7187114b45b68aab
 float distanced30d7187114b45b68aabda807c282bc1 = _RenderDistance;
 if (_IsActived30d7187114b45b68aabda807c282bc1 > 0)
 {
-if (_IsEnabledd30d7187114b45b68aabda807c282bc10 > 0)
-{
 positiond30d7187114b45b68aabda807c282bc1 = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positiond30d7187114b45b68aabda807c282bc1, _TwistAmountXd30d7187114b45b68aabda807c282bc10);
-}
 distanced30d7187114b45b68aabda807c282bc1 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positiond30d7187114b45b68aabda807c282bc1, _Dimensionsd30d7187114b45b68aabda807c282bc1) * _Scaled30d7187114b45b68aabda807c282bc1;
 distanced30d7187114b45b68aabda807c282bc1 /= _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
 }
@@ -349,14 +343,8 @@ float distance9909da39672d4c0a9ddbeec2369d040d = _RenderDistance;
 if (_IsActive9909da39672d4c0a9ddbeec2369d040d > 0)
 {
 distance9909da39672d4c0a9ddbeec2369d040d = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position9909da39672d4c0a9ddbeec2369d040d, _Dimensions9909da39672d4c0a9ddbeec2369d040d) * _Scale9909da39672d4c0a9ddbeec2369d040d;
-if (_IsEnabled9909da39672d4c0a9ddbeec2369d040d0 > 0)
-{
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_Displacement3D_1a61691f0be94ed6b83151f90f2fefb1(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Displacement9909da39672d4c0a9ddbeec2369d040d0);
-}
-if (_IsEnabled9909da39672d4c0a9ddbeec2369d040d1 > 0)
-{
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Freq9909da39672d4c0a9ddbeec2369d040d1, _Amplitude9909da39672d4c0a9ddbeec2369d040d1, _Speed9909da39672d4c0a9ddbeec2369d040d1, _Dir9909da39672d4c0a9ddbeec2369d040d1);
-}
 if (_IsEnabled9909da39672d4c0a9ddbeec2369d040d2 > 0)
 {
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Freq9909da39672d4c0a9ddbeec2369d040d2, _Amplitude9909da39672d4c0a9ddbeec2369d040d2, _Speed9909da39672d4c0a9ddbeec2369d040d2, _Dir9909da39672d4c0a9ddbeec2369d040d2);

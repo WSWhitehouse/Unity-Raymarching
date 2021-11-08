@@ -209,7 +209,7 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
     /* NOTE(WSWhitehouse):
      * Each section is split up into functions below, this should help organise and
      * help you follow the code as this can look quite a mess in some places.
-     * But it all seems to work...
+     * But that's mainly because Unity's custom editors normally do...
      */
     
     DrawTransformInspector();
@@ -365,14 +365,13 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
 
         if (GUI.Button(menuButtonRect, new GUIContent(EditorGUIUtility.FindTexture("_Menu")), GUIStyle.none))
         {
+          // NOTE(WSWhitehouse): Local functions to be used in the Generic Menu below
           void onToggleHardcodedModifier(object modifier)
           {
-            if (modifier is ToggleableShaderFeatureImpl<ModifierShaderFeature> modifierAs)
-            {
-              modifierAs.EDITOR_ToggleHarcodedModifier = !modifierAs.EDITOR_ToggleHarcodedModifier;
-              modifierAs.IsEnabled = true;
-              ShaderGen.GenerateRaymarchShader();
-            }
+            if (modifier is not ToggleableShaderFeatureImpl<ModifierShaderFeature> modifierAs) return;
+            modifierAs.EDITOR_ToggleHarcodedModifier = !modifierAs.EDITOR_ToggleHarcodedModifier;
+            modifierAs.IsEnabled = true;
+            ShaderGen.GenerateRaymarchShader();
           }
 
           // NOTE(WSWhitehouse): Setting up modifier Options Menu

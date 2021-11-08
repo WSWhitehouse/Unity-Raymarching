@@ -185,8 +185,8 @@ public class RaymarchObject : RaymarchBase
     result.AppendLine($"uniform float3 _{nameof(Rotation4D)}{guid};");
     result.AppendLine($"uniform float4 _{nameof(Scale)}{guid};");
     result.AppendLine($"uniform float4 _{nameof(Colour)}{guid};");
-    result.AppendLine($"uniform float _{nameof(MarchingStepAmount)}{guid};");
-    result.AppendLine($"uniform int _{nameof(Transform4DEnabled)}{guid};");
+    result.AppendLine($"uniform float  _{nameof(MarchingStepAmount)}{guid};");
+    result.AppendLine($"uniform int    _{nameof(Transform4DEnabled)}{guid};");
 
     return result.ToString();
   }

@@ -165,6 +165,9 @@ public class RaymarchSceneEditor : Editor
   // Dropdowns
   private static bool _raymarchSettingsDropDown = false;
   private static bool _lightingSettingsDropDown = false;
+  
+  // Renderer Check
+  private static bool? _rendererOkay = null;
 
   private void OnEnable()
   {
@@ -202,6 +205,20 @@ public class RaymarchSceneEditor : Editor
     {
      RaymarchScene.ForceRenderScene();
     }
+    
+    if (GUILayout.Button(new GUIContent("Perform Renderer Checks",
+      "Checks to see if the renderer is set up correctly")))
+    {
+      _rendererOkay = Raymarch.PerformRendererChecks();
+    }
+
+    string rendererOkayLabel = "Not performed renderer checks";
+    if (_rendererOkay.HasValue)
+    {
+      rendererOkayLabel = _rendererOkay.Value ? "Okay" : "RaymarchRenderFeature cannot be found. Please add one.";
+    }
+
+    EditorGUILayout.LabelField($"Renderer Status: {rendererOkayLabel}");
 
     EditorGUILayout.Space();
 

@@ -15,8 +15,8 @@ MonoBehaviour:
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
   m_RendererFeatures:
-  - {fileID: 3538658796040075711}
-  m_RendererFeatureMap: bfb947276dd71b31
+  - {fileID: 531964344056017876}
+  m_RendererFeatureMap: d4f3a1a0c0ea6107
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_AccurateGbufferNormals: 0
   m_ClusteredRendering: 0
   m_TileSize: 32
---- !u!114 &3538658796040075711
+--- !u!114 &531964344056017876
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,6 +64,4 @@ MonoBehaviour:
   m_Name: RaymarchRenderFeature
   m_EditorClassIdentifier: 
   m_Active: 1
-  settings:
-    PassEvent: 400
-    RaymarchSettings: {fileID: 11400000, guid: a12468c52ae931b48be41f5f66490516, type: 2}
+  passEvent: 400

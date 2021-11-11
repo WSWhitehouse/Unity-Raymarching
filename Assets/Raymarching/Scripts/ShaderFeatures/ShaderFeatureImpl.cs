@@ -47,10 +47,6 @@ public class ShaderFeatureImpl<T> where T : ShaderFeature
       {
         shaderFeature = value;
         OnShaderVariablesChanged();
-      }
-
-      if (shaderFeature != null)
-      {
         shaderFeature.OnShaderVariablesChanged += OnShaderVariablesChanged;
       }
     }

@@ -156,9 +156,9 @@ public static class Raymarch
         }
       }
     }
-
+    
     Debug.LogError(
-      "Raymarch: A RaymarchRenderFeature was not found on any Renderers on the current render pipeline. Please add one!");
+      "HEY BUDDY! fuck you, we dont have one");
     return false;
 
 

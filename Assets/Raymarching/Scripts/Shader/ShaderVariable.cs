@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -54,7 +55,7 @@ public struct ShaderVariable
     vectorValue = other.vectorValue;
     textureValue = other.textureValue;
   }
-
+  
   // Shader
   public string GetShaderType()
   {
@@ -91,6 +92,35 @@ public struct ShaderVariable
       case ShaderType.Texture2D:
         material.SetTexture(shaderID, textureValue);
         break;
+      default:
+        throw new ArgumentOutOfRangeException();
+    }
+  }
+  
+  public string ValueToShaderString()
+  {
+    // NOTE(WSWhitehouse):
+    // Local function to convert float to string as it requires string culture to be explicitly specified
+    string _FloatToString(float value)
+    {
+      return value.ToString(NumberFormatInfo.CurrentInfo);
+    }
+    
+    switch (shaderType)
+    {
+      
+      case ShaderType.Float: return _FloatToString(floatValue);
+      case ShaderType.Int: return intValue.ToString();
+      case ShaderType.Bool: return intValue > 0 ? "true" : "false";
+      case ShaderType.Vector2: return $"float2({_FloatToString(vectorValue.x)}, {_FloatToString(vectorValue.y)})";
+      case ShaderType.Vector3: return $"float3({_FloatToString(vectorValue.x)}, {_FloatToString(vectorValue.y)}, {_FloatToString(vectorValue.z)})";
+      case ShaderType.Vector4: return $"float4({_FloatToString(vectorValue.x)}, {_FloatToString(vectorValue.y)}, {_FloatToString(vectorValue.z)}, {_FloatToString(vectorValue.w)})";
+      case ShaderType.Colour:  return $"float4({_FloatToString(vectorValue.x)}, {_FloatToString(vectorValue.y)}, {_FloatToString(vectorValue.z)}, {_FloatToString(vectorValue.w)})";
+      
+      // NOTE(WSWhitehouse): Cannot convert these types to a string
+      case ShaderType.Texture2D:
+      case ShaderType.Void: return "";
+      
       default:
         throw new ArgumentOutOfRangeException();
     }

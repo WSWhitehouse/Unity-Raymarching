@@ -261,31 +261,8 @@ public static class ShaderGen
     string marchingStepAmountName = $"_{nameof(rmObject.MarchingStepAmount)}{guid}";
 
     StringBuilder result = new StringBuilder();
-
-    // NOTE(WSWhitehouse): Pre Modifiers
-    foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
-    {
-      if (modifier.ShaderFeature.ModifierType != ModifierType.PreSDF) continue;
-
-      string modifierParams = localPosName;
-      for (int i = 0; i < modifier.ShaderVariables.Count; i++)
-      {
-        modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
-      }
-
-      if (!modifier.EDITOR_ToggleHarcodedModifier)
-      {
-        result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
-        result.AppendLine("{");
-      }
-
-      result.AppendLine($"{localPosName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
-
-      if (!modifier.EDITOR_ToggleHarcodedModifier)
-      {
-        result.AppendLine("}");
-      }
-    }
+    
+    result.AppendLine(RaymarchObjectModifiersShaderCode(rmObject, ModifierType.PreSDF));
 
     // NOTE(WSWhitehouse): Signed Distance Field
     string parameters = localPosName;
@@ -296,33 +273,68 @@ public static class ShaderGen
 
     result.AppendLine(
       $"{localDistName} = {rmObject.raymarchSDF.ShaderFeature.FunctionNameWithGuid}({parameters}) * {scaleName};");
+    
+    result.AppendLine(RaymarchObjectModifiersShaderCode(rmObject, ModifierType.PostSDF));
 
-    // NOTE(WSWhitehouse): Post Modifiers
+    result.AppendLine($"{localDistName} /= {marchingStepAmountName};");
+
+    return result.ToString();
+  }
+  
+  private static string RaymarchObjectModifiersShaderCode(RaymarchObject rmObject, ModifierType type)
+  {
+    string guid = rmObject.GUID.ToShaderSafeString();
+    string localDistName = $"distance{guid}";
+    string localPosName = $"position{guid}";
+
+    string defaultModifierParams = type switch
+    {
+      ModifierType.PreSDF => localPosName,
+      ModifierType.PostSDF => $"{localPosName}, {localDistName}",
+      _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+    };
+
+    string modifierOutputVar = type switch
+    {
+      ModifierType.PreSDF => localPosName,
+      ModifierType.PostSDF => localDistName,
+      _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+    };
+    
+    StringBuilder result = new StringBuilder();
+
     foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
     {
-      if (modifier.ShaderFeature.ModifierType != ModifierType.PostSDF) continue;
+      if (modifier.ShaderFeature.ModifierType != type) continue;
 
-      string modifierParams = $"position{guid}, {localDistName}";
+      string modifierParams = defaultModifierParams;
       for (int i = 0; i < modifier.ShaderVariables.Count; i++)
       {
-        modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
+        ShaderVariable variable = modifier.GetShaderVariable(i);
+        
+        if (modifier.hardcodedShaderFeature && variable.ShaderType != ShaderType.Texture2D)
+        {
+          modifierParams = string.Concat(modifierParams, ", ", variable.ValueToShaderString());
+        }
+        else
+        {
+          modifierParams = string.Concat(modifierParams, ", ", modifier.GetShaderVariableName(i, rmObject.GUID));
+        }
       }
-      
-      if (!modifier.EDITOR_ToggleHarcodedModifier)
+
+      if (!modifier.hardcodedShaderFeature)
       {
         result.AppendLine($"if ({modifier.GetIsEnabledShaderName(rmObject.GUID)} > 0)");
         result.AppendLine("{");
       }
-      
-      result.AppendLine($"{localDistName} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
 
-      if (!modifier.EDITOR_ToggleHarcodedModifier)
+      result.AppendLine($"{modifierOutputVar} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
+
+      if (!modifier.hardcodedShaderFeature)
       {
         result.AppendLine("}");
       }
     }
-
-    result.AppendLine($"{localDistName} /= {marchingStepAmountName};");
 
     return result.ToString();
   }

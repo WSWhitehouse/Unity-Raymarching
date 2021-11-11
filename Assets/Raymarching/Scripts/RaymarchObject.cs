@@ -338,10 +338,10 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
         menuButtonRect.width = toolbarRect.height;
         menuButtonRect.x += toggleAndNameRect.width;
 
-        if (Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier)
+        if (Target.raymarchMods[i].hardcodedShaderFeature)
         {
           bool guiEnabledCached = GUI.enabled;
-          GUI.enabled = !Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier;
+          GUI.enabled = !Target.raymarchMods[i].hardcodedShaderFeature;
 
           EditorGUI.Toggle(toggleAndNameRect, true);
 
@@ -354,7 +354,7 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
 
         GUI.Label(nameRect, new GUIContent(label), BoldLabelStyle);
 
-        if (Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier)
+        if (Target.raymarchMods[i].hardcodedShaderFeature)
         {
           Rect hardcodedRect = nameRect;
           hardcodedRect.width = 80f; // NOTE(WSWhitehouse): Magic Number - width of "HARDCODED" (see code below)!
@@ -369,14 +369,14 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
           void onToggleHardcodedModifier(object modifier)
           {
             if (modifier is not ToggleableShaderFeatureImpl<ModifierShaderFeature> modifierAs) return;
-            modifierAs.EDITOR_ToggleHarcodedModifier = !modifierAs.EDITOR_ToggleHarcodedModifier;
+            modifierAs.hardcodedShaderFeature = !modifierAs.hardcodedShaderFeature;
             modifierAs.IsEnabled = true;
             ShaderGen.GenerateRaymarchShader();
           }
 
           // NOTE(WSWhitehouse): Setting up modifier Options Menu
           GenericMenu menu = new GenericMenu();
-          menu.AddItem(new GUIContent("Hardcoded Modifier"), Target.raymarchMods[i].EDITOR_ToggleHarcodedModifier,
+          menu.AddItem(new GUIContent("Hardcoded Modifier"), Target.raymarchMods[i].hardcodedShaderFeature,
             onToggleHardcodedModifier, Target.raymarchMods[i]);
 
           menu.ShowAsContext();

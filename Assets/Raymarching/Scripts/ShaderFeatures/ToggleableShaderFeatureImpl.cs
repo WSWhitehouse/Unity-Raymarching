@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
-using UnityEditor;
 using System.Text;
 #endif
 
@@ -27,6 +25,8 @@ public sealed class ToggleableShaderFeatureImpl<T> : ShaderFeatureImpl<T> where 
     set => isEnabled = value;
   }
 
+  [SerializeField] public bool hardcodedShaderFeature = false;
+  
   private int isEnabledShaderID;
 
   protected override void InitShaderIDs(SerializableGuid guid)
@@ -43,9 +43,6 @@ public sealed class ToggleableShaderFeatureImpl<T> : ShaderFeatureImpl<T> where 
   }
   
 #if UNITY_EDITOR
-  
-  [SerializeField] public bool EDITOR_ToggleHarcodedModifier = false;
-
   public string GetIsEnabledShaderName(SerializableGuid guid)
   {
    return $"_IsEnabled{guid.ToShaderSafeString()}{postfix}";

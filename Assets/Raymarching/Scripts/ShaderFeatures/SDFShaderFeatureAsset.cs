@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 
 [CreateAssetMenu(menuName = "Raymarching/Signed Distance Function (SDF)")]
-public class SDFShaderFeature : ShaderFeature
+public class SDFShaderFeatureAsset : ShaderFeatureAsset
 {
   protected override string GetFunctionPrefix()
   {
@@ -29,16 +29,16 @@ public class SDFShaderFeature : ShaderFeature
   public override void SignalShaderFeatureUpdated()
   {
     base.SignalShaderFeatureUpdated();
-    ShaderGen.GenerateUtilShader<SDFShaderFeature>("SDFFunctions");
+    RaymarchShaderGen.GenerateUtilShader<SDFShaderFeatureAsset>("SDFFunctions");
   }
 #endif
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(SDFShaderFeature))]
+[CustomEditor(typeof(SDFShaderFeatureAsset))]
 public class SDFShaderFeatureEditor : ShaderFeatureEditor
 {
-  private SDFShaderFeature Target => target as SDFShaderFeature;
+  private SDFShaderFeatureAsset Target => target as SDFShaderFeatureAsset;
 
   protected override void DrawInspector()
   {

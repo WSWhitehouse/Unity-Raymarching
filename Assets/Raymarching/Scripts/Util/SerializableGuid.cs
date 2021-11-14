@@ -42,7 +42,7 @@ public class SerializableGuid
   public void ResetGUIDWithShaderGen()
   {
     ResetGUID();
-    ShaderGen.GenerateRaymarchShader();
+    RaymarchShaderGen.GenerateRaymarchShader();
   }
 #endif
 }

@@ -156,11 +156,6 @@ public static class Raymarch
         }
       }
     }
-    
-    Debug.LogError(
-      "HEY BUDDY! fuck you, we dont have one");
-    return false;
-
 
 #else
     Debug.LogError("Raymarch: Current Unity Pipeline is not supported!");

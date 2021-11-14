@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/05/2021 23:48:06
+//    Time Generated: 11/14/2021 21:31:45
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -76,8 +76,8 @@ uniform float4 _RotationRotor3Df067225ac605462aa1f01a9c504f97b1;
 uniform float3 _Rotation4Df067225ac605462aa1f01a9c504f97b1;
 uniform float4 _Scalef067225ac605462aa1f01a9c504f97b1;
 uniform float4 _Colourf067225ac605462aa1f01a9c504f97b1;
-uniform float _MarchingStepAmountf067225ac605462aa1f01a9c504f97b1;
-uniform int _Transform4DEnabledf067225ac605462aa1f01a9c504f97b1;
+uniform float  _MarchingStepAmountf067225ac605462aa1f01a9c504f97b1;
+uniform int    _Transform4DEnabledf067225ac605462aa1f01a9c504f97b1;
 
 uniform int _IsActive10fc656da492424e9757568d34136d0e;
 uniform float _Smooth10fc656da492424e9757568d34136d0e;
@@ -94,8 +94,8 @@ uniform float4 _RotationRotor3Db320a942164246c39a98c549464c0e2a;
 uniform float3 _Rotation4Db320a942164246c39a98c549464c0e2a;
 uniform float4 _Scaleb320a942164246c39a98c549464c0e2a;
 uniform float4 _Colourb320a942164246c39a98c549464c0e2a;
-uniform float _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
-uniform int _Transform4DEnabledb320a942164246c39a98c549464c0e2a;
+uniform float  _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
+uniform int    _Transform4DEnabledb320a942164246c39a98c549464c0e2a;
 
 uniform int _IsActivef041e9cb2fa4455d853ef9789ba6c70d;
 uniform float4 _Dimensionsf041e9cb2fa4455d853ef9789ba6c70d;
@@ -106,8 +106,8 @@ uniform float4 _RotationRotor3Df041e9cb2fa4455d853ef9789ba6c70d;
 uniform float3 _Rotation4Df041e9cb2fa4455d853ef9789ba6c70d;
 uniform float4 _Scalef041e9cb2fa4455d853ef9789ba6c70d;
 uniform float4 _Colourf041e9cb2fa4455d853ef9789ba6c70d;
-uniform float _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
-uniform int _Transform4DEnabledf041e9cb2fa4455d853ef9789ba6c70d;
+uniform float  _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
+uniform int    _Transform4DEnabledf041e9cb2fa4455d853ef9789ba6c70d;
 
 uniform int _IsActived30d7187114b45b68aabda807c282bc1;
 uniform float4 _Dimensionsd30d7187114b45b68aabda807c282bc1;
@@ -121,8 +121,8 @@ uniform float4 _RotationRotor3Dd30d7187114b45b68aabda807c282bc1;
 uniform float3 _Rotation4Dd30d7187114b45b68aabda807c282bc1;
 uniform float4 _Scaled30d7187114b45b68aabda807c282bc1;
 uniform float4 _Colourd30d7187114b45b68aabda807c282bc1;
-uniform float _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
-uniform int _Transform4DEnabledd30d7187114b45b68aabda807c282bc1;
+uniform float  _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
+uniform int    _Transform4DEnabledd30d7187114b45b68aabda807c282bc1;
 
 uniform int _IsActive9909da39672d4c0a9ddbeec2369d040d;
 uniform float4 _Dimensions9909da39672d4c0a9ddbeec2369d040d;
@@ -148,8 +148,8 @@ uniform float4 _RotationRotor3D9909da39672d4c0a9ddbeec2369d040d;
 uniform float3 _Rotation4D9909da39672d4c0a9ddbeec2369d040d;
 uniform float4 _Scale9909da39672d4c0a9ddbeec2369d040d;
 uniform float4 _Colour9909da39672d4c0a9ddbeec2369d040d;
-uniform float _MarchingStepAmount9909da39672d4c0a9ddbeec2369d040d;
-uniform int _Transform4DEnabled9909da39672d4c0a9ddbeec2369d040d;
+uniform float  _MarchingStepAmount9909da39672d4c0a9ddbeec2369d040d;
+uniform int    _Transform4DEnabled9909da39672d4c0a9ddbeec2369d040d;
 
 uniform int _IsActivee586d6b0b63c49469245b80324e6f590;
 uniform float4 _Dimensionse586d6b0b63c49469245b80324e6f590;
@@ -163,8 +163,8 @@ uniform float4 _RotationRotor3De586d6b0b63c49469245b80324e6f590;
 uniform float3 _Rotation4De586d6b0b63c49469245b80324e6f590;
 uniform float4 _Scalee586d6b0b63c49469245b80324e6f590;
 uniform float4 _Coloure586d6b0b63c49469245b80324e6f590;
-uniform float _MarchingStepAmounte586d6b0b63c49469245b80324e6f590;
-uniform int _Transform4DEnablede586d6b0b63c49469245b80324e6f590;
+uniform float  _MarchingStepAmounte586d6b0b63c49469245b80324e6f590;
+uniform int    _Transform4DEnablede586d6b0b63c49469245b80324e6f590;
 
 uniform int _IsActive5ebbfc4f35c24df29be3937f93a35c80;
 uniform float4 _Dimensions5ebbfc4f35c24df29be3937f93a35c80;
@@ -175,8 +175,8 @@ uniform float4 _RotationRotor3D5ebbfc4f35c24df29be3937f93a35c80;
 uniform float3 _Rotation4D5ebbfc4f35c24df29be3937f93a35c80;
 uniform float4 _Scale5ebbfc4f35c24df29be3937f93a35c80;
 uniform float4 _Colour5ebbfc4f35c24df29be3937f93a35c80;
-uniform float _MarchingStepAmount5ebbfc4f35c24df29be3937f93a35c80;
-uniform int _Transform4DEnabled5ebbfc4f35c24df29be3937f93a35c80;
+uniform float  _MarchingStepAmount5ebbfc4f35c24df29be3937f93a35c80;
+uniform int    _Transform4DEnabled5ebbfc4f35c24df29be3937f93a35c80;
 
 
 
@@ -240,7 +240,9 @@ positionf067225ac605462aa1f01a9c504f97b1 = Rotate4D(positionf067225ac605462aa1f0
 float distancef067225ac605462aa1f01a9c504f97b1 = _RenderDistance;
 if (_IsActivef067225ac605462aa1f01a9c504f97b1 > 0)
 {
+
 distancef067225ac605462aa1f01a9c504f97b1 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionf067225ac605462aa1f01a9c504f97b1, _Dimensionsf067225ac605462aa1f01a9c504f97b1) * _Scalef067225ac605462aa1f01a9c504f97b1;
+
 distancef067225ac605462aa1f01a9c504f97b1 /= _MarchingStepAmountf067225ac605462aa1f01a9c504f97b1;
 }
 
@@ -263,8 +265,13 @@ positionb320a942164246c39a98c549464c0e2a = Rotate4D(positionb320a942164246c39a98
 float distanceb320a942164246c39a98c549464c0e2a = _RenderDistance;
 if (_IsActiveb320a942164246c39a98c549464c0e2a > 0)
 {
+if (_IsEnabledb320a942164246c39a98c549464c0e2a0 > 0)
+{
 positionb320a942164246c39a98c549464c0e2a = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positionb320a942164246c39a98c549464c0e2a, _TwistAmountXb320a942164246c39a98c549464c0e2a0);
+}
+
 distanceb320a942164246c39a98c549464c0e2a = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionb320a942164246c39a98c549464c0e2a, _Dimensionsb320a942164246c39a98c549464c0e2a) * _Scaleb320a942164246c39a98c549464c0e2a;
+
 distanceb320a942164246c39a98c549464c0e2a /= _MarchingStepAmountb320a942164246c39a98c549464c0e2a;
 }
 
@@ -280,7 +287,9 @@ positionf041e9cb2fa4455d853ef9789ba6c70d = Rotate4D(positionf041e9cb2fa4455d853e
 float distancef041e9cb2fa4455d853ef9789ba6c70d = _RenderDistance;
 if (_IsActivef041e9cb2fa4455d853ef9789ba6c70d > 0)
 {
+
 distancef041e9cb2fa4455d853ef9789ba6c70d = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positionf041e9cb2fa4455d853ef9789ba6c70d, _Dimensionsf041e9cb2fa4455d853ef9789ba6c70d) * _Scalef041e9cb2fa4455d853ef9789ba6c70d;
+
 distancef041e9cb2fa4455d853ef9789ba6c70d /= _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
 }
 
@@ -307,8 +316,13 @@ positiond30d7187114b45b68aabda807c282bc1 = Rotate4D(positiond30d7187114b45b68aab
 float distanced30d7187114b45b68aabda807c282bc1 = _RenderDistance;
 if (_IsActived30d7187114b45b68aabda807c282bc1 > 0)
 {
+if (_IsEnabledd30d7187114b45b68aabda807c282bc10 > 0)
+{
 positiond30d7187114b45b68aabda807c282bc1 = Mod_TwistX_a2afad70a366443ead7b8bf1ce7c82fc(positiond30d7187114b45b68aabda807c282bc1, _TwistAmountXd30d7187114b45b68aabda807c282bc10);
+}
+
 distanced30d7187114b45b68aabda807c282bc1 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(positiond30d7187114b45b68aabda807c282bc1, _Dimensionsd30d7187114b45b68aabda807c282bc1) * _Scaled30d7187114b45b68aabda807c282bc1;
+
 distanced30d7187114b45b68aabda807c282bc1 /= _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
 }
 
@@ -342,13 +356,21 @@ position9909da39672d4c0a9ddbeec2369d040d = Rotate4D(position9909da39672d4c0a9ddb
 float distance9909da39672d4c0a9ddbeec2369d040d = _RenderDistance;
 if (_IsActive9909da39672d4c0a9ddbeec2369d040d > 0)
 {
+
 distance9909da39672d4c0a9ddbeec2369d040d = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position9909da39672d4c0a9ddbeec2369d040d, _Dimensions9909da39672d4c0a9ddbeec2369d040d) * _Scale9909da39672d4c0a9ddbeec2369d040d;
+if (_IsEnabled9909da39672d4c0a9ddbeec2369d040d0 > 0)
+{
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_Displacement3D_1a61691f0be94ed6b83151f90f2fefb1(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Displacement9909da39672d4c0a9ddbeec2369d040d0);
+}
+if (_IsEnabled9909da39672d4c0a9ddbeec2369d040d1 > 0)
+{
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Freq9909da39672d4c0a9ddbeec2369d040d1, _Amplitude9909da39672d4c0a9ddbeec2369d040d1, _Speed9909da39672d4c0a9ddbeec2369d040d1, _Dir9909da39672d4c0a9ddbeec2369d040d1);
+}
 if (_IsEnabled9909da39672d4c0a9ddbeec2369d040d2 > 0)
 {
 distance9909da39672d4c0a9ddbeec2369d040d = Mod_SineWave_a6bfc751b1354407833fc4a471b08d44(position9909da39672d4c0a9ddbeec2369d040d, distance9909da39672d4c0a9ddbeec2369d040d, _Freq9909da39672d4c0a9ddbeec2369d040d2, _Amplitude9909da39672d4c0a9ddbeec2369d040d2, _Speed9909da39672d4c0a9ddbeec2369d040d2, _Dir9909da39672d4c0a9ddbeec2369d040d2);
 }
+
 distance9909da39672d4c0a9ddbeec2369d040d /= _MarchingStepAmount9909da39672d4c0a9ddbeec2369d040d;
 }
 
@@ -367,11 +389,13 @@ positione586d6b0b63c49469245b80324e6f590 = Rotate4D(positione586d6b0b63c49469245
 float distancee586d6b0b63c49469245b80324e6f590 = _RenderDistance;
 if (_IsActivee586d6b0b63c49469245b80324e6f590 > 0)
 {
+
 distancee586d6b0b63c49469245b80324e6f590 = SDF_Hypercube_78b7fc6cdf924ebf90ce9825f126d7f5(positione586d6b0b63c49469245b80324e6f590, _Dimensionse586d6b0b63c49469245b80324e6f590) * _Scalee586d6b0b63c49469245b80324e6f590;
 if (_IsEnablede586d6b0b63c49469245b80324e6f5900 > 0)
 {
 distancee586d6b0b63c49469245b80324e6f590 = Mod_Displacement3D_1a61691f0be94ed6b83151f90f2fefb1(positione586d6b0b63c49469245b80324e6f590, distancee586d6b0b63c49469245b80324e6f590, _Displacemente586d6b0b63c49469245b80324e6f5900);
 }
+
 distancee586d6b0b63c49469245b80324e6f590 /= _MarchingStepAmounte586d6b0b63c49469245b80324e6f590;
 }
 
@@ -390,7 +414,9 @@ position5ebbfc4f35c24df29be3937f93a35c80 = Rotate4D(position5ebbfc4f35c24df29be3
 float distance5ebbfc4f35c24df29be3937f93a35c80 = _RenderDistance;
 if (_IsActive5ebbfc4f35c24df29be3937f93a35c80 > 0)
 {
+
 distance5ebbfc4f35c24df29be3937f93a35c80 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position5ebbfc4f35c24df29be3937f93a35c80, _Dimensions5ebbfc4f35c24df29be3937f93a35c80) * _Scale5ebbfc4f35c24df29be3937f93a35c80;
+
 distance5ebbfc4f35c24df29be3937f93a35c80 /= _MarchingStepAmount5ebbfc4f35c24df29be3937f93a35c80;
 }
 

@@ -1,257 +1,260 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #if UNITY_EDITOR
+using System.Text;
 using UnityEditor;
 #endif
 
-public abstract class ShaderFeature : ScriptableObject
+/*
+ * NOTE(WSWhitehouse):
+ * This script is used to implement Shader Features Assets on scene objects. It creates local copies
+ * of variables so they can be updated on a per-object basis by responding to the
+ * OnShaderVariablesChanged event in the Shader Feature Asset. It also handles getting shader
+ * IDs and uploading the local Shader Feature Asset variables to the shader. Also includes an editor
+ * class for useful OnInspectorGUI functions.
+ */
+
+[Serializable]
+public class ShaderFeature<T> where T : ShaderFeatureAsset
 {
-  #region GUID
+  #region Shader Feature
 
-  [SerializeField] private SerializableGuid guid;
-  public SerializableGuid GUID => guid;
+  [SerializeField, FormerlySerializedAs("shaderFeature")] private T shaderFeatureAsset;
 
-  #endregion GUID
-
-  #region Shader Code
-
-  public string FunctionName => $"{GetFunctionPrefix()}_{name.Replace(' ', '_')}";
-  public string FunctionNameWithGuid => $"{FunctionName}_{GUID.ToShaderSafeString()}";
-
-  public string FunctionParameters
+  public T ShaderFeatureAsset
   {
-    get
+    get => shaderFeatureAsset;
+#if UNITY_EDITOR
+    // NOTE(WSWhitehouse): Cannot change the shader feature asset during runtime, for editor only
+    set
     {
-      string parameters = String.Empty;
-      var defaultParams = GetDefaultParameters();
+      if (Application.isPlaying) return;
+      if (EqualityComparer<T>.Default.Equals(shaderFeatureAsset, value)) return;
 
-      for (int i = 0; i < defaultParams.Length; i++)
+      if (shaderFeatureAsset != null)
       {
-        if (i == 0)
-        {
-          parameters = $"{defaultParams[i].ToShaderParameter()}";
-          continue;
-        }
-
-        parameters = $"{parameters}, {defaultParams[i].ToShaderParameter()}";
+        shaderFeatureAsset.OnShaderVariablesChanged -= OnShaderVariablesChanged;
       }
 
-      for (int i = 0; i < shaderVariables.Count; i++)
+      if (value == null)
       {
-        parameters = string.Concat(parameters, ", ", shaderVariables[i].ToShaderParameter());
+        shaderFeatureAsset = null;
+        shaderVariables.Clear();
       }
-
-      return parameters;
+      else
+      {
+        shaderFeatureAsset = value;
+        OnShaderVariablesChanged();
+        shaderFeatureAsset.OnShaderVariablesChanged += OnShaderVariablesChanged;
+      }
     }
+#endif
   }
 
-  public string FunctionPrototype => $"{GetReturnType().ToShaderString()} {FunctionName}({FunctionParameters})";
+  #endregion Shader Feature
 
-  public string FunctionPrototypeWithGuid =>
-    $"{GetReturnType().ToShaderString()} {FunctionNameWithGuid}({FunctionParameters})";
-
-  [SerializeField] private string functionBody = "return 0;";
-
-  public string FunctionBody
-  {
-    get => functionBody;
-    set => functionBody = value;
-  }
-
-  /*
-   * NOTE(WSWhitehouse):
-   * The following abstract functions are used to set up a shader feature.
-   * They must all be overwritten but can return nothing - i.e. `string.Empty`,
-   * `Array.Empty<>()` or `ShaderType.void`. They are abstract to force inheriting
-   * shader features to implement them.
-   */
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected abstract string GetFunctionPrefix();
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected abstract ShaderType GetReturnType();
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected abstract ShaderVariable[] GetDefaultParameters();
-
-  #endregion Shader Code
+  #region Shader Variables
 
   [SerializeField] private List<ShaderVariable> shaderVariables = new List<ShaderVariable>();
 
+  public List<ShaderVariable> ShaderVariables => shaderVariables;
+
+  public string GetShaderVariableName(int index, SerializableGuid guid)
+  {
+    return $"{ShaderVariables[index].GetShaderName(guid)}{postfix}";
+  }
+
+  /// <summary>
+  /// Get index of variable from its name.
+  /// </summary>
+  /// <param name="name">name of shader variable</param>
+  /// <returns>index of shader variable in <see cref="ShaderVariables"/> list. Returns -1 if variable cannot be found</returns>
+  public int PropertyToID(string name)
+  {
+    return ShaderVariables.FindIndex(x => x.Name == name);
+  }
+
+  /// <summary>
+  /// Returns the shader variable at the ID
+  /// </summary>
+  /// <param name="id">ID of shader variable - use <see cref="PropertyToID"/> to get ID</param>
+  /// <seealso cref="PropertyToID"/>
+  public ShaderVariable GetShaderVariable(int id)
+  {
+    return ShaderVariables[id];
+  }
+
+  /// <summary>
+  /// Returns the shader variable with the given name - this performs no error checking, meaning if the variable
+  /// cannot be found an exception could be thrown. Use <see cref="GetShaderVariable(int)"/> instead.
+  /// </summary>
+  /// <param name="name">Name of shader variable</param>
+  public ShaderVariable GetShaderVariable(string name)
+  {
+    return ShaderVariables[PropertyToID(name)];
+  }
+
 #if UNITY_EDITOR
-  // NOTE(WSWhitehouse): Only allow access in the editor, the ShaderVariables should not be updated at runtime.
-  public List<ShaderVariable> ShaderVariables
+  private void OnShaderVariablesChanged()
   {
-    get => shaderVariables;
-    set => shaderVariables = value;
-  }
+    int count = ShaderFeatureAsset.ShaderVariables.Count;
 
-  /*
-   * NOTE(WSWhitehouse):
-   * This event is invoked when this shader feature gets changed, it ensures that all implementations of
-   * a shader feature gets up to date variables and gets notified of a change. The event is only used in
-   * debug so don't subscribe to it during runtime.
-   */
-  public delegate void ShaderVariablesChanged();
+    var newVariables = new List<ShaderVariable>(count);
 
-  public event ShaderVariablesChanged OnShaderVariablesChanged;
-
-  public virtual void SignalShaderFeatureUpdated()
-  {
-    OnShaderVariablesChanged?.Invoke();
-    EditorUtility.SetDirty(this);
-  }
-#endif
-}
-
-#if UNITY_EDITOR
-[CustomEditor(typeof(ShaderFeature))]
-public class ShaderFeatureEditor : Editor
-{
-  private ShaderFeature Target => target as ShaderFeature;
-
-  private bool _valuesDropDown = true;
-
-  private string _functionBody;
-  private List<ShaderVariable> _shaderVariables;
-
-  private bool _changes = false;
-
-  protected virtual void OnEnable()
-  {
-    _functionBody = Target.FunctionBody;
-    _shaderVariables = Target.ShaderVariables;
-  }
-
-  // NOTE(WSWhitehouse): Do *NOT* override this function as it handles enabling/disabling
-  // of the GUI while in play mode. Instead, override "DrawInspector()". The function is
-  // marked sealed to ensure it cannot be overriden.
-  public sealed override void OnInspectorGUI()
-  {
-    if (Application.isPlaying)
-      EditorGUILayout.HelpBox("You cannot edit Shader Features during play mode.", MessageType.Info, true);
-
-    bool cachedGUIEnabled = GUI.enabled;
-    GUI.enabled = !Application.isPlaying;
-
-    serializedObject.Update();
-    DrawInspector();
-    serializedObject.ApplyModifiedProperties();
-
-    GUI.enabled = cachedGUIEnabled;
-  }
-
-  protected virtual void DrawInspector()
-  {
-    GUIStyle wordWrapStyle = EditorStyles.wordWrappedLabel;
-    wordWrapStyle.fontStyle = FontStyle.Bold;
-
-    EditorGUILayout.BeginVertical(GUI.skin.box);
-    EditorGUILayout.LabelField(Target.FunctionPrototype, wordWrapStyle);
-    EditorGUILayout.LabelField("{");
-    
-    EditorGUI.BeginChangeCheck();
-
-    EditorGUI.indentLevel++;
-    _functionBody = EditorGUILayout.TextArea(_functionBody);
-    EditorGUI.indentLevel--;
-
-    if (EditorGUI.EndChangeCheck())
+    for (int i = 0; i < count; i++)
     {
-      _changes = true;
+      int index = ShaderVariables.FindIndex(x =>
+        x.Name == ShaderFeatureAsset.ShaderVariables[i].Name);
+
+      if (index < 0) // variable not found
+      {
+        newVariables.Add(ShaderFeatureAsset.ShaderVariables[i]);
+        continue;
+      }
+
+      newVariables.Add(shaderVariables[index].ShaderType != ShaderFeatureAsset.ShaderVariables[i].ShaderType
+        ? ShaderFeatureAsset.ShaderVariables[i]
+        : shaderVariables[index]);
     }
 
-    EditorGUILayout.LabelField("}");
+    shaderVariables = newVariables;
+  }
+#endif
 
-    EditorGUILayout.EndVertical();
+  #endregion Shader Variables
 
-    EditorGUILayout.Space();
+  #region Shader IDs
 
-    _valuesDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_valuesDropDown, "Values");
+  private int[] _shaderIDs;
 
-    if (_valuesDropDown)
+#if UNITY_EDITOR
+  // NOTE(WSWhitehouse): Storing the guid of the object that is initialising the ShaderFeature, just in case
+  // the variables get updated and the IDs need to be regenerated - this only happens in the editor
+  private SerializableGuid guid;
+#endif
+
+  protected virtual void InitShaderIDs(SerializableGuid guid)
+  {
+#if UNITY_EDITOR
+    this.guid = guid;
+#endif
+
+    _shaderIDs = new int[ShaderVariables.Count];
+    for (int i = 0; i < _shaderIDs.Length; i++)
     {
-      EditorGUI.indentLevel++;
+      _shaderIDs[i] = Shader.PropertyToID(GetShaderVariableName(i, guid));
+    }
+  }
 
-      for (int i = 0; i < _shaderVariables.Count; i++)
+  #endregion Shader IDs
+
+  protected string postfix = string.Empty;
+
+  /// <param name="postfix">
+  /// This string will be appended to the names of any shader variables. Used to
+  /// distinguish between multiple of the same shader feature (i.e. a list/array of shader features)
+  /// </param>
+  public void Awake(SerializableGuid guid, string postfix = "")
+  {
+#if UNITY_EDITOR
+    if (ShaderFeatureAsset != null)
+    {
+      ShaderFeatureAsset.OnShaderVariablesChanged += OnShaderVariablesChanged;
+    }
+#endif
+
+    this.postfix = postfix;
+
+    InitShaderIDs(guid);
+    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
+  }
+
+  public bool IsValid()
+  {
+    return ShaderFeatureAsset != null;
+  }
+
+  public void OnDestroy()
+  {
+#if UNITY_EDITOR
+    if (ShaderFeatureAsset != null)
+    {
+      ShaderFeatureAsset.OnShaderVariablesChanged -= OnShaderVariablesChanged;
+    }
+#endif
+    
+    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
+  }
+
+  protected virtual void UploadShaderData(Material material)
+  {
+    if (ShaderFeatureAsset == null) return;
+
+#if UNITY_EDITOR
+    // NOTE(WSWhitehouse): This can happen when the scene is reloaded in edit mode
+    if (ShaderVariables.Count != _shaderIDs.Length)
+    {
+      InitShaderIDs(guid);
+    }
+#endif
+
+    for (int i = 0; i < ShaderVariables.Count; i++)
+    {
+      ShaderVariables[i].UploadToShader(material, _shaderIDs[i]);
+    }
+  }
+
+#if UNITY_EDITOR
+  public virtual string GetShaderVariables(SerializableGuid guid)
+  {
+    if (ShaderFeatureAsset == null) return string.Empty;
+
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < ShaderVariables.Count; i++)
+    {
+      result.AppendLine($"uniform {ShaderVariables[i].GetShaderType()} {GetShaderVariableName(i, guid)};");
+    }
+
+    return result.ToString();
+  }
+#endif
+
+#if UNITY_EDITOR
+  public static class Editor
+  {
+    public static ShaderFeature<T> ShaderVariableField(GUIContent guiContent, ShaderFeature<T> shaderFeature)
+    {
+      if (shaderFeature.shaderVariables.Count <= 0)
       {
-        EditorGUILayout.BeginVertical(GUI.skin.box);
+        return shaderFeature;
+      }
 
+      GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("label"))
+      {
+        fontStyle = FontStyle.Bold
+      };
+
+      if (guiContent != GUIContent.none)
+        EditorGUILayout.LabelField(guiContent, boldStyle);
+
+      for (int i = 0; i < shaderFeature.ShaderVariables.Count; i++)
+      {
         EditorGUI.BeginChangeCheck();
 
-        var value = ShaderVariable.Editor.EditableVariableField(_shaderVariables[i]);
+        var variable = ShaderVariable.Editor.VariableField(shaderFeature.ShaderVariables[i]);
 
         if (EditorGUI.EndChangeCheck())
         {
-          _shaderVariables[i] = value;
-          _changes = true;
-          // Target.SignalShaderFeatureUpdated();
+          shaderFeature.ShaderVariables[i] = variable;
         }
-
-        if (GUILayout.Button("Remove Value"))
-        {
-          RemoveValue(i);
-          EditorGUILayout.EndVertical();
-          break; // leave loop so iterator doesn't get messed up!
-        }
-
-        EditorGUILayout.EndVertical();
       }
 
-      if (GUILayout.Button("Add New Value"))
-      {
-        AddValue();
-      }
-
-      EditorGUI.indentLevel--;
+      return shaderFeature;
     }
-
-    EditorGUILayout.EndFoldoutHeaderGroup();
-
-    EditorGUILayout.Space();
-    EditorGUILayout.LabelField("Apply Changes to Shader Feature", wordWrapStyle);
-    EditorGUILayout.BeginHorizontal();
-
-    bool guiEnableCache = GUI.enabled;
-    GUI.enabled = _changes && guiEnableCache;
-
-    if (GUILayout.Button("Apply"))
-    {
-      _changes = false;
-      Target.FunctionBody = _functionBody;
-      Target.ShaderVariables = _shaderVariables;
-      Target.SignalShaderFeatureUpdated();
-    }
-
-    if (GUILayout.Button("Revert"))
-    {
-      _changes = false;
-      _functionBody = Target.FunctionBody;
-      _shaderVariables = Target.ShaderVariables;
-    }
-
-    GUI.enabled = guiEnableCache;
-
-    EditorGUILayout.EndHorizontal();
   }
-
-  private void RemoveValue(int index)
-  {
-    _shaderVariables.RemoveAt(index);
-    _changes = true;
-    // Target.SignalShaderFeatureUpdated();
-  }
-
-  private void AddValue()
-  {
-    _shaderVariables.Add(
-      new ShaderVariable($"Value_{Target.ShaderVariables.Count.ToString()}", ShaderType.Float));
-    _changes = true;
-    // Target.SignalShaderFeatureUpdated();
-  }
-}
 #endif
+}

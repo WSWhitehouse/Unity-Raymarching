@@ -552,7 +552,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
-    EDITOR_ToggleHarcodedModifier: 1
+    hardcodedShaderFeature: 0
   - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
@@ -584,7 +584,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
-    EDITOR_ToggleHarcodedModifier: 1
+    hardcodedShaderFeature: 0
   - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
@@ -616,7 +616,7 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
-    EDITOR_ToggleHarcodedModifier: 0
+    hardcodedShaderFeature: 0
   transform4DEnabled: 0
   positionW: 0
   rotation4D: {x: 0, y: 0, z: 0}
@@ -895,7 +895,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
-    EDITOR_ToggleHarcodedModifier: 1
+    hardcodedShaderFeature: 0
   transform4DEnabled: 0
   positionW: 0
   rotation4D: {x: 0, y: 0, z: 0}
@@ -1211,7 +1211,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551371003}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.46, y: 1.149, z: -6.8}
+  m_LocalPosition: {x: -1.72, y: 1.149, z: -4.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1667,7 +1667,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1859244689}
   m_LocalRotation: {x: -0.23840377, y: -0.062793896, z: -0.039685436, w: 0.9683211}
-  m_LocalPosition: {x: 0.215, y: 1.215, z: -6.9}
+  m_LocalPosition: {x: 2.502, y: 1.215, z: -3.805}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1712,7 +1712,7 @@ MonoBehaviour:
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     isEnabled: 1
-    EDITOR_ToggleHarcodedModifier: 1
+    hardcodedShaderFeature: 0
   transform4DEnabled: 1
   positionW: 0
   rotation4D: {x: 1.49, y: 0, z: 0}
@@ -1772,7 +1772,7 @@ MonoBehaviour:
       parameterType: 0
       floatValue: 0
       intValue: 0
-      vectorValue: {x: 1.91, y: 1, z: 1, w: 1}
+      vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
     shaderFeature: {fileID: 0}
@@ -1787,14 +1787,14 @@ MonoBehaviour:
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
-    isEnabled: 1
-    EDITOR_ToggleHarcodedModifier: 0
+    isEnabled: 0
+    hardcodedShaderFeature: 0
   transform4DEnabled: 1
-  positionW: 0.62
-  rotation4D: {x: 6.01, y: 0.7, z: 21.6}
-  scaleW: 23.02
+  positionW: 0.53
+  rotation4D: {x: 3.26, y: 0.46, z: 0.78}
+  scaleW: 1
   colour: {r: 0.43921566, g: 1, b: 0, a: 1}
-  marchingStepAmount: 9.9
+  marchingStepAmount: 1
 --- !u!4 &2100360760
 Transform:
   m_ObjectHideFlags: 0

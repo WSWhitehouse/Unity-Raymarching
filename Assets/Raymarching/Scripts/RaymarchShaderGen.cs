@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-public static class ShaderGen
+public static class RaymarchShaderGen
 {
   #region Scene Raymarch Shader
 
@@ -94,7 +94,7 @@ public static class ShaderGen
 
         var opGuid = rmOperation.GUID.ToShaderSafeString();
 
-        raymarchDistance.AppendLine($"// Operation Start {rmOperation.operation.ShaderFeature.FunctionName} {opGuid}");
+        raymarchDistance.AppendLine($"// Operation Start {rmOperation.operation.ShaderFeatureAsset.FunctionName} {opGuid}");
         raymarchDistance.AppendLine($"float distance{opGuid} = _RenderDistance;");
         raymarchDistance.AppendLine($"float4 colour{opGuid} = float4(1,1,1,1);");
         raymarchDistance.AppendLine();
@@ -272,7 +272,7 @@ public static class ShaderGen
     }
 
     result.AppendLine(
-      $"{localDistName} = {rmObject.raymarchSDF.ShaderFeature.FunctionNameWithGuid}({parameters}) * {scaleName};");
+      $"{localDistName} = {rmObject.raymarchSDF.ShaderFeatureAsset.FunctionNameWithGuid}({parameters}) * {scaleName};");
     
     result.AppendLine(RaymarchObjectModifiersShaderCode(rmObject, ModifierType.PostSDF));
 
@@ -303,9 +303,9 @@ public static class ShaderGen
     
     StringBuilder result = new StringBuilder();
 
-    foreach (ToggleableShaderFeatureImpl<ModifierShaderFeature> modifier in rmObject.raymarchMods)
+    foreach (ToggleableShaderFeature<ModifierShaderFeatureAsset> modifier in rmObject.raymarchMods)
     {
-      if (modifier.ShaderFeature.ModifierType != type) continue;
+      if (modifier.ShaderFeatureAsset.ModifierType != type) continue;
 
       string modifierParams = defaultModifierParams;
       for (int i = 0; i < modifier.ShaderVariables.Count; i++)
@@ -328,7 +328,7 @@ public static class ShaderGen
         result.AppendLine("{");
       }
 
-      result.AppendLine($"{modifierOutputVar} = {modifier.ShaderFeature.FunctionNameWithGuid}({modifierParams});");
+      result.AppendLine($"{modifierOutputVar} = {modifier.ShaderFeatureAsset.FunctionNameWithGuid}({modifierParams});");
 
       if (!modifier.hardcodedShaderFeature)
       {
@@ -343,7 +343,7 @@ public static class ShaderGen
   {
     string guid = rmObject.GUID.ToShaderSafeString();
 
-    if (rmObject.raymarchMat.ShaderFeature == null)
+    if (rmObject.raymarchMat.ShaderFeatureAsset == null)
     {
       return $"_{nameof(rmObject.Colour)}{guid}";
     }
@@ -354,7 +354,7 @@ public static class ShaderGen
       parameters = string.Concat(parameters, ", ", rmObject.raymarchMat.GetShaderVariableName(i, rmObject.GUID));
     }
 
-    return $"{rmObject.raymarchMat.ShaderFeature.FunctionNameWithGuid}({parameters})";
+    return $"{rmObject.raymarchMat.ShaderFeatureAsset.FunctionNameWithGuid}({parameters})";
   }
 
   private static string RaymarchOperationShaderCode(RaymarchOperation rmOperation, string objDistance, string objColour)
@@ -374,7 +374,7 @@ public static class ShaderGen
 
     result.AppendLine($"if ({opIsActive} > 0)");
     result.AppendLine($"{{");
-    result.AppendLine($"{rmOperation.operation.ShaderFeature.FunctionNameWithGuid}({parameters});");
+    result.AppendLine($"{rmOperation.operation.ShaderFeatureAsset.FunctionNameWithGuid}({parameters});");
     result.AppendLine($"}}");
     result.AppendLine($"else");
     result.AppendLine($"{{");
@@ -531,7 +531,7 @@ public static class ShaderGen
   private const string UtilShaderPath = "Assets/Raymarching/Shaders/Generated/";
   private const string UtilShaderExtension = "hlsl";
 
-  public static void GenerateUtilShader<T>(string shaderName) where T : ShaderFeature
+  public static void GenerateUtilShader<T>(string shaderName) where T : ShaderFeatureAsset
   {
     string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).FullName}", null);
 

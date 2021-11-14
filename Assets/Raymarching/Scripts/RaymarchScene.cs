@@ -197,7 +197,7 @@ public class RaymarchSceneEditor : Editor
 
     if (GUILayout.Button("Regenerate Shader"))
     {
-      ShaderGen.GenerateRaymarchShader();
+      RaymarchShaderGen.GenerateRaymarchShader();
     }
 
     if (GUILayout.Button(new GUIContent("Force Render Scene",

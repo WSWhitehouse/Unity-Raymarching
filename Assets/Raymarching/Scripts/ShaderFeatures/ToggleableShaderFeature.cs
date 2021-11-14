@@ -15,7 +15,7 @@ using System.Text;
  * and 'T' must be of type ShaderFeature. Sometimes C# can be truly disgusting to look at :(
  */
 [Serializable]
-public sealed class ToggleableShaderFeatureImpl<T> : ShaderFeatureImpl<T> where T : ShaderFeature
+public sealed class ToggleableShaderFeature<T> : ShaderFeature<T> where T : ShaderFeatureAsset
 {
   [SerializeField] private bool isEnabled = true;
 
@@ -37,7 +37,7 @@ public sealed class ToggleableShaderFeatureImpl<T> : ShaderFeatureImpl<T> where 
 
   protected override void UploadShaderData(Material material)
   {
-    if (ShaderFeature == null) return;
+    if (ShaderFeatureAsset == null) return;
     base.UploadShaderData(material);
     material.SetInteger(isEnabledShaderID, IsEnabled ? 1 : 0);
   }
@@ -50,7 +50,7 @@ public sealed class ToggleableShaderFeatureImpl<T> : ShaderFeatureImpl<T> where 
   
   public override string GetShaderVariables(SerializableGuid guid)
   {
-    if (ShaderFeature == null) return string.Empty;
+    if (ShaderFeatureAsset == null) return string.Empty;
 
     StringBuilder result = new StringBuilder();
     result.AppendLine($"uniform int _IsEnabled{guid.ToShaderSafeString()}{postfix};");

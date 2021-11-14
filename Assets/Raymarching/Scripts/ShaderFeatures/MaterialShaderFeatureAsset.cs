@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 
 [CreateAssetMenu(menuName = "Raymarching/Material")]
-public class MaterialShaderFeature : ShaderFeature
+public class MaterialShaderFeatureAsset : ShaderFeatureAsset
 {
   protected override string GetFunctionPrefix()
   {
@@ -31,16 +31,16 @@ public class MaterialShaderFeature : ShaderFeature
   public override void SignalShaderFeatureUpdated()
   {
     base.SignalShaderFeatureUpdated();
-    ShaderGen.GenerateUtilShader<MaterialShaderFeature>("MaterialFunctions");
+    RaymarchShaderGen.GenerateUtilShader<MaterialShaderFeatureAsset>("MaterialFunctions");
   }
 #endif
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(MaterialShaderFeature))]
+[CustomEditor(typeof(MaterialShaderFeatureAsset))]
 public class MaterialShaderFeatureEditor : ShaderFeatureEditor
 {
-  private MaterialShaderFeature Target => target as MaterialShaderFeature;
+  private MaterialShaderFeatureAsset Target => target as MaterialShaderFeatureAsset;
   
   protected override void DrawInspector()
   {

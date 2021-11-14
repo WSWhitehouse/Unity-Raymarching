@@ -11,11 +11,11 @@ using UnityEngine.InputSystem;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchObject : RaymarchBase
 {
-  [SerializeField] public ShaderFeatureImpl<SDFShaderFeature> raymarchSDF;
-  [SerializeField] public ShaderFeatureImpl<MaterialShaderFeature> raymarchMat;
+  [SerializeField] public ShaderFeature<SDFShaderFeatureAsset> raymarchSDF;
+  [SerializeField] public ShaderFeature<MaterialShaderFeatureAsset> raymarchMat;
 
-  [SerializeField] public List<ToggleableShaderFeatureImpl<ModifierShaderFeature>> raymarchMods =
-    new List<ToggleableShaderFeatureImpl<ModifierShaderFeature>>();
+  [SerializeField] public List<ToggleableShaderFeature<ModifierShaderFeatureAsset>> raymarchMods =
+    new List<ToggleableShaderFeature<ModifierShaderFeatureAsset>>();
 
   public Vector4 Position
   {
@@ -244,16 +244,16 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
     EditorGUILayout.LabelField("Signed Distance Function", BoldLabelStyle);
 
     EditorGUI.BeginChangeCheck();
-    Target.raymarchSDF.ShaderFeature =
-      (SDFShaderFeature) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchSDF.ShaderFeature,
-        typeof(SDFShaderFeature), false);
+    Target.raymarchSDF.ShaderFeatureAsset =
+      (SDFShaderFeatureAsset) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchSDF.ShaderFeatureAsset,
+        typeof(SDFShaderFeatureAsset), false);
     if (EditorGUI.EndChangeCheck())
     {
-      ShaderGen.GenerateRaymarchShader();
+      RaymarchShaderGen.GenerateRaymarchShader();
     }
 
     Target.raymarchSDF =
-      ShaderFeatureImpl<SDFShaderFeature>.Editor.ShaderVariableField(new GUIContent("SDF Variables"),
+      ShaderFeature<SDFShaderFeatureAsset>.Editor.ShaderVariableField(new GUIContent("SDF Variables"),
         Target.raymarchSDF);
 
     Target.MarchingStepAmount =
@@ -275,19 +275,19 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
         MessageType.Info, true);
 
       EditorGUI.BeginChangeCheck();
-      Target.raymarchMat.ShaderFeature =
-        (MaterialShaderFeature) EditorGUILayout.ObjectField(new GUIContent("Material"),
-          Target.raymarchMat.ShaderFeature,
-          typeof(MaterialShaderFeature), false);
+      Target.raymarchMat.ShaderFeatureAsset =
+        (MaterialShaderFeatureAsset) EditorGUILayout.ObjectField(new GUIContent("Material"),
+          Target.raymarchMat.ShaderFeatureAsset,
+          typeof(MaterialShaderFeatureAsset), false);
       if (EditorGUI.EndChangeCheck())
       {
-        ShaderGen.GenerateRaymarchShader();
+        RaymarchShaderGen.GenerateRaymarchShader();
       }
 
       Target.Colour = EditorGUILayout.ColorField(new GUIContent("Colour"), Target.Colour);
 
       Target.raymarchMat =
-        ShaderFeatureImpl<MaterialShaderFeature>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat);
+        ShaderFeature<MaterialShaderFeatureAsset>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMat);
 
       EditorGUILayout.EndVertical();
     }
@@ -302,7 +302,7 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
       var item = Target.raymarchMods[oldIndex];
       Target.raymarchMods.RemoveAt(oldIndex);
       Target.raymarchMods.Insert(newIndex, item);
-      ShaderGen.GenerateRaymarchShader();
+      RaymarchShaderGen.GenerateRaymarchShader();
     }
     
     _modifierDropDown = EditorGUILayout.BeginFoldoutHeaderGroup(_modifierDropDown, new GUIContent("Modifiers"));
@@ -320,9 +320,9 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
         string label = $"[{i.ToString()}] ";
-        if (Target.raymarchMods[i].ShaderFeature != null)
+        if (Target.raymarchMods[i].ShaderFeatureAsset != null)
         {
-          label = string.Concat(label, Target.raymarchMods[i].ShaderFeature.name);
+          label = string.Concat(label, Target.raymarchMods[i].ShaderFeatureAsset.name);
         }
 
         EditorGUILayout.BeginHorizontal();
@@ -368,10 +368,10 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
           // NOTE(WSWhitehouse): Local functions to be used in the Generic Menu below
           void onToggleHardcodedModifier(object modifier)
           {
-            if (modifier is not ToggleableShaderFeatureImpl<ModifierShaderFeature> modifierAs) return;
+            if (modifier is not ToggleableShaderFeature<ModifierShaderFeatureAsset> modifierAs) return;
             modifierAs.hardcodedShaderFeature = !modifierAs.hardcodedShaderFeature;
             modifierAs.IsEnabled = true;
-            ShaderGen.GenerateRaymarchShader();
+            RaymarchShaderGen.GenerateRaymarchShader();
           }
 
           // NOTE(WSWhitehouse): Setting up modifier Options Menu
@@ -385,17 +385,17 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
         EditorGUILayout.EndHorizontal();
 
         EditorGUI.BeginChangeCheck();
-        Target.raymarchMods[i].ShaderFeature =
-          (ModifierShaderFeature) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchMods[i].ShaderFeature,
-            typeof(ModifierShaderFeature), false);
+        Target.raymarchMods[i].ShaderFeatureAsset =
+          (ModifierShaderFeatureAsset) EditorGUILayout.ObjectField(GUIContent.none, Target.raymarchMods[i].ShaderFeatureAsset,
+            typeof(ModifierShaderFeatureAsset), false);
         if (EditorGUI.EndChangeCheck())
         {
-          ShaderGen.GenerateRaymarchShader();
+          RaymarchShaderGen.GenerateRaymarchShader();
         }
 
         Target.raymarchMods[i] =
-          ShaderFeatureImpl<ModifierShaderFeature>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMods[i])
-            as ToggleableShaderFeatureImpl<ModifierShaderFeature>;
+          ShaderFeature<ModifierShaderFeatureAsset>.Editor.ShaderVariableField(GUIContent.none, Target.raymarchMods[i])
+            as ToggleableShaderFeature<ModifierShaderFeatureAsset>;
 
         GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.25f);
 
@@ -440,7 +440,7 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
         if (GUI.Button(rect, "Remove Modifier"))
         {
           Target.raymarchMods.RemoveAt(i);
-          ShaderGen.GenerateRaymarchShader();
+          RaymarchShaderGen.GenerateRaymarchShader();
           break; // break out of loop so iter doesnt get messed up!
         }
 
@@ -451,7 +451,7 @@ public class RaymarchObjectEditor : RaymarchBaseEditor
 
       if (GUILayout.Button("Add New Modifier"))
       {
-        Target.raymarchMods.Add(new ToggleableShaderFeatureImpl<ModifierShaderFeature>());
+        Target.raymarchMods.Add(new ToggleableShaderFeature<ModifierShaderFeatureAsset>());
       }
 
       EditorGUILayout.EndVertical();

@@ -10,7 +10,7 @@ using UnityEditor;
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchOperation : RaymarchBase
 {
-  [SerializeField] public ShaderFeatureImpl<OperationShaderFeature> operation;
+  [SerializeField] public ShaderFeature<OperationShaderFeatureAsset> operation;
 
   public override void Awake()
   {
@@ -55,16 +55,16 @@ public class RaymarchOperationEditor : RaymarchBaseEditor
   {
     EditorGUILayout.LabelField("Operation Function", BoldLabelStyle);
     EditorGUI.BeginChangeCheck();
-    Target.operation.ShaderFeature =
-      (OperationShaderFeature) EditorGUILayout.ObjectField(GUIContent.none, Target.operation.ShaderFeature,
-        typeof(OperationShaderFeature), false);
+    Target.operation.ShaderFeatureAsset =
+      (OperationShaderFeatureAsset) EditorGUILayout.ObjectField(GUIContent.none, Target.operation.ShaderFeatureAsset,
+        typeof(OperationShaderFeatureAsset), false);
     if (EditorGUI.EndChangeCheck())
     {
-      ShaderGen.GenerateRaymarchShader();
+      RaymarchShaderGen.GenerateRaymarchShader();
     }
 
     Target.operation =
-      ShaderFeatureImpl<OperationShaderFeature>.Editor.ShaderVariableField(
+      ShaderFeature<OperationShaderFeatureAsset>.Editor.ShaderVariableField(
         new GUIContent("Operation Variables"), Target.operation);
   }
 }

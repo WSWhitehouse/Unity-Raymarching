@@ -7,9 +7,9 @@ using System.Text;
 
 /*
  * NOTE(WSWhitehouse):
- * This is an extension class of ShaderFeatureImpl<> to allow the shader feature to be
+ * This is an extension class of ShaderFeature<> to allow the shader feature to be
  * toggled on and off. It generates an enabled boolean that gets sent to the shader.
- * The script directly inherits from ShaderFeatureImpl<>.
+ * The script directly inherits from ShaderFeature<>.
  *
  * The beautiful few lines of code below me says this script inherits from ShaderFeatureImpl<>
  * and 'T' must be of type ShaderFeature. Sometimes C# can be truly disgusting to look at :(

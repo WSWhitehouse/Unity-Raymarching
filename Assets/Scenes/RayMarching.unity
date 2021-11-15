@@ -155,7 +155,7 @@ MonoBehaviour:
   guid:
     serializedGuid: 6d65fc1092a44e429757568d34136d0e
   operation:
-    shaderFeature: {fileID: 11400000, guid: 25e623070afac8141a93080a379dfa8c, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 25e623070afac8141a93080a379dfa8c, type: 2}
     shaderVariables:
     - name: Smooth
       shaderType: 0
@@ -359,7 +359,7 @@ MonoBehaviour:
   guid:
     serializedGuid: 4ffcbb5ec235f24d9be3937f93a35c80
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -369,7 +369,7 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 0}
+    shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods: []
   transform4DEnabled: 1
@@ -529,7 +529,7 @@ MonoBehaviour:
   guid:
     serializedGuid: 39da09992d670a4c9ddbeec2369d040d
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -539,10 +539,10 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 0}
+    shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+  - shaderFeatureAsset: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
     shaderVariables:
     - name: Displacement
       shaderType: 0
@@ -553,7 +553,7 @@ MonoBehaviour:
       textureValue: {fileID: 0}
     isEnabled: 1
     hardcodedShaderFeature: 0
-  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+  - shaderFeatureAsset: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
       shaderType: 0
@@ -585,7 +585,7 @@ MonoBehaviour:
       textureValue: {fileID: 0}
     isEnabled: 1
     hardcodedShaderFeature: 0
-  - shaderFeature: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
+  - shaderFeatureAsset: {fileID: 11400000, guid: 6d15e6185016c744a9889f3a16680f33, type: 2}
     shaderVariables:
     - name: Freq
       shaderType: 0
@@ -872,7 +872,7 @@ MonoBehaviour:
   guid:
     serializedGuid: 42a920b34216c3469a98c549464c0e2a
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -882,10 +882,10 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 0}
+    shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
+  - shaderFeatureAsset: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
     shaderVariables:
     - name: TwistAmountX
       shaderType: 0
@@ -1098,7 +1098,7 @@ MonoBehaviour:
   guid:
     serializedGuid: 5a2267f005c62a46a1f01a9c504f97b1
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -1108,7 +1108,7 @@ MonoBehaviour:
       vectorValue: {x: 100, y: 1, z: 100, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 11400000, guid: 68533ef4ca7169043bf7d7199392d505, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 68533ef4ca7169043bf7d7199392d505, type: 2}
     shaderVariables:
     - name: Texture
       shaderType: 7
@@ -1184,7 +1184,7 @@ MonoBehaviour:
   guid:
     serializedGuid: cbe941f0a42f5d45853ef9789ba6c70d
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -1194,7 +1194,7 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 0}
+    shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods: []
   transform4DEnabled: 0
@@ -1689,7 +1689,7 @@ MonoBehaviour:
   guid:
     serializedGuid: 87710dd34b11b6458aabda807c282bc1
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 5e24907e1386fe94ba62ffe78afa2ecc, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -1699,10 +1699,10 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 0}
+    shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
+  - shaderFeatureAsset: {fileID: 11400000, guid: 858292388241dbd4ea44d3c47402103f, type: 2}
     shaderVariables:
     - name: TwistAmountX
       shaderType: 0
@@ -1765,7 +1765,7 @@ MonoBehaviour:
   guid:
     serializedGuid: b0d686e53cb646499245b80324e6f590
   raymarchSDF:
-    shaderFeature: {fileID: 11400000, guid: 59488ebdc037ce74b896d1e921c667a1, type: 2}
+    shaderFeatureAsset: {fileID: 11400000, guid: 59488ebdc037ce74b896d1e921c667a1, type: 2}
     shaderVariables:
     - name: Dimensions
       shaderType: 5
@@ -1775,10 +1775,10 @@ MonoBehaviour:
       vectorValue: {x: 1, y: 1, z: 1, w: 1}
       textureValue: {fileID: 0}
   raymarchMat:
-    shaderFeature: {fileID: 0}
+    shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods:
-  - shaderFeature: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
+  - shaderFeatureAsset: {fileID: 11400000, guid: 4af6b268508dd2a43a8d86ed2f062ed4, type: 2}
     shaderVariables:
     - name: Displacement
       shaderType: 0

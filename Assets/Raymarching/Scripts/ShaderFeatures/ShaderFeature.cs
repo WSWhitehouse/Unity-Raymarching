@@ -22,7 +22,8 @@ public class ShaderFeature<T> where T : ShaderFeatureAsset
 {
   #region Shader Feature
 
-  [SerializeField, FormerlySerializedAs("shaderFeature")] private T shaderFeatureAsset;
+  [SerializeField, FormerlySerializedAs("shaderFeature")] 
+  private T shaderFeatureAsset;
 
   public T ShaderFeatureAsset
   {

@@ -1,0 +1,1 @@
+Materials are a type of [[ShaderFeatureAsset]], this asset is used on a [[RaymarchObject]] in the Material Shader Feature slot.

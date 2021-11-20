@@ -38,11 +38,5 @@ public class SerializableGuid
     serializedGuid = Guid.NewGuid().ToByteArray();
     guid = Guid.Empty;
   }
-
-  public void ResetGUIDWithShaderGen()
-  {
-    ResetGUID();
-    RaymarchShaderGen.GenerateRaymarchShader();
-  }
 #endif
 }

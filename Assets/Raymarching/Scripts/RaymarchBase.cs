@@ -70,8 +70,9 @@ public abstract class RaymarchBase : MonoBehaviour
   [MenuItem("CONTEXT/RaymarchBase/Reset GUID")]
   private static void ResetGUID(MenuCommand command)
   {
-    if (command.context is RaymarchBase rmBase)
-      rmBase.guid.ResetGUIDWithShaderGen();
+    if (command.context is not RaymarchBase rmBase) return;
+    rmBase.guid.ResetGUID();
+    RaymarchShaderGen.GenerateRaymarchShader();
   }
 #endif
 }

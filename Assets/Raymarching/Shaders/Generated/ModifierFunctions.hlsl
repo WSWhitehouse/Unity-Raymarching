@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 10/29/2021 13:20:36
+//    Time Generated: 11/22/2021 18:33:53
 //---------------------------------------------------------------------
 
 #ifndef MODIFIERFUNCTIONS_HLSL
@@ -36,9 +36,9 @@ float displacement = sin(Displacement*pos.x)*sin(Displacement*pos.y)*sin(Displac
 return objDistance + displacement;
 }
 
-float4 Mod_InfiniteRepetition_802c270f402c48459b9597d4fb74dba8(float4 pos, float3 RepPeriod)
+float4 Mod_InfiniteRepetition_802c270f402c48459b9597d4fb74dba8(float4 pos, float4 RepPeriod)
 {
-return float4(fmod(pos + 0.5 * RepPeriod, RepPeriod) - 0.5 * RepPeriod, 0);
+return fmod(pos + 0.5 * RepPeriod, RepPeriod) - 0.5 * RepPeriod;
 }
 
 float Mod_Onion_ecbac56f3862424a8fad6d23b416efe1(float4 pos, float objDistance, float Thickness)

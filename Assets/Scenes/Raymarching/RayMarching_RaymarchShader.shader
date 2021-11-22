@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/21/2021 12:43:10
+//    Time Generated: 11/22/2021 18:33:09
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -392,12 +392,12 @@ resultColour   = (_Colour5ebbfc4f35c24df29be3937f93a35c80 * resultdistance5ebbfc
 
     float4 GetLight(float3 pos, float3 normal)
     {
-      float3 light = float3(0, 0, 0);
+      float4 light = float4(0, 0, 0, 1);
 
       light += GetDirectionalLight(pos, normal, float4(1, 0.9568627, 0.8392157, 1), float3(0.5337918, -0.6015774, 0.594282), 1);
 
 
-      return float4(light.xyz, 1.0);
+      return light;
     }
 
     float3 GetObjectNormal(float3 pos)

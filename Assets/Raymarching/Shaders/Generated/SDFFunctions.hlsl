@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/02/2021 09:42:58
+//    Time Generated: 11/22/2021 18:32:14
 //---------------------------------------------------------------------
 
 #ifndef SDFFUNCTIONS_HLSL
@@ -18,7 +18,7 @@ float SDF_Capsule_6dd9ace8ea81468da4fe7ff03e5332bb(float4 pos, float Height, flo
 {
 //Height = max(0, Height -1);
 
-float3 pa = pos - float3(0, abs(Height) * 0.5, 0);
+float3 pa = pos.xyz - float3(0, abs(Height) * 0.5, 0);
 float3 ba = float3(0, -abs(Height) * 0.5, 0) - float3(0, abs(Height) * 0.5, 0);
 
 float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);

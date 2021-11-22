@@ -120,11 +120,11 @@ Shader "Raymarch/RaymarchTemplateShader"
 
     float4 GetLight(float3 pos, float3 normal)
     {
-      float3 light = float3(0, 0, 0);
+      float4 light = float4(0, 0, 0, 1);
 
       // RAYMARCH CALC LIGHT //
 
-      return float4(light.xyz, 1.0);
+      return light;
     }
 
     float3 GetObjectNormal(float3 pos)

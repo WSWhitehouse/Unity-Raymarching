@@ -1,12 +1,12 @@
 ﻿#ifndef RAYMARCHING_LIGHT_HLSL
 #define RAYMARCHING_LIGHT_HLSL
 
-float3 GetDirectionalLight(float3 objPos, float3 normal, float4 lightCol, float3 lightDir, float lightIntensity)
+float4 GetDirectionalLight(float3 objPos, float3 normal, float4 lightCol, float3 lightDir, float lightIntensity)
 {
     return max(0.0, dot(-normal, lightDir)) * lightCol * lightIntensity;
 }
 
-float3 GetPointLight(float3 objPos, float3 normal, float3 lightPos, float4 lightCol, float lightRange,
+float4 GetPointLight(float3 objPos, float3 normal, float3 lightPos, float4 lightCol, float lightRange,
                      float lightIntensity)
 {
     // http://forum.unity3d.com/threads/light-attentuation-equation.16006/
@@ -17,7 +17,7 @@ float3 GetPointLight(float3 objPos, float3 normal, float3 lightPos, float4 light
     return max(0.0, dot(-normal, normalize(toLight.xyz))) * lightCol * lightIntensity * attenuation;
 }
 
-float3 GetSpotLight(float3 objPos, float3 normal, float3 lightPos, float4 lightCol, float3 lightDir, float lightRange,
+float4 GetSpotLight(float3 objPos, float3 normal, float3 lightPos, float4 lightCol, float3 lightDir, float lightRange,
                     float lightIntensity, float spotAngle, float innerSpotAngle)
 {
     // http://forum.unity3d.com/threads/light-attentuation-equation.16006/

@@ -34,6 +34,13 @@ public class DebugSettings
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchScene : MonoBehaviour
 {
+  /// <summary>
+  /// Get currently active RM Scene. Returns null if one cannot be found.
+  /// This function does NOT cache the result, so do not call in Update, etc.
+  /// </summary>
+  /// <returns>Currently active Raymarch Scene - can be null!</returns>
+  public static RaymarchScene Get() => FindObjectOfType<RaymarchScene>();
+
   [SerializeField] private RaymarchSettings raymarchSettings = new RaymarchSettings();
   public RaymarchSettings RaymarchSettings => raymarchSettings;
 
@@ -44,14 +51,14 @@ public class RaymarchScene : MonoBehaviour
   public DebugSettings DebugSettings => debugSettings;
 
   // Active Raymarch Shader
-  [SerializeField] private Shader shader;
+  [SerializeField] private Shader raymarchShader;
 
-  public Shader Shader
+  public Shader RaymarchShader
   {
-    get => shader;
+    get => raymarchShader;
     set
     {
-      shader = value;
+      raymarchShader = value;
       UpdateRaymarchData();
 
 #if UNITY_EDITOR
@@ -62,47 +69,16 @@ public class RaymarchScene : MonoBehaviour
 
   private void UpdateRaymarchData()
   {
-    Raymarch.Shader = shader;
+    Raymarch.Shader = RaymarchShader;
   }
-
-  /// <summary>
-  /// Using a singleton here because there MUST be one per scene, the RaymarchScene object
-  /// must be gotten in a static instance when generating the shader. It is *very* strongly
-  /// recommended to not use this singleton outside the editor - if you need access to this
-  /// object during runtime, use GameObject.Find, GetComponent, or even cache it! If
-  /// ActiveInstance is null then there isn't a RaymarchScene in the active scene.
-  /// </summary>
-  public static RaymarchScene CurrentlyActiveScene { get; private set; } = null;
-
+  
   private void Awake()
   {
-    InitSingleton();
     UpdateRaymarchData();
-  }
-
-  private void InitSingleton()
-  {
-    // Set up Singleton
-    if (CurrentlyActiveScene != null && CurrentlyActiveScene != this)
-    {
-      Debug.LogError(
-        $"There are multiple RaymarchScenes in the current scene ({gameObject.scene.name}) - there must only be 1!");
-#if UNITY_EDITOR
-      EditorGUIUtility.PingObject(this);
-#endif
-
-      return;
-    }
-
-    CurrentlyActiveScene = this;
   }
 
   private void OnDestroy()
   {
-    if (CurrentlyActiveScene != this)
-      return;
-
-    CurrentlyActiveScene = null;
     Raymarch.ResetData();
   }
 
@@ -130,11 +106,6 @@ public class RaymarchScene : MonoBehaviour
 
     UpdateRaymarchData();
   }
-
-  private void OnValidate()
-  {
-    InitSingleton();
-  }
 #endif
 }
 
@@ -145,7 +116,7 @@ public class RaymarchSceneEditor : Editor
   private RaymarchScene Target => target as RaymarchScene;
 
   // Serialized Properties
-  private SerializedProperty _shaderProperty;
+  private SerializedProperty _raymarchShaderProperty;
   private SerializedProperty _templateShaderProperty;
   private SerializedProperty _raymarchSettingsProperty;
   private SerializedProperty _lightingSettingsProperty;
@@ -161,7 +132,7 @@ public class RaymarchSceneEditor : Editor
 
   private void OnEnable()
   {
-    _shaderProperty           = serializedObject.FindProperty("shader");
+    _raymarchShaderProperty   = serializedObject.FindProperty("raymarchShader");
     _templateShaderProperty   = serializedObject.FindProperty("templateShader");
     _raymarchSettingsProperty = serializedObject.FindProperty("raymarchSettings");
     _lightingSettingsProperty = serializedObject.FindProperty("lightingSettings");
@@ -182,7 +153,7 @@ public class RaymarchSceneEditor : Editor
     bool cachedGUIEnabled = GUI.enabled;
     GUI.enabled = false;
 
-    EditorGUILayout.PropertyField(_shaderProperty, GUIContent.none, true);
+    EditorGUILayout.PropertyField(_raymarchShaderProperty, GUIContent.none, true);
 
     GUI.enabled = cachedGUIEnabled;
 

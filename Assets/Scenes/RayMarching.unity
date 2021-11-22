@@ -497,7 +497,7 @@ MonoBehaviour:
     colourMultiplier: 2
   debugSettings:
     enableDebugSymbols: 0
-  shader: {fileID: 4800000, guid: db974a8866b6f0b4d8efca1152c14ccf, type: 3}
+  raymarchShader: {fileID: 4800000, guid: db974a8866b6f0b4d8efca1152c14ccf, type: 3}
   templateShader: {fileID: 4800000, guid: c6c888053f2af174fb0c96159bd003cd, type: 3}
 --- !u!1 &605198479
 GameObject:

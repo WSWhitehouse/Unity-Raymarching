@@ -42,7 +42,7 @@ public static class RaymarchShaderGen
       return;
     }
 
-    RaymarchScene rmScene = RaymarchScene.CurrentlyActiveScene;
+    RaymarchScene rmScene = RaymarchScene.Get();
 
     // Raymarch Scene Sanity Checks
     if (rmScene == null) return;
@@ -225,11 +225,11 @@ public static class RaymarchShaderGen
     int assetsIndex = filePath.IndexOf("\\Assets\\", StringComparison.Ordinal);
     filePath = filePath.Remove(0, assetsIndex + 1);
 
-    rmScene.Shader = AssetDatabase.LoadAssetAtPath<Shader>(filePath);
+    rmScene.RaymarchShader = AssetDatabase.LoadAssetAtPath<Shader>(filePath);
 
-    if (rmScene.Shader != null)
+    if (rmScene.RaymarchShader != null)
     {
-      EditorUtility.SetDirty(rmScene.Shader);
+      EditorUtility.SetDirty(rmScene.RaymarchShader);
     }
     else
     {
@@ -583,9 +583,9 @@ public static class RaymarchShaderGen
   
   public static void ForceRenderScene()
   {
-    if (RaymarchScene.CurrentlyActiveScene == null)
+    if (RaymarchScene.Get() == null)
     {
-      Debug.LogError($"You don't have an active {nameof(RaymarchScene)} in the scene {SceneManager.GetActiveScene().name}");
+      Debug.LogError($"You don't have an active {nameof(RaymarchScene)} in the scene ({SceneManager.GetActiveScene().name})");
       return;
     }
     

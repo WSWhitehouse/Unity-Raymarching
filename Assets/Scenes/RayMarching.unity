@@ -160,7 +160,7 @@ MonoBehaviour:
     - name: Smooth
       shaderType: 0
       parameterType: 0
-      floatValue: 1.07
+      floatValue: 0.5
       intValue: 0
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 391752654}
   - component: {fileID: 391752653}
   m_Layer: 0
-  m_Name: RM Hypercube (1)
+  m_Name: RM Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -351,7 +351,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 391752652}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -372,7 +372,7 @@ MonoBehaviour:
     shaderFeatureAsset: {fileID: 0}
     shaderVariables: []
   raymarchMods: []
-  transform4DEnabled: 1
+  transform4DEnabled: 0
   positionW: 0
   rotation4D: {x: 0, y: 0, z: 0}
   scaleW: 1
@@ -386,7 +386,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 391752652}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.06, y: 1.734, z: 8.23}
+  m_LocalPosition: {x: -1.06, y: 2.696, z: 8.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -454,7 +454,7 @@ GameObject:
   - component: {fileID: 589048860}
   - component: {fileID: 589048861}
   m_Layer: 0
-  m_Name: Raymarch Scene
+  m_Name: RMScene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -495,6 +495,8 @@ MonoBehaviour:
   lightingSettings:
     ambientColour: {r: 0.2117, g: 0.2274, b: 0.2588, a: 1}
     colourMultiplier: 2
+  debugSettings:
+    enableDebugSymbols: 0
   shader: {fileID: 4800000, guid: db974a8866b6f0b4d8efca1152c14ccf, type: 3}
   templateShader: {fileID: 4800000, guid: c6c888053f2af174fb0c96159bd003cd, type: 3}
 --- !u!1 &605198479
@@ -864,7 +866,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303356924}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -900,7 +902,7 @@ MonoBehaviour:
   positionW: 0
   rotation4D: {x: 0, y: 0, z: 0}
   scaleW: 1
-  colour: {r: 1, g: 1, b: 1, a: 1}
+  colour: {r: 1, g: 0.16355896, b: 0, a: 1}
   marchingStepAmount: 1
 --- !u!4 &1303356926
 Transform:
@@ -910,7 +912,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303356924}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.26, y: 1.149, z: -5.825}
+  m_LocalPosition: {x: -0.465, y: 1.149, z: -5.036}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1090,7 +1092,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405943641}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -1176,7 +1178,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551371003}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -1211,7 +1213,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551371003}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.72, y: 1.149, z: -4.03}
+  m_LocalPosition: {x: 0.269, y: 1.149, z: -4.053}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1667,7 +1669,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1859244689}
   m_LocalRotation: {x: -0.23840377, y: -0.062793896, z: -0.039685436, w: 0.9683211}
-  m_LocalPosition: {x: 2.502, y: 1.215, z: -3.805}
+  m_LocalPosition: {x: 1.985, y: 1.067, z: -4.213}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1681,7 +1683,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1859244689}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -1717,7 +1719,7 @@ MonoBehaviour:
   positionW: 0
   rotation4D: {x: 1.49, y: 0, z: 0}
   scaleW: 2.85
-  colour: {r: 1, g: 1, b: 1, a: 1}
+  colour: {r: 1, g: 0.6410173, b: 0, a: 1}
   marchingStepAmount: 7.81
 --- !u!1 &2100360757
 GameObject:
@@ -1757,7 +1759,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100360757}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e27c3810803f4944ac2a8a57ccd3bdcc, type: 3}
   m_Name: 
@@ -1790,8 +1792,8 @@ MonoBehaviour:
     isEnabled: 0
     hardcodedShaderFeature: 0
   transform4DEnabled: 1
-  positionW: 0.53
-  rotation4D: {x: 3.26, y: 0.46, z: 0.78}
+  positionW: 0.38
+  rotation4D: {x: 1.97, y: 2.58, z: 0.95}
   scaleW: 1
   colour: {r: 0.43921566, g: 1, b: 0, a: 1}
   marchingStepAmount: 1

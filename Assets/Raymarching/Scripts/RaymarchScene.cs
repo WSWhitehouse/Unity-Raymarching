@@ -25,6 +25,12 @@ public class LightingSettings
   public float colourMultiplier = 1f;
 }
 
+[Serializable]
+public class DebugSettings
+{
+  public bool enableDebugSymbols = false;
+}
+
 [DisallowMultipleComponent, ExecuteAlways]
 public class RaymarchScene : MonoBehaviour
 {
@@ -33,6 +39,9 @@ public class RaymarchScene : MonoBehaviour
 
   [SerializeField] private LightingSettings lightingSettings = new LightingSettings();
   public LightingSettings LightingSettings => lightingSettings;
+
+  [SerializeField] private DebugSettings debugSettings = new DebugSettings();
+  public DebugSettings DebugSettings => debugSettings;
 
   // Active Raymarch Shader
   [SerializeField] private Shader shader;
@@ -63,7 +72,7 @@ public class RaymarchScene : MonoBehaviour
   /// object during runtime, use GameObject.Find, GetComponent, or even cache it! If
   /// ActiveInstance is null then there isn't a RaymarchScene in the active scene.
   /// </summary>
-  public static RaymarchScene ActiveInstance { get; private set; } = null;
+  public static RaymarchScene CurrentlyActiveScene { get; private set; } = null;
 
   private void Awake()
   {
@@ -74,7 +83,7 @@ public class RaymarchScene : MonoBehaviour
   private void InitSingleton()
   {
     // Set up Singleton
-    if (ActiveInstance != null && ActiveInstance != this)
+    if (CurrentlyActiveScene != null && CurrentlyActiveScene != this)
     {
       Debug.LogError(
         $"There are multiple RaymarchScenes in the current scene ({gameObject.scene.name}) - there must only be 1!");
@@ -85,15 +94,15 @@ public class RaymarchScene : MonoBehaviour
       return;
     }
 
-    ActiveInstance = this;
+    CurrentlyActiveScene = this;
   }
 
   private void OnDestroy()
   {
-    if (ActiveInstance != this)
+    if (CurrentlyActiveScene != this)
       return;
 
-    ActiveInstance = null;
+    CurrentlyActiveScene = null;
     Raymarch.ResetData();
   }
 
@@ -126,27 +135,6 @@ public class RaymarchScene : MonoBehaviour
   {
     InitSingleton();
   }
-
-  public static void ForceRenderScene()
-  {
-    if (ActiveInstance == null)
-    {
-      Debug.LogError($"You don't have an active {nameof(RaymarchScene)} in the scene {SceneManager.GetActiveScene().name}");
-      return;
-    }
-    
-    var rmBases = FindObjectsOfType<RaymarchBase>();
-    foreach (var rmBase in rmBases)
-    {
-      rmBase.Awake();
-    }
-    
-    var rmCameras = FindObjectsOfType<RaymarchCamera>();
-    foreach (var rmCamera in rmCameras)
-    {
-      rmCamera.Awake();
-    }
-  }
 #endif
 }
 
@@ -161,20 +149,23 @@ public class RaymarchSceneEditor : Editor
   private SerializedProperty _templateShaderProperty;
   private SerializedProperty _raymarchSettingsProperty;
   private SerializedProperty _lightingSettingsProperty;
+  private SerializedProperty _debugSettingsProperty;
 
   // Dropdowns
   private static bool _raymarchSettingsDropDown = false;
   private static bool _lightingSettingsDropDown = false;
+  private static bool _debugSettingsDropDown    = false;
   
   // Renderer Check
   private static bool? _rendererOkay = null;
 
   private void OnEnable()
   {
-    _shaderProperty = serializedObject.FindProperty("shader");
-    _templateShaderProperty = serializedObject.FindProperty("templateShader");
+    _shaderProperty           = serializedObject.FindProperty("shader");
+    _templateShaderProperty   = serializedObject.FindProperty("templateShader");
     _raymarchSettingsProperty = serializedObject.FindProperty("raymarchSettings");
     _lightingSettingsProperty = serializedObject.FindProperty("lightingSettings");
+    _debugSettingsProperty    = serializedObject.FindProperty("debugSettings");
   }
 
   public override void OnInspectorGUI()
@@ -203,7 +194,7 @@ public class RaymarchSceneEditor : Editor
     if (GUILayout.Button(new GUIContent("Force Render Scene",
       "If the objects aren't rendering in the scene, press this button.")))
     {
-     RaymarchScene.ForceRenderScene();
+     RaymarchShaderGen.ForceRenderScene();
     }
     
     if (GUILayout.Button(new GUIContent("Perform Renderer Checks",
@@ -215,7 +206,7 @@ public class RaymarchSceneEditor : Editor
     string rendererOkayLabel = "Not performed renderer checks";
     if (_rendererOkay.HasValue)
     {
-      rendererOkayLabel = _rendererOkay.Value ? "Okay" : "RaymarchRenderFeature cannot be found. Please add one.";
+      rendererOkayLabel = _rendererOkay.Value ? "Renderer okay" : "RaymarchRenderFeature cannot be found. Please add one.";
     }
 
     EditorGUILayout.LabelField($"Renderer Status: {rendererOkayLabel}");
@@ -256,6 +247,24 @@ public class RaymarchSceneEditor : Editor
       {
         EditorGUILayout.PropertyField(lightingSetting,
           new GUIContent(lightingSetting.displayName, lightingSetting.tooltip), true);
+      }
+
+      EditorGUILayout.EndVertical();
+    }
+
+    EditorGUILayout.EndFoldoutHeaderGroup();
+    
+    _debugSettingsDropDown =
+      EditorGUILayout.BeginFoldoutHeaderGroup(_debugSettingsDropDown, new GUIContent("Debug Settings"));
+    if (_debugSettingsDropDown)
+    {
+      EditorGUILayout.BeginVertical(GUI.skin.box);
+
+      var debugSettings = _debugSettingsProperty.GetChildren().ToArray();
+      foreach (var debugSetting in debugSettings)
+      {
+        EditorGUILayout.PropertyField(debugSetting,
+          new GUIContent(debugSetting.displayName, debugSetting.tooltip), true);
       }
 
       EditorGUILayout.EndVertical();

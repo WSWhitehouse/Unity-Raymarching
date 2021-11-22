@@ -25,6 +25,8 @@ Shader "Raymarch/RaymarchTemplateShader"
     #pragma fragment frag
     #pragma target 3.0
 
+    // DEBUG SETTINGS //
+
     struct appdata
     {
       float4 vertex : POSITION;
@@ -56,7 +58,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
     // RAYMARCH VARS //
 
-    float3 Rotate3D(in float3 pos, in float4 rotor)
+    inline float3 Rotate3D(in float3 pos, in float4 rotor)
     {
       /*
        * bi-vector components of the rotor
@@ -73,7 +75,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
       float triVec = pos.x * rotor.z - pos.y * rotor.y + pos.z * rotor.x;
 
-      //NOTE(zack): Reflection formula vector and bivector multiplication table
+      // NOTE(zack): Reflection formula vector and bivector multiplication table
       float3 result;
       result.x = rotor.a * v.x + v.y * rotor.x + v.z * rotor.y + triVec * rotor.z;
       result.y = rotor.a * v.y - v.x * rotor.x - triVec * rotor.y + v.z * rotor.z;
@@ -82,7 +84,7 @@ Shader "Raymarch/RaymarchTemplateShader"
       return result;
     }
 
-    float4 Rotate4D(float4 pos, float3 rot)
+    inline float4 Rotate4D(float4 pos, float3 rot)
     {
       pos.xw = mul(pos.xw, float2x2(cos(rot.x), sin(rot.x), -sin(rot.x), cos(rot.x)));
       pos.yw = mul(pos.yw, float2x2(cos(rot.y), -sin(rot.y), sin(rot.y), cos(rot.y)));
@@ -91,25 +93,29 @@ Shader "Raymarch/RaymarchTemplateShader"
       return pos;
     }
 
-    ObjectDistanceResult GetDistanceFromObjects(float3 rayPos)
+    RaymarchMapResult RaymarchMap(float3 rayPos)
     {
       float4 rayPos4D = float4(rayPos, _CamPositionW);
-      if (length(_CamRotation4D) != 0)
-      {
-        rayPos4D.xw = mul(rayPos4D.xw, float2x2(cos(_CamRotation4D.x), -sin(_CamRotation4D.x),
-                                                sin(_CamRotation4D.x), cos(_CamRotation4D.x)));
-        rayPos4D.yw = mul(rayPos4D.yw, float2x2(cos(_CamRotation4D.y), -sin(_CamRotation4D.y),
-                                                sin(_CamRotation4D.y), cos(_CamRotation4D.y)));
-        rayPos4D.zw = mul(rayPos4D.zw, float2x2(cos(_CamRotation4D.z), -sin(_CamRotation4D.z),
-                                                sin(_CamRotation4D.z), cos(_CamRotation4D.z)));
-      }
+
+      /* NOTE(WSWhitehouse): 
+       * 
+       */
+
+      // if (length(_CamRotation4D) != 0)
+      // {
+      //   rayPos = Rotate4D(rayPos4D, _CamRotation4D);
+      // }
+
+      int CamRot = length(_CamRotation4D) != 0;
+      rayPos4D = (Rotate4D(rayPos4D, _CamRotation4D) * CamRot) +
+        (rayPos4D * !CamRot);
 
       float resultDistance = _RenderDistance;
       float4 resultColour = float4(1, 1, 1, 1);
 
       // RAYMARCH CALC DISTANCE //
 
-      return CreateObjectDistanceResult(resultDistance, resultColour);
+      return CreateRaymarchMapResult(resultDistance, resultColour);
     }
 
     float4 GetLight(float3 pos, float3 normal)
@@ -125,9 +131,9 @@ Shader "Raymarch/RaymarchTemplateShader"
     {
       float2 offset = float2(0.01, 0.0);
       float3 normal = float3(
-        GetDistanceFromObjects(pos + offset.xyy).Distance - GetDistanceFromObjects(pos - offset.xyy).Distance,
-        GetDistanceFromObjects(pos + offset.yxy).Distance - GetDistanceFromObjects(pos - offset.yxy).Distance,
-        GetDistanceFromObjects(pos + offset.yyx).Distance - GetDistanceFromObjects(pos - offset.yyx).Distance
+        RaymarchMap(pos + offset.xyy).Distance - RaymarchMap(pos - offset.xyy).Distance,
+        RaymarchMap(pos + offset.yxy).Distance - RaymarchMap(pos - offset.yxy).Distance,
+        RaymarchMap(pos + offset.yyx).Distance - RaymarchMap(pos - offset.yyx).Distance
       );
 
       return normalize(normal);
@@ -156,18 +162,18 @@ Shader "Raymarch/RaymarchTemplateShader"
       float prevRadius = 0;
       float stepLength = 0;
 
-      float funcSign = GetDistanceFromObjects(ray.Origin).Distance < 0 ? +1 : +1;
+      float funcSign = RaymarchMap(ray.Origin).Distance < 0 ? +1 : +1;
 
       [loop]
       for (int i = 0; i < _MaxIterations; i++)
       {
         float3 pos = ray.Origin + ray.Direction * distanceTraveled;
-        ObjectDistanceResult objData = GetDistanceFromObjects(pos);
+        RaymarchMapResult objData = RaymarchMap(pos);
 
         float signedRadius = funcSign * objData.Distance;
         float radius = abs(signedRadius);
 
-        bool sorFail = relaxOmega > 1 && (radius + prevRadius) < stepLength;
+        int sorFail = relaxOmega > 1 && (radius + prevRadius) < stepLength;
 
         [branch]
         if (sorFail)
@@ -244,13 +250,8 @@ Shader "Raymarch/RaymarchTemplateShader"
         float depth = LinearEyeDepth(sceneDepth, _ZBufferParams) * ray.Length;
 
         RaymarchResult raymarchResult = Raymarch(ray, depth);
-
-        if (raymarchResult.Succeeded > 0)
-        {
-          return half4(raymarchResult.Colour * _ColourMultiplier);
-        }
-
-        return half4(tex2D(_MainTex, i.uv));
+        return (half4(raymarchResult.Colour * _ColourMultiplier) * raymarchResult.Succeeded) +
+               (half4(tex2D(_MainTex, i.uv)) * !raymarchResult.Succeeded);
       }
       ENDHLSL
     }

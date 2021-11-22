@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -69,7 +70,8 @@ public class RaymarchRenderPass : ScriptableRenderPass
 
     context.ExecuteCommandBuffer(cmd);
     cmd.Clear();
-    context.Submit();
     CommandBufferPool.Release(cmd);
+
+    context.Submit();
   }
 }

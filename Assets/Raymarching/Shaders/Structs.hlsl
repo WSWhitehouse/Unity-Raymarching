@@ -33,15 +33,15 @@ inline Ray CreateCameraRay(float2 uv, float4x4 camToWorld)
 }
 
 // OBJECT DISTANCE RESULT
-struct ObjectDistanceResult
+struct RaymarchMapResult
 {
     float Distance;
     float4 Colour;
 };
 
-inline ObjectDistanceResult CreateObjectDistanceResult(float distance, float4 colour)
+inline RaymarchMapResult CreateRaymarchMapResult(float distance, float4 colour)
 {
-    ObjectDistanceResult objData;
+    RaymarchMapResult objData;
     objData.Distance = distance;
     objData.Colour = colour;
     return objData;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using System.Text;
@@ -16,7 +17,7 @@ public abstract class RaymarchBase : MonoBehaviour
 
   #endregion GUID
 
-  public bool IsActive => gameObject.activeInHierarchy /*&& enabled*/;
+  public bool IsActive => gameObject.activeInHierarchy && enabled;
 
   private struct ShaderIDs
   {
@@ -26,6 +27,11 @@ public abstract class RaymarchBase : MonoBehaviour
   private ShaderIDs _shaderIDs = new ShaderIDs();
 
   public abstract bool IsValid();
+
+  protected virtual void OnEnable()
+  {
+    // NOTE(WSWhitehouse): Empty on enable function to force these MonoBehaviours to have a enabled state
+  }
 
   public virtual void Awake()
   {
@@ -64,7 +70,7 @@ public abstract class RaymarchBase : MonoBehaviour
   [MenuItem("CONTEXT/RaymarchBase/Force Render Scene")]
   private static void ForceRenderScene()
   {
-    RaymarchScene.ForceRenderScene();
+    RaymarchShaderGen.ForceRenderScene();
   }
 
   [MenuItem("CONTEXT/RaymarchBase/Reset GUID")]

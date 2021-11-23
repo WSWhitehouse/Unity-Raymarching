@@ -119,34 +119,34 @@ public class RaymarchObject : RaymarchBase
 
   public override void Awake()
   {
-    raymarchSDF.Awake(GUID);
-    raymarchMat.Awake(GUID);
+    base.Awake();
+    
+    raymarchSDF?.Awake(GUID);
+    raymarchMat?.Awake(GUID);
 
     for (var i = 0; i < raymarchMods.Count; i++)
     {
       var mod = raymarchMods[i];
-      mod.Awake(GUID, i.ToString());
+      mod?.Awake(GUID, i.ToString());
     }
 
     InitShaderIDs();
     Raymarch.UploadShaderDataAddCallback(UploadShaderData);
-
-    base.Awake();
   }
 
   protected override void OnDestroy()
   {
-    raymarchSDF.OnDestroy();
-    raymarchMat.OnDestroy();
+    base.OnDestroy();
+    
+    raymarchSDF?.OnDestroy();
+    raymarchMat?.OnDestroy();
 
     foreach (var mod in raymarchMods)
     {
-      mod.OnDestroy();
+      mod?.OnDestroy();
     }
 
     Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
-
-    base.OnDestroy();
   }
 
   public override bool IsValid()

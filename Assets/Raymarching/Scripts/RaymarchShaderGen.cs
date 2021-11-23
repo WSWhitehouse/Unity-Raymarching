@@ -34,19 +34,28 @@ public static class RaymarchShaderGen
 
   public static void GenerateRaymarchShader()
   {
-    Debug.Log("Generate Raymarch Shader called");
+    Debug.Log($"{nameof(RaymarchShaderGen)}: Generating Raymarch Shader in '{SceneManager.GetActiveScene().name}'");
 
     if (Application.isPlaying)
     {
-      Debug.LogWarning("Generate Raymarch Shader called during runtime!");
+      Debug.LogError($"{nameof(RaymarchShaderGen)}: {nameof(GenerateRaymarchShader)} called during runtime!");
       return;
     }
 
     RaymarchScene rmScene = RaymarchScene.Get();
 
     // Raymarch Scene Sanity Checks
-    if (rmScene == null) return;
-    if (rmScene.templateShader == null) return;
+    if (rmScene == null)
+    {
+      Debug.LogError($"{nameof(RaymarchShaderGen)}: There is no {nameof(RaymarchScene)} in the active scene");
+      return;
+    }
+    
+    if (rmScene.templateShader == null)
+    {
+      Debug.LogError($"{nameof(RaymarchShaderGen)}: There is no template shader in the {nameof(RaymarchScene)}");
+      return;
+    }
 
     Scene activeScene = rmScene.gameObject.scene;
     var raymarchBases = GenerateRaymarchSceneHierarchy(activeScene);
@@ -535,11 +544,7 @@ public static class RaymarchShaderGen
 
   public static void GenerateUtilShader<T>(string shaderName) where T : ShaderFeatureAsset
   {
-    string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).FullName}", null);
-
-    List<T> shaderFeatures = new List<T>(guids.Length);
-    shaderFeatures.AddRange(guids.Select(guid =>
-      AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid))));
+    List<T> shaderFeatures = global::Util.Editor.FindAllAssetsOfType<T>();
 
     StringBuilder functions = new StringBuilder();
     foreach (T shaderFeature in shaderFeatures)
@@ -583,9 +588,11 @@ public static class RaymarchShaderGen
   
   public static void ForceRenderScene()
   {
+    Debug.Log($"{nameof(RaymarchShaderGen)}: Force Rendering Scene ({SceneManager.GetActiveScene().name})");
+    
     if (RaymarchScene.Get() == null)
     {
-      Debug.LogError($"You don't have an active {nameof(RaymarchScene)} in the scene ({SceneManager.GetActiveScene().name})");
+      Debug.LogError($"{nameof(RaymarchShaderGen)}: You don't have an active {nameof(RaymarchScene)} in the scene ({SceneManager.GetActiveScene().name})");
       return;
     }
     

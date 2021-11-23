@@ -194,7 +194,7 @@ public class RaymarchSceneEditor : Editor
     {
       EditorGUILayout.BeginVertical(GUI.skin.box);
 
-      var raymarchSettings = _raymarchSettingsProperty.GetChildren().ToArray();
+      var raymarchSettings = Util.Editor.GetSerializedPropertyChildren(_raymarchSettingsProperty).ToArray();
       foreach (var raymarchSetting in raymarchSettings)
       {
         EditorGUILayout.PropertyField(raymarchSetting,
@@ -212,7 +212,7 @@ public class RaymarchSceneEditor : Editor
     {
       EditorGUILayout.BeginVertical(GUI.skin.box);
 
-      var lightingSettings = _lightingSettingsProperty.GetChildren().ToArray();
+      var lightingSettings = Util.Editor.GetSerializedPropertyChildren(_lightingSettingsProperty).ToArray();
       foreach (var lightingSetting in lightingSettings)
       {
         EditorGUILayout.PropertyField(lightingSetting,
@@ -230,7 +230,7 @@ public class RaymarchSceneEditor : Editor
     {
       EditorGUILayout.BeginVertical(GUI.skin.box);
 
-      var debugSettings = _debugSettingsProperty.GetChildren().ToArray();
+      var debugSettings = Util.Editor.GetSerializedPropertyChildren(_debugSettingsProperty).ToArray();
       foreach (var debugSetting in debugSettings)
       {
         EditorGUILayout.PropertyField(debugSetting,

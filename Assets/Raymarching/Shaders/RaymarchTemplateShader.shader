@@ -98,7 +98,7 @@ Shader "Raymarch/RaymarchTemplateShader"
       float4 rayPos4D = float4(rayPos, _CamPositionW);
 
       /* NOTE(WSWhitehouse): 
-       * 
+       * This shader is (mostly) branchless.
        */
 
       // if (length(_CamRotation4D) != 0)
@@ -164,7 +164,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
       float funcSign = RaymarchMap(ray.Origin).Distance < 0 ? +1 : +1;
 
-      [loop]
+      UNITY_LOOP
       for (int i = 0; i < _MaxIterations; i++)
       {
         float3 pos = ray.Origin + ray.Direction * distanceTraveled;
@@ -175,7 +175,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         int sorFail = relaxOmega > 1 && (radius + prevRadius) < stepLength;
 
-        [branch]
+        UNITY_BRANCH
         if (sorFail)
         {
           stepLength -= relaxOmega * stepLength;
@@ -188,13 +188,14 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         prevRadius = radius;
 
-        [branch]
+        UNITY_BRANCH
         if (sorFail)
         {
           distanceTraveled += stepLength;
           continue;
         }
 
+        UNITY_BRANCH
         if (distanceTraveled > _RenderDistance || distanceTraveled >= depth) // Environment
         {
           return CreateRaymarchResult(0, half4(0, 0, 0, 0));
@@ -202,12 +203,14 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         float error = radius / distanceTraveled;
 
+        UNITY_BRANCH
         if (error < candidateError)
         {
           candidateDistanceTraveled = distanceTraveled;
           candidateColour = objData.Colour;
           candidateError = error;
 
+          UNITY_BRANCH
           if (error < _HitResolution) break; // Hit Something
         }
 

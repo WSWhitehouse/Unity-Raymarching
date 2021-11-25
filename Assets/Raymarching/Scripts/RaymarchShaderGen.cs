@@ -381,30 +381,48 @@ public static class RaymarchShaderGen
     string opColour = $"colour{guid}";
     string opIsActive = $"_IsActive{guid}";
 
-    string parameters = $"{opDistance}, {opColour}, {objDistance}, {objColour}";
-    for (int i = 0; i < rmOperation.operation.ShaderVariables.Count; i++)
-    {
-      parameters = string.Concat(parameters, ", ", rmOperation.operation.GetShaderVariableName(i, rmOperation.GUID));
-    }
-
-    result.AppendLine($"if ({opIsActive} > 0)");
-    result.AppendLine($"{{");
-    result.AppendLine($"{rmOperation.operation.ShaderFeatureAsset.FunctionNameWithGuid}({parameters});");
-    result.AppendLine($"}}");
-    result.AppendLine($"else");
-    result.AppendLine($"{{");
+    string distanceBranchlessTestIf = String.Concat("distIf_", GUID.Generate().ToString());
+    string colourBranchlessTestIf = String.Concat("colIf_", GUID.Generate().ToString());
     
+    string distanceBranchlessTestElse = String.Concat("distanceElse_", GUID.Generate().ToString());
+    string colourBranchlessTestElse = String.Concat("colElse_", GUID.Generate().ToString());
+    
+    string ifResultVarName = $"if_result_{GUID.Generate().ToString()}";
+    string elseResultVarName = $"else_result_{GUID.Generate().ToString()}";
+
+    // result.AppendLine($"if ({opIsActive} > 0)");
+    // result.AppendLine($"{{");
+    // result.AppendLine($"{rmOperation.operation.ShaderFeatureAsset.FunctionNameWithGuid}({parameters});");
+    // result.AppendLine($"}}");
+    // result.AppendLine($"else");
+    // result.AppendLine($"{{");
     // result.AppendLine($"if ({objDistance} < {opDistance})");
     // result.AppendLine($"{{");
     // result.AppendLine($"{opDistance} = {objDistance};");
     // result.AppendLine($"{opColour} = {objColour};");
     // result.AppendLine($"}}");
+    // result.AppendLine($"}}");
     
-    result.AppendLine($"int result{opDistance} = {objDistance} < {opDistance};");
-    result.AppendLine($"{opDistance} = ({objDistance} * result{opDistance}) + ({opDistance} * !result{opDistance});");
-    result.AppendLine($"{opColour}   = ({objColour} * result{opDistance}) + ({opColour} * !result{opDistance});");
+    result.AppendLine($"float {distanceBranchlessTestIf} = {opDistance};");
+    result.AppendLine($"float4 {colourBranchlessTestIf} = {opColour};");
+    result.AppendLine($"float {distanceBranchlessTestElse} = {opDistance};");
+    result.AppendLine($"float4 {colourBranchlessTestElse} = {opColour};");
+
+    string parameters = $"{distanceBranchlessTestIf}, {colourBranchlessTestIf}, {objDistance}, {objColour}";
+    for (int i = 0; i < rmOperation.operation.ShaderVariables.Count; i++)
+    {
+      parameters = string.Concat(parameters, ", ", rmOperation.operation.GetShaderVariableName(i, rmOperation.GUID));
+    }
+
+    result.AppendLine($"{rmOperation.operation.ShaderFeatureAsset.FunctionNameWithGuid}({parameters});");
     
-    result.AppendLine($"}}");
+    result.AppendLine($"int {elseResultVarName} = {objDistance} < {opDistance};");
+    result.AppendLine($"{distanceBranchlessTestElse} = ({objDistance} * {elseResultVarName}) + ({distanceBranchlessTestElse} * !{elseResultVarName});");
+    result.AppendLine($"{colourBranchlessTestElse}   = ({objColour} * {elseResultVarName}) + ({colourBranchlessTestElse} * !{elseResultVarName});");
+    
+    result.AppendLine($"int {ifResultVarName} = {opIsActive} > 0;");
+    result.AppendLine($"{opDistance} = ({distanceBranchlessTestIf} * {ifResultVarName}) + ({distanceBranchlessTestElse} * !{ifResultVarName});");
+    result.AppendLine($"{opColour}   = ({colourBranchlessTestIf} * {ifResultVarName}) + ({colourBranchlessTestElse} * !{ifResultVarName});");
 
     return result.ToString();
   }

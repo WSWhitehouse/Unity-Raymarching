@@ -35,7 +35,7 @@ public abstract class RaymarchBase : MonoBehaviour
 
   public virtual void Awake()
   {
-    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData += UploadShaderData;
 
     string guid = GUID.ToShaderSafeString();
     _shaderIDs.IsActive = Shader.PropertyToID($"_{nameof(IsActive)}{guid}");
@@ -43,7 +43,7 @@ public abstract class RaymarchBase : MonoBehaviour
 
   protected virtual void OnDestroy()
   {
-    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData -= UploadShaderData;
   }
 
   private void UploadShaderData(Material material)

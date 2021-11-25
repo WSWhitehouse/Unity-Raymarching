@@ -170,7 +170,7 @@ public class ShaderFeature<T> where T : ShaderFeatureAsset
     this.postfix = postfix;
 
     InitShaderIDs(guid);
-    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData += UploadShaderData;
   }
 
   public bool IsValid()
@@ -187,7 +187,7 @@ public class ShaderFeature<T> where T : ShaderFeatureAsset
     }
 #endif
     
-    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData -= UploadShaderData;
   }
 
   protected virtual void UploadShaderData(Material material)

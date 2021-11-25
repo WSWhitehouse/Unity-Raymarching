@@ -131,7 +131,7 @@ public class RaymarchObject : RaymarchBase
     }
 
     InitShaderIDs();
-    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData += UploadShaderData;
   }
 
   protected override void OnDestroy()
@@ -146,7 +146,7 @@ public class RaymarchObject : RaymarchBase
       mod?.OnDestroy();
     }
 
-    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData -= UploadShaderData;
   }
 
   public override bool IsValid()

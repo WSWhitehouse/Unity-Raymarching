@@ -29,7 +29,7 @@ public class RaymarchCamera : MonoBehaviour
   
   public void Awake()
   {
-    Raymarch.UploadShaderDataAddCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData += UploadShaderData;
 
     _shaderIDs.CamPositionW = Shader.PropertyToID("_CamPositionW");
     _shaderIDs.CamRotation4D = Shader.PropertyToID("_CamRotation4D");
@@ -37,7 +37,7 @@ public class RaymarchCamera : MonoBehaviour
 
   private void OnDestroy()
   {
-    Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
+    Raymarch.OnUploadShaderData -= UploadShaderData;
   }
 
   private void UploadShaderData(Material material)

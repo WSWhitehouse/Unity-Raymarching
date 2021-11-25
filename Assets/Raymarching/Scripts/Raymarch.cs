@@ -68,24 +68,25 @@ public static class Raymarch
 
   // NOTE(WSWhitehouse): This event is private so scripts can only add/remove callbacks through 
   // the functions below. Meaning this script can perform any checks on the callbacks.
-  private static event UploadShaderData OnUploadShaderData;
-
-  public static void UploadShaderDataAddCallback(UploadShaderData func)
+  private static event UploadShaderData _OnUploadShaderData;
+  
+  public static event UploadShaderData OnUploadShaderData
   {
+    add
+    {
+      // NOTE(WSWhitehouse): Unsubscribing first in editor to ensure an object doesn't upload data multiple times
 #if UNITY_EDITOR
-    UploadShaderDataRemoveCallback(func);
+      _OnUploadShaderData -= value;
 #endif
-    OnUploadShaderData += func;
-  }
+      _OnUploadShaderData += value;
+    }
 
-  public static void UploadShaderDataRemoveCallback(UploadShaderData func)
-  {
-    OnUploadShaderData -= func;
+    remove => _OnUploadShaderData -= value;
   }
 
   public static void UploadShaderDataInvoke()
   {
-    OnUploadShaderData?.Invoke(Material);
+    _OnUploadShaderData?.Invoke(Material);
   }
 
   #endregion Upload Shader Data Event

@@ -75,7 +75,7 @@ public class RaymarchLight : RaymarchBase
     if (LightMode == LightMode.Realtime)
     {
       InitShaderIDs();
-      Raymarch.UploadShaderDataAddCallback(UploadShaderData);
+      Raymarch.OnUploadShaderData += UploadShaderData;
       base.Awake();
     }
   }
@@ -84,7 +84,7 @@ public class RaymarchLight : RaymarchBase
   {
     if (LightMode == LightMode.Realtime)
     {
-      Raymarch.UploadShaderDataRemoveCallback(UploadShaderData);
+      Raymarch.OnUploadShaderData -= UploadShaderData;
       base.OnDestroy();
     }
   }

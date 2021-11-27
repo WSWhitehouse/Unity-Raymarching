@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(TextMeshProUGUI))]
+[RequireComponent(typeof(TMP_Text))]
 public class ScreenCanvasFPS : MonoBehaviour
 {
-  private TextMeshProUGUI tmp;
+  private TMP_Text tmp;
 
+  // NOTE(WSWhitehouse): This array is to prevent creating new strings each frame (to reduce garbage)
+  // NOTE(WSWhitehouse): The FPS counter will only go to the max number in this array (currently: 99)
   private readonly string[] fpsAsStrings = new string[]
   {
     "00 fps", "01 fps", "02 fps", "03 fps", "04 fps", "05 fps", "06 fps", "07 fps", "08 fps", "09 fps",
@@ -22,7 +24,7 @@ public class ScreenCanvasFPS : MonoBehaviour
 
   private void Awake()
   {
-    tmp = GetComponent<TextMeshProUGUI>();
+    tmp = GetComponent<TMP_Text>();
   }
 
   private void Update()

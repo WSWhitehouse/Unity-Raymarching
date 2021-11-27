@@ -23,21 +23,9 @@ Shader "Raymarch/RaymarchTemplateShader"
 
     #pragma vertex vert
     #pragma fragment frag
-    #pragma target 3.0
+    #pragma target 4.5
 
     // DEBUG SETTINGS //
-
-    struct appdata
-    {
-      float4 vertex : POSITION;
-      float2 uv : TEXCOORD0;
-    };
-
-    struct v2f
-    {
-      float2 uv : TEXCOORD0;
-      float4 vertex : SV_POSITION;
-    };
 
     // RAYMARCH SETTINGS START //
     static const float _RenderDistance = 100;
@@ -224,23 +212,63 @@ Shader "Raymarch/RaymarchTemplateShader"
     Pass
     {
       HLSLPROGRAM
-      sampler2D _MainTex;
+      
+      TEXTURE2D_X(_MainTex);
+      SAMPLER(sampler_MainTex);
+      
+      CBUFFER_START(UnityPerMaterial)
+      
       float4 _MainTex_ST;
+      
+      CBUFFER_END;
 
-      v2f vert(appdata v)
+      struct Attributes
       {
-        #ifdef UNITY_UV_STARTS_AT_TOP
-        // v.uv.y = 1 - v.uv.y;
-        #endif
+        float4 vertex : POSITION;
+        float2 uv : TEXCOORD0;
 
-        v2f o;
-        o.vertex = TransformObjectToHClip(v.vertex.xyz);
-        o.uv = UnityStereoTransformScreenSpaceTex(v.uv);
+        UNITY_VERTEX_INPUT_INSTANCE_ID
+      };
+
+      struct Varyings
+      {
+        float2 uv : TEXCOORD0;
+        float4 vertex : SV_POSITION;
+
+        UNITY_VERTEX_INPUT_INSTANCE_ID
+        UNITY_VERTEX_OUTPUT_STEREO
+      };
+
+      Varyings vert(Attributes i)
+      {
+        UNITY_SETUP_INSTANCE_ID(i);
+        
+        Varyings o = (Varyings)0;
+        UNITY_TRANSFER_INSTANCE_ID(i, o);
+        UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+        o.vertex = TransformObjectToHClip(i.vertex.xyz);
+        o.uv = UnityStereoTransformScreenSpaceTex(i.uv);
+        
         return o;
       }
 
-      half4 frag(v2f i) : SV_Target0
+      half4 frag(Varyings i) : SV_Target0
       {
+        UNITY_SETUP_INSTANCE_ID(i);
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+
+        #if defined(UNITY_STEREO_INSTANCING_ENABLED)
+        if (SLICE_ARRAY_INDEX == 0)
+        {
+          return half4(1,0,0,1);
+        }
+        else
+        {
+          return half4(0,0,1,1);
+        }
+        #endif
+        
+        
         Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
 
         #if UNITY_REVERSED_Z
@@ -254,7 +282,7 @@ Shader "Raymarch/RaymarchTemplateShader"
 
         RaymarchResult raymarchResult = Raymarch(ray, depth);
         return (half4(raymarchResult.Colour * _ColourMultiplier) * raymarchResult.Succeeded) +
-               (half4(tex2D(_MainTex, i.uv)) * !raymarchResult.Succeeded);
+               (half4(SAMPLE_TEXTURE2D_X(_MainTex, sampler_MainTex, i.uv)) * !raymarchResult.Succeeded);
       }
       ENDHLSL
     }

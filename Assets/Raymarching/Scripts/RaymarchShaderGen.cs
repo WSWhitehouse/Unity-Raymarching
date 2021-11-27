@@ -3,12 +3,15 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 public static class RaymarchShaderGen
@@ -34,11 +37,11 @@ public static class RaymarchShaderGen
 
   public static void GenerateRaymarchShader()
   {
-    Debug.Log($"{nameof(RaymarchShaderGen)}: Generating Raymarch Shader in '{SceneManager.GetActiveScene().name}'");
+    Debug.Log($"Generating Raymarch Shader in '{SceneManager.GetActiveScene().name}'");
 
     if (Application.isPlaying)
     {
-      Debug.LogError($"{nameof(RaymarchShaderGen)}: {nameof(GenerateRaymarchShader)} called during runtime!");
+      Debug.LogError($"{nameof(GenerateRaymarchShader)} called during runtime");
       return;
     }
 

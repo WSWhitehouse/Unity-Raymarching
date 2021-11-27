@@ -37,8 +37,8 @@ public class RaymarchRenderPass : ScriptableRenderPass
   public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
   {
     RenderTextureDescriptor descriptor = cameraTextureDescriptor;
-    descriptor.enableRandomWrite = true;
-
+    // descriptor.enableRandomWrite = true;
+    
     cmd.GetTemporaryRT(Shader.PropertyToID("_Destination"), descriptor);
     _destination = new RenderTargetIdentifier("_Destination");
   }
@@ -69,9 +69,14 @@ public class RaymarchRenderPass : ScriptableRenderPass
     cmd.Blit(_destination, cameraColourTexture);
 
     context.ExecuteCommandBuffer(cmd);
-    cmd.Clear();
+    // cmd.Clear();
     CommandBufferPool.Release(cmd);
 
     context.Submit();
+  }
+
+  public override void OnCameraCleanup(CommandBuffer cmd)
+  {
+    cmd.ReleaseTemporaryRT(Shader.PropertyToID("_Destination"));
   }
 }

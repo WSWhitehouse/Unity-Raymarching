@@ -20,8 +20,15 @@ public class RaymarchSettings
 [Serializable]
 public class LightingSettings
 {
+  [Header("Colour")]
   public Color ambientColour = new Color(0.2117f, 0.2274f, 0.2588f, 1);
   public float colourMultiplier = 1f;
+
+  [Header("Ambient Occlusion")] 
+  public bool aoEnabled = true;
+  public float aoStepSize = 0.2f;
+  public float aoIntensity = 0.25f;
+  public int aoIterations = 3;
 }
 
 [Serializable]

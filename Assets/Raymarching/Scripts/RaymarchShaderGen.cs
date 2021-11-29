@@ -492,9 +492,20 @@ public static class RaymarchShaderGen
     StringBuilder result = new StringBuilder();
     result.AppendLine("// Lighting Settings");
     result.AppendLine($"static const float4 _AmbientColour = {Util.ToShaderVector(lightingSettings.ambientColour)};");
-    result.AppendLine(
-      $"static const float _ColourMultiplier = {lightingSettings.colourMultiplier.ToString(CultureInfo.InvariantCulture)};");
-
+    result.AppendLine($"static const float _ColourMultiplier = {lightingSettings.colourMultiplier.ToString(CultureInfo.InvariantCulture)};");
+    
+    if (lightingSettings.aoEnabled)
+    {
+      result.AppendLine($"static const float _AOStepSize = {lightingSettings.aoStepSize.ToString(CultureInfo.InvariantCulture)};");
+      result.AppendLine($"static const float _AOIntensity = {lightingSettings.aoIntensity.ToString(CultureInfo.InvariantCulture)};");
+      result.AppendLine($"static const int _AOIterations = {lightingSettings.aoIterations.ToString()};");
+    }
+    else
+    {
+      result.AppendLine($"static const float _AOStepSize = 0.0;");
+      result.AppendLine($"static const float _AOIntensity = 0.0;");
+      result.AppendLine($"static const int _AOIterations = 0;");
+    }
     return result.ToString();
   }
 

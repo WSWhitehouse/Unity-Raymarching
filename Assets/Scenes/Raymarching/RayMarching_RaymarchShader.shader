@@ -4,7 +4,7 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/27/2021 13:59:25
+//    Time Generated: 11/29/2021 18:58:44
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
@@ -47,6 +47,9 @@ static const int _MaxIterations = 164;
     // Lighting Settings
 static const float4 _AmbientColour = float4(0.2117, 0.2274, 0.2588, 1);
 static const float _ColourMultiplier = 2;
+static const float _AOStepSize = 0.2;
+static const float _AOIntensity = 0.25;
+static const int _AOIterations = 3;
 
 
     // Camera Settings
@@ -157,8 +160,22 @@ uniform float4 _Coloure586d6b0b63c49469245b80324e6f590;
 uniform float  _MarchingStepAmounte586d6b0b63c49469245b80324e6f590;
 uniform int    _Transform4DEnablede586d6b0b63c49469245b80324e6f590;
 
+uniform int _IsActive21d601d9bc9b4a358952d64fd5bdb481;
+
+uniform int _IsActive6ace03b94f824637943ad5aed7a32720;
+uniform float4 _Dimensions6ace03b94f824637943ad5aed7a32720;
+
+
+uniform float4 _Position6ace03b94f824637943ad5aed7a32720;
+uniform float4 _RotationRotor3D6ace03b94f824637943ad5aed7a32720;
+uniform float3 _Rotation4D6ace03b94f824637943ad5aed7a32720;
+uniform float4 _Scale6ace03b94f824637943ad5aed7a32720;
+uniform float4 _Colour6ace03b94f824637943ad5aed7a32720;
+uniform float  _MarchingStepAmount6ace03b94f824637943ad5aed7a32720;
+uniform int    _Transform4DEnabled6ace03b94f824637943ad5aed7a32720;
+
 uniform int _IsActive5ebbfc4f35c24df29be3937f93a35c80;
-uniform float4 _Dimensions5ebbfc4f35c24df29be3937f93a35c80;
+uniform float _Radius5ebbfc4f35c24df29be3937f93a35c80;
 
 
 uniform float4 _Position5ebbfc4f35c24df29be3937f93a35c80;
@@ -275,17 +292,17 @@ distancef041e9cb2fa4455d853ef9789ba6c70d = SDF_Cube_05845aac9d55425c8e1f8d191d01
 distancef041e9cb2fa4455d853ef9789ba6c70d /= _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
 distancef041e9cb2fa4455d853ef9789ba6c70d = (distancef041e9cb2fa4455d853ef9789ba6c70d * (_IsActivef041e9cb2fa4455d853ef9789ba6c70d)) + (_RenderDistance * !(_IsActivef041e9cb2fa4455d853ef9789ba6c70d));
 
-float distIf_7a7cf6abc7d821d4dacfb0521a1c8085 = distance10fc656da492424e9757568d34136d0e;
-float4 colIf_ad66dcf94a08ead4388504b51019832b = colour10fc656da492424e9757568d34136d0e;
-float distanceElse_d3897c38aabdccb4394eded4bc334215 = distance10fc656da492424e9757568d34136d0e;
-float4 colElse_36609497440c05f43bc2900085d16af3 = colour10fc656da492424e9757568d34136d0e;
-Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_7a7cf6abc7d821d4dacfb0521a1c8085, colIf_ad66dcf94a08ead4388504b51019832b, distancef041e9cb2fa4455d853ef9789ba6c70d, _Colourf041e9cb2fa4455d853ef9789ba6c70d, _Smooth10fc656da492424e9757568d34136d0e);
-int else_result_8c8bdfc4d9ed23342a1e55498eab1225 = distancef041e9cb2fa4455d853ef9789ba6c70d < distance10fc656da492424e9757568d34136d0e;
-distanceElse_d3897c38aabdccb4394eded4bc334215 = (distancef041e9cb2fa4455d853ef9789ba6c70d * else_result_8c8bdfc4d9ed23342a1e55498eab1225) + (distanceElse_d3897c38aabdccb4394eded4bc334215 * !else_result_8c8bdfc4d9ed23342a1e55498eab1225);
-colElse_36609497440c05f43bc2900085d16af3   = (_Colourf041e9cb2fa4455d853ef9789ba6c70d * else_result_8c8bdfc4d9ed23342a1e55498eab1225) + (colElse_36609497440c05f43bc2900085d16af3 * !else_result_8c8bdfc4d9ed23342a1e55498eab1225);
-int if_result_248d12e5b3ec7514db2630bb2f786ff7 = _IsActive10fc656da492424e9757568d34136d0e > 0;
-distance10fc656da492424e9757568d34136d0e = (distIf_7a7cf6abc7d821d4dacfb0521a1c8085 * if_result_248d12e5b3ec7514db2630bb2f786ff7) + (distanceElse_d3897c38aabdccb4394eded4bc334215 * !if_result_248d12e5b3ec7514db2630bb2f786ff7);
-colour10fc656da492424e9757568d34136d0e   = (colIf_ad66dcf94a08ead4388504b51019832b * if_result_248d12e5b3ec7514db2630bb2f786ff7) + (colElse_36609497440c05f43bc2900085d16af3 * !if_result_248d12e5b3ec7514db2630bb2f786ff7);
+float distIf_bc136e85889b4414a818f9d943873eca = distance10fc656da492424e9757568d34136d0e;
+float4 colIf_4239659021e2ff845aa968f5c418060f = colour10fc656da492424e9757568d34136d0e;
+float distanceElse_dfd6abddda6b4b04aa2c63ac6cde376f = distance10fc656da492424e9757568d34136d0e;
+float4 colElse_512bee7f0eaab63428f0d53653ca1251 = colour10fc656da492424e9757568d34136d0e;
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_bc136e85889b4414a818f9d943873eca, colIf_4239659021e2ff845aa968f5c418060f, distancef041e9cb2fa4455d853ef9789ba6c70d, _Colourf041e9cb2fa4455d853ef9789ba6c70d, _Smooth10fc656da492424e9757568d34136d0e);
+int else_result_3d0a7173515630647812def5e72d3fdb = distancef041e9cb2fa4455d853ef9789ba6c70d < distance10fc656da492424e9757568d34136d0e;
+distanceElse_dfd6abddda6b4b04aa2c63ac6cde376f = (distancef041e9cb2fa4455d853ef9789ba6c70d * else_result_3d0a7173515630647812def5e72d3fdb) + (distanceElse_dfd6abddda6b4b04aa2c63ac6cde376f * !else_result_3d0a7173515630647812def5e72d3fdb);
+colElse_512bee7f0eaab63428f0d53653ca1251   = (_Colourf041e9cb2fa4455d853ef9789ba6c70d * else_result_3d0a7173515630647812def5e72d3fdb) + (colElse_512bee7f0eaab63428f0d53653ca1251 * !else_result_3d0a7173515630647812def5e72d3fdb);
+int if_result_66fb1865b2eba4f4dbca4b19ce221f5e = _IsActive10fc656da492424e9757568d34136d0e > 0;
+distance10fc656da492424e9757568d34136d0e = (distIf_bc136e85889b4414a818f9d943873eca * if_result_66fb1865b2eba4f4dbca4b19ce221f5e) + (distanceElse_dfd6abddda6b4b04aa2c63ac6cde376f * !if_result_66fb1865b2eba4f4dbca4b19ce221f5e);
+colour10fc656da492424e9757568d34136d0e   = (colIf_4239659021e2ff845aa968f5c418060f * if_result_66fb1865b2eba4f4dbca4b19ce221f5e) + (colElse_512bee7f0eaab63428f0d53653ca1251 * !if_result_66fb1865b2eba4f4dbca4b19ce221f5e);
 
 
 float4 positiond30d7187114b45b68aabda807c282bc1 = (rayPos4D - _Positiond30d7187114b45b68aabda807c282bc1) / _Scaled30d7187114b45b68aabda807c282bc1;
@@ -301,17 +318,17 @@ distanced30d7187114b45b68aabda807c282bc1 = SDF_Cube_05845aac9d55425c8e1f8d191d01
 distanced30d7187114b45b68aabda807c282bc1 /= _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
 distanced30d7187114b45b68aabda807c282bc1 = (distanced30d7187114b45b68aabda807c282bc1 * (_IsActived30d7187114b45b68aabda807c282bc1)) + (_RenderDistance * !(_IsActived30d7187114b45b68aabda807c282bc1));
 
-float distIf_092d5c9eddae60b419834c06bf8c5270 = distance10fc656da492424e9757568d34136d0e;
-float4 colIf_6bec4cc0e5cd2d14fa0c8dad79cd8c0c = colour10fc656da492424e9757568d34136d0e;
-float distanceElse_15d0d95b9cac23041838803e52b8784a = distance10fc656da492424e9757568d34136d0e;
-float4 colElse_c8ad397acb00de340bf414097f26cd1f = colour10fc656da492424e9757568d34136d0e;
-Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_092d5c9eddae60b419834c06bf8c5270, colIf_6bec4cc0e5cd2d14fa0c8dad79cd8c0c, distanced30d7187114b45b68aabda807c282bc1, _Colourd30d7187114b45b68aabda807c282bc1, _Smooth10fc656da492424e9757568d34136d0e);
-int else_result_51e97d00e9d5ce042a3985e871abcd6a = distanced30d7187114b45b68aabda807c282bc1 < distance10fc656da492424e9757568d34136d0e;
-distanceElse_15d0d95b9cac23041838803e52b8784a = (distanced30d7187114b45b68aabda807c282bc1 * else_result_51e97d00e9d5ce042a3985e871abcd6a) + (distanceElse_15d0d95b9cac23041838803e52b8784a * !else_result_51e97d00e9d5ce042a3985e871abcd6a);
-colElse_c8ad397acb00de340bf414097f26cd1f   = (_Colourd30d7187114b45b68aabda807c282bc1 * else_result_51e97d00e9d5ce042a3985e871abcd6a) + (colElse_c8ad397acb00de340bf414097f26cd1f * !else_result_51e97d00e9d5ce042a3985e871abcd6a);
-int if_result_b378748ebf1b9da4a8b2d9f86c6bc55e = _IsActive10fc656da492424e9757568d34136d0e > 0;
-distance10fc656da492424e9757568d34136d0e = (distIf_092d5c9eddae60b419834c06bf8c5270 * if_result_b378748ebf1b9da4a8b2d9f86c6bc55e) + (distanceElse_15d0d95b9cac23041838803e52b8784a * !if_result_b378748ebf1b9da4a8b2d9f86c6bc55e);
-colour10fc656da492424e9757568d34136d0e   = (colIf_6bec4cc0e5cd2d14fa0c8dad79cd8c0c * if_result_b378748ebf1b9da4a8b2d9f86c6bc55e) + (colElse_c8ad397acb00de340bf414097f26cd1f * !if_result_b378748ebf1b9da4a8b2d9f86c6bc55e);
+float distIf_46aab6b3d2c99324596efb11b904e61c = distance10fc656da492424e9757568d34136d0e;
+float4 colIf_b9a5543d786988b409d8a26852ef572d = colour10fc656da492424e9757568d34136d0e;
+float distanceElse_488f252cb9582f4498f61bb2a9887e00 = distance10fc656da492424e9757568d34136d0e;
+float4 colElse_39cde62b86a55c24881bcef7a7a2a686 = colour10fc656da492424e9757568d34136d0e;
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_46aab6b3d2c99324596efb11b904e61c, colIf_b9a5543d786988b409d8a26852ef572d, distanced30d7187114b45b68aabda807c282bc1, _Colourd30d7187114b45b68aabda807c282bc1, _Smooth10fc656da492424e9757568d34136d0e);
+int else_result_feffed4ecae96134eb38a9414333cf86 = distanced30d7187114b45b68aabda807c282bc1 < distance10fc656da492424e9757568d34136d0e;
+distanceElse_488f252cb9582f4498f61bb2a9887e00 = (distanced30d7187114b45b68aabda807c282bc1 * else_result_feffed4ecae96134eb38a9414333cf86) + (distanceElse_488f252cb9582f4498f61bb2a9887e00 * !else_result_feffed4ecae96134eb38a9414333cf86);
+colElse_39cde62b86a55c24881bcef7a7a2a686   = (_Colourd30d7187114b45b68aabda807c282bc1 * else_result_feffed4ecae96134eb38a9414333cf86) + (colElse_39cde62b86a55c24881bcef7a7a2a686 * !else_result_feffed4ecae96134eb38a9414333cf86);
+int if_result_4963f5a76cb2da74fa34665da6d7be36 = _IsActive10fc656da492424e9757568d34136d0e > 0;
+distance10fc656da492424e9757568d34136d0e = (distIf_46aab6b3d2c99324596efb11b904e61c * if_result_4963f5a76cb2da74fa34665da6d7be36) + (distanceElse_488f252cb9582f4498f61bb2a9887e00 * !if_result_4963f5a76cb2da74fa34665da6d7be36);
+colour10fc656da492424e9757568d34136d0e   = (colIf_b9a5543d786988b409d8a26852ef572d * if_result_4963f5a76cb2da74fa34665da6d7be36) + (colElse_39cde62b86a55c24881bcef7a7a2a686 * !if_result_4963f5a76cb2da74fa34665da6d7be36);
 
 
 // Operation End 10fc656da492424e9757568d34136d0e
@@ -358,6 +375,25 @@ resultDistance = (distancee586d6b0b63c49469245b80324e6f590 * resultdistancee586d
 resultColour   = (_Coloure586d6b0b63c49469245b80324e6f590 * resultdistancee586d6b0b63c49469245b80324e6f590) + (resultColour * !resultdistancee586d6b0b63c49469245b80324e6f590);
 
 
+// Operation Start Oper_Cut 21d601d9bc9b4a358952d64fd5bdb481
+float distance21d601d9bc9b4a358952d64fd5bdb481 = _RenderDistance;
+float4 colour21d601d9bc9b4a358952d64fd5bdb481 = float4(1,1,1,1);
+
+float4 position6ace03b94f824637943ad5aed7a32720 = (rayPos4D - _Position6ace03b94f824637943ad5aed7a32720) / _Scale6ace03b94f824637943ad5aed7a32720;
+position6ace03b94f824637943ad5aed7a32720 = float4(Rotate3D(position6ace03b94f824637943ad5aed7a32720.xyz, _RotationRotor3D6ace03b94f824637943ad5aed7a32720), position6ace03b94f824637943ad5aed7a32720.w);
+int result_Transform4DEnabled6ace03b94f824637943ad5aed7a32720 = _Transform4DEnabled6ace03b94f824637943ad5aed7a32720 > 0;
+position6ace03b94f824637943ad5aed7a32720 = Rotate4D(position6ace03b94f824637943ad5aed7a32720, _Rotation4D6ace03b94f824637943ad5aed7a32720) * result_Transform4DEnabled6ace03b94f824637943ad5aed7a32720 + position6ace03b94f824637943ad5aed7a32720 * !result_Transform4DEnabled6ace03b94f824637943ad5aed7a32720;
+
+float distance6ace03b94f824637943ad5aed7a32720 = _RenderDistance;
+
+distance6ace03b94f824637943ad5aed7a32720 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position6ace03b94f824637943ad5aed7a32720, _Dimensions6ace03b94f824637943ad5aed7a32720) * _Scale6ace03b94f824637943ad5aed7a32720;
+
+distance6ace03b94f824637943ad5aed7a32720 /= _MarchingStepAmount6ace03b94f824637943ad5aed7a32720;
+distance6ace03b94f824637943ad5aed7a32720 = (distance6ace03b94f824637943ad5aed7a32720 * (_IsActive6ace03b94f824637943ad5aed7a32720)) + (_RenderDistance * !(_IsActive6ace03b94f824637943ad5aed7a32720));
+
+distance21d601d9bc9b4a358952d64fd5bdb481 = distance6ace03b94f824637943ad5aed7a32720;
+colour21d601d9bc9b4a358952d64fd5bdb481 = _Colour6ace03b94f824637943ad5aed7a32720;
+
 float4 position5ebbfc4f35c24df29be3937f93a35c80 = (rayPos4D - _Position5ebbfc4f35c24df29be3937f93a35c80) / _Scale5ebbfc4f35c24df29be3937f93a35c80;
 position5ebbfc4f35c24df29be3937f93a35c80 = float4(Rotate3D(position5ebbfc4f35c24df29be3937f93a35c80.xyz, _RotationRotor3D5ebbfc4f35c24df29be3937f93a35c80), position5ebbfc4f35c24df29be3937f93a35c80.w);
 int result_Transform4DEnabled5ebbfc4f35c24df29be3937f93a35c80 = _Transform4DEnabled5ebbfc4f35c24df29be3937f93a35c80 > 0;
@@ -365,19 +401,47 @@ position5ebbfc4f35c24df29be3937f93a35c80 = Rotate4D(position5ebbfc4f35c24df29be3
 
 float distance5ebbfc4f35c24df29be3937f93a35c80 = _RenderDistance;
 
-distance5ebbfc4f35c24df29be3937f93a35c80 = SDF_Cube_05845aac9d55425c8e1f8d191d017e1e(position5ebbfc4f35c24df29be3937f93a35c80, _Dimensions5ebbfc4f35c24df29be3937f93a35c80) * _Scale5ebbfc4f35c24df29be3937f93a35c80;
+distance5ebbfc4f35c24df29be3937f93a35c80 = SDF_Sphere_5a5c930dec9347e2970ec043d92e6116(position5ebbfc4f35c24df29be3937f93a35c80, _Radius5ebbfc4f35c24df29be3937f93a35c80) * _Scale5ebbfc4f35c24df29be3937f93a35c80;
 
 distance5ebbfc4f35c24df29be3937f93a35c80 /= _MarchingStepAmount5ebbfc4f35c24df29be3937f93a35c80;
 distance5ebbfc4f35c24df29be3937f93a35c80 = (distance5ebbfc4f35c24df29be3937f93a35c80 * (_IsActive5ebbfc4f35c24df29be3937f93a35c80)) + (_RenderDistance * !(_IsActive5ebbfc4f35c24df29be3937f93a35c80));
 
-int resultdistance5ebbfc4f35c24df29be3937f93a35c80 = distance5ebbfc4f35c24df29be3937f93a35c80 < resultDistance;
-resultDistance = (distance5ebbfc4f35c24df29be3937f93a35c80 * resultdistance5ebbfc4f35c24df29be3937f93a35c80) + (resultDistance * !resultdistance5ebbfc4f35c24df29be3937f93a35c80);
-resultColour   = (_Colour5ebbfc4f35c24df29be3937f93a35c80 * resultdistance5ebbfc4f35c24df29be3937f93a35c80) + (resultColour * !resultdistance5ebbfc4f35c24df29be3937f93a35c80);
+float distIf_2cb87403f8a770f498cd13e892053fd8 = distance21d601d9bc9b4a358952d64fd5bdb481;
+float4 colIf_a94b63d435f704a4b964a7700ca65428 = colour21d601d9bc9b4a358952d64fd5bdb481;
+float distanceElse_a8dc3fe3e32f827428a963a52d64fa87 = distance21d601d9bc9b4a358952d64fd5bdb481;
+float4 colElse_dc5261e63a98ec94e98505a427946888 = colour21d601d9bc9b4a358952d64fd5bdb481;
+Oper_Cut_e668285f5b654bfab03360efeb593db7(distIf_2cb87403f8a770f498cd13e892053fd8, colIf_a94b63d435f704a4b964a7700ca65428, distance5ebbfc4f35c24df29be3937f93a35c80, _Colour5ebbfc4f35c24df29be3937f93a35c80);
+int else_result_2f783f5ce8e24f94cafe6e56ab73fc12 = distance5ebbfc4f35c24df29be3937f93a35c80 < distance21d601d9bc9b4a358952d64fd5bdb481;
+distanceElse_a8dc3fe3e32f827428a963a52d64fa87 = (distance5ebbfc4f35c24df29be3937f93a35c80 * else_result_2f783f5ce8e24f94cafe6e56ab73fc12) + (distanceElse_a8dc3fe3e32f827428a963a52d64fa87 * !else_result_2f783f5ce8e24f94cafe6e56ab73fc12);
+colElse_dc5261e63a98ec94e98505a427946888   = (_Colour5ebbfc4f35c24df29be3937f93a35c80 * else_result_2f783f5ce8e24f94cafe6e56ab73fc12) + (colElse_dc5261e63a98ec94e98505a427946888 * !else_result_2f783f5ce8e24f94cafe6e56ab73fc12);
+int if_result_e4e7e9f126a4d384fbbc524228fd4ef2 = _IsActive21d601d9bc9b4a358952d64fd5bdb481 > 0;
+distance21d601d9bc9b4a358952d64fd5bdb481 = (distIf_2cb87403f8a770f498cd13e892053fd8 * if_result_e4e7e9f126a4d384fbbc524228fd4ef2) + (distanceElse_a8dc3fe3e32f827428a963a52d64fa87 * !if_result_e4e7e9f126a4d384fbbc524228fd4ef2);
+colour21d601d9bc9b4a358952d64fd5bdb481   = (colIf_a94b63d435f704a4b964a7700ca65428 * if_result_e4e7e9f126a4d384fbbc524228fd4ef2) + (colElse_dc5261e63a98ec94e98505a427946888 * !if_result_e4e7e9f126a4d384fbbc524228fd4ef2);
+
+
+// Operation End 21d601d9bc9b4a358952d64fd5bdb481
+int resultdistance21d601d9bc9b4a358952d64fd5bdb481 = distance21d601d9bc9b4a358952d64fd5bdb481 < resultDistance;
+resultDistance = (distance21d601d9bc9b4a358952d64fd5bdb481 * resultdistance21d601d9bc9b4a358952d64fd5bdb481) + (resultDistance * !resultdistance21d601d9bc9b4a358952d64fd5bdb481);
+resultColour   = (colour21d601d9bc9b4a358952d64fd5bdb481 * resultdistance21d601d9bc9b4a358952d64fd5bdb481) + (resultColour * !resultdistance21d601d9bc9b4a358952d64fd5bdb481);
 
 
 
 
       return CreateRaymarchMapResult(resultDistance, resultColour);
+    }
+
+    float AmbientOcclusion(float3 pos, float3 normal)
+    {
+      float ao = 0.0;
+
+      UNITY_LOOP
+      for (int i = 1; i <= _AOIterations; i++)
+      {
+        float dist = _AOStepSize * i;
+        ao += max(0.0, (dist - RaymarchMap(pos + normal * dist).Distance) / dist);
+      }
+
+      return (1.0 - ao * _AOIntensity);
     }
 
     float4 GetLight(float3 pos, float3 normal)
@@ -387,7 +451,8 @@ resultColour   = (_Colour5ebbfc4f35c24df29be3937f93a35c80 * resultdistance5ebbfc
       light += GetDirectionalLight(pos, normal, float4(1, 0.9568627, 0.8392157, 1), float3(0.5337918, -0.6015774, 0.594282), 1);
 
 
-      return light;
+      float ao = AmbientOcclusion(pos, normal);
+      return light * ao;
     }
 
     float3 GetObjectNormal(float3 pos)

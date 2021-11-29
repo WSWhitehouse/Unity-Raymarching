@@ -1,13 +1,13 @@
 # Raymarching
 Render procedual 3D & 4D objects through Signed Distance Fields (SDFs) using the Raymarching rendering technique in Unity's Universal Render Pipeline (URP).
 
-See the [[GettingStarted]] page for more information on getting set up in Untiy.
+See the [[GettingStarted]] page for more information on getting set up in Untiy. These docs are designed to be read using Obsidian - see [[README#Software]] below.
 
 # Software
 ##### Unity Engine
-Minimum version: [2021.2.0](https://unity3d.com/unity/whats-new/2021.2.0) or above (although other versions are untested)
+Minimum version: [2021.2.0](https://unity3d.com/unity/whats-new/2021.2.0) or above (other versions are untested)
 
-Requires the Universal Render Pipeline (version: 12.1.1 or above) package
+Requires the Universal Render Pipeline package - version: 12.0.0 or above. Any links to external Unity documentation will link to that version of the docs.
 
 ##### Obsidian
 This is used to read the docs, it is not a requirement. Download available on their website: https://obsidian.md/ 

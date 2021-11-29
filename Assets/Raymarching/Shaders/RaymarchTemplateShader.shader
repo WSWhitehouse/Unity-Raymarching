@@ -36,7 +36,10 @@ Shader "Raymarch/RaymarchTemplateShader"
 
     // LIGHTING SETTINGS START //
     static const float4 _AmbientColour = float4(0.2117, 0.2274, 0.2588, 1);
-    static const float _ColourMultiplier = 1;
+    static const float _ColourMultiplier = 1.0;
+    static const float _AOStepSize = 1.0;
+    static const float _AOIntensity = 1.0;
+    static const int _AOIterations = 1;
     // LIGHTING SETTINGS END //
 
     // Camera Settings
@@ -106,13 +109,28 @@ Shader "Raymarch/RaymarchTemplateShader"
       return CreateRaymarchMapResult(resultDistance, resultColour);
     }
 
+    float AmbientOcclusion(float3 pos, float3 normal)
+    {
+      float ao = 0.0;
+
+      UNITY_LOOP
+      for (int i = 1; i <= _AOIterations; i++)
+      {
+        float dist = _AOStepSize * i;
+        ao += max(0.0, (dist - RaymarchMap(pos + normal * dist).Distance) / dist);
+      }
+
+      return (1.0 - ao * _AOIntensity);
+    }
+
     float4 GetLight(float3 pos, float3 normal)
     {
       float4 light = float4(0, 0, 0, 1);
 
       // RAYMARCH CALC LIGHT //
 
-      return light;
+      float ao = AmbientOcclusion(pos, normal);
+      return light * ao;
     }
 
     float3 GetObjectNormal(float3 pos)

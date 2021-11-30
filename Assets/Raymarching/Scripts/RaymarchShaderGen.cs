@@ -476,13 +476,10 @@ public static class RaymarchShaderGen
   {
     StringBuilder result = new StringBuilder();
     result.AppendLine("// Raymarch Settings");
-    result.AppendLine(
-      $"static const float _RenderDistance = {raymarchSettings.renderDistance.ToString(CultureInfo.InvariantCulture)};");
-    result.AppendLine(
-      $"static const float _HitResolution = {raymarchSettings.hitResolution.ToString(CultureInfo.InvariantCulture)};");
-    result.AppendLine(
-      $"static const float _Relaxation = {raymarchSettings.relaxation.ToString(CultureInfo.InvariantCulture)};");
-    result.AppendLine($"static const int _MaxIterations = {raymarchSettings.maxIterations.ToString()};");
+    result.AppendLine($"#define _RenderDistance {raymarchSettings.renderDistance.ToString(CultureInfo.InvariantCulture)}");
+    result.AppendLine($"#define _HitResolution {raymarchSettings.hitResolution.ToString(CultureInfo.InvariantCulture)}");
+    result.AppendLine($"#define _Relaxation {raymarchSettings.relaxation.ToString(CultureInfo.InvariantCulture)}");
+    result.AppendLine($"#define _MaxIterations {raymarchSettings.maxIterations.ToString()}");
 
     return result.ToString();
   }
@@ -491,20 +488,20 @@ public static class RaymarchShaderGen
   {
     StringBuilder result = new StringBuilder();
     result.AppendLine("// Lighting Settings");
-    result.AppendLine($"static const float4 _AmbientColour = {Util.ToShaderVector(lightingSettings.ambientColour)};");
-    result.AppendLine($"static const float _ColourMultiplier = {lightingSettings.colourMultiplier.ToString(CultureInfo.InvariantCulture)};");
+    result.AppendLine($"#define _AmbientColour {Util.ToShaderVector(lightingSettings.ambientColour)}");
+    result.AppendLine($"#define _ColourMultiplier {lightingSettings.colourMultiplier.ToString(CultureInfo.InvariantCulture)}");
     
     if (lightingSettings.aoEnabled)
     {
-      result.AppendLine($"static const float _AOStepSize = {lightingSettings.aoStepSize.ToString(CultureInfo.InvariantCulture)};");
-      result.AppendLine($"static const float _AOIntensity = {lightingSettings.aoIntensity.ToString(CultureInfo.InvariantCulture)};");
-      result.AppendLine($"static const int _AOIterations = {lightingSettings.aoIterations.ToString()};");
+      result.AppendLine($"#define _AOStepSize {lightingSettings.aoStepSize.ToString(CultureInfo.InvariantCulture)}");
+      result.AppendLine($"#define _AOIntensity {lightingSettings.aoIntensity.ToString(CultureInfo.InvariantCulture)}");
+      result.AppendLine($"#define _AOIterations {lightingSettings.aoIterations.ToString()}");
     }
     else
     {
-      result.AppendLine($"static const float _AOStepSize = 0.0;");
-      result.AppendLine($"static const float _AOIntensity = 0.0;");
-      result.AppendLine($"static const int _AOIterations = 0;");
+      result.AppendLine($"#define _AOStepSize 0.0");
+      result.AppendLine($"#define _AOIntensity 0.0");
+      result.AppendLine($"#define _AOIterations 0");
     }
     return result.ToString();
   }

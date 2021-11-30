@@ -4,17 +4,19 @@
 //    Changes to this file may cause incorrect behavior and will be 
 //    lost if the code is regenerated.
 //
-//    Time Generated: 11/29/2021 20:03:47
+//    Time Generated: 11/30/2021 15:59:36
 //---------------------------------------------------------------------
 
 Shader "Raymarch/RayMarching_RaymarchShader"
 {
   Properties
   {
-    _MainTex ("Texture", 2D) = "white" {}
+    // NOTE(WSWhitehouse): if you see red, run and hide
+    _MainTex ("Texture", 2D) = "red" {}
   }
   SubShader
   {
+    Tags { "RenderPipeline" = "UniversalPipeline" }
     Cull Off ZWrite Off ZTest Always
 
     HLSLINCLUDE
@@ -38,18 +40,18 @@ Shader "Raymarch/RayMarching_RaymarchShader"
 
 
     // Raymarch Settings
-static const float _RenderDistance = 100;
-static const float _HitResolution = 0.001;
-static const float _Relaxation = 1.2;
-static const int _MaxIterations = 164;
+#define _RenderDistance 100
+#define _HitResolution 0.001
+#define _Relaxation 1.2
+#define _MaxIterations 164
 
 
     // Lighting Settings
-static const float4 _AmbientColour = float4(0.2117, 0.2274, 0.2588, 1);
-static const float _ColourMultiplier = 2;
-static const float _AOStepSize = 0.2;
-static const float _AOIntensity = 0.25;
-static const int _AOIterations = 3;
+#define _AmbientColour float4(0.2117, 0.2274, 0.2588, 1)
+#define _ColourMultiplier 2
+#define _AOStepSize 0.2
+#define _AOIntensity 0.25
+#define _AOIterations 3
 
 
     // Camera Settings
@@ -301,17 +303,17 @@ distancef041e9cb2fa4455d853ef9789ba6c70d = SDF_Cube_05845aac9d55425c8e1f8d191d01
 distancef041e9cb2fa4455d853ef9789ba6c70d /= _MarchingStepAmountf041e9cb2fa4455d853ef9789ba6c70d;
 distancef041e9cb2fa4455d853ef9789ba6c70d = (distancef041e9cb2fa4455d853ef9789ba6c70d * (_IsActivef041e9cb2fa4455d853ef9789ba6c70d)) + (_RenderDistance * !(_IsActivef041e9cb2fa4455d853ef9789ba6c70d));
 
-float distIf_aa5fea1ee61f02e418fb4a1072d5dc09 = distance10fc656da492424e9757568d34136d0e;
-float4 colIf_9e13e6f08c306ad4ea3866d8f2d5e76c = colour10fc656da492424e9757568d34136d0e;
-float distanceElse_418c2790d035b564f80fac9591615e87 = distance10fc656da492424e9757568d34136d0e;
-float4 colElse_fc5c2383e3501734a894800943e5ec74 = colour10fc656da492424e9757568d34136d0e;
-Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_aa5fea1ee61f02e418fb4a1072d5dc09, colIf_9e13e6f08c306ad4ea3866d8f2d5e76c, distancef041e9cb2fa4455d853ef9789ba6c70d, _Colourf041e9cb2fa4455d853ef9789ba6c70d, _Smooth10fc656da492424e9757568d34136d0e);
-int else_result_41a21968cbce3764fbdf9b08ed03c8e4 = distancef041e9cb2fa4455d853ef9789ba6c70d < distance10fc656da492424e9757568d34136d0e;
-distanceElse_418c2790d035b564f80fac9591615e87 = (distancef041e9cb2fa4455d853ef9789ba6c70d * else_result_41a21968cbce3764fbdf9b08ed03c8e4) + (distanceElse_418c2790d035b564f80fac9591615e87 * !else_result_41a21968cbce3764fbdf9b08ed03c8e4);
-colElse_fc5c2383e3501734a894800943e5ec74   = (_Colourf041e9cb2fa4455d853ef9789ba6c70d * else_result_41a21968cbce3764fbdf9b08ed03c8e4) + (colElse_fc5c2383e3501734a894800943e5ec74 * !else_result_41a21968cbce3764fbdf9b08ed03c8e4);
-int if_result_661b38a6456dcbf4792c91db4ea8f4ec = _IsActive10fc656da492424e9757568d34136d0e > 0;
-distance10fc656da492424e9757568d34136d0e = (distIf_aa5fea1ee61f02e418fb4a1072d5dc09 * if_result_661b38a6456dcbf4792c91db4ea8f4ec) + (distanceElse_418c2790d035b564f80fac9591615e87 * !if_result_661b38a6456dcbf4792c91db4ea8f4ec);
-colour10fc656da492424e9757568d34136d0e   = (colIf_9e13e6f08c306ad4ea3866d8f2d5e76c * if_result_661b38a6456dcbf4792c91db4ea8f4ec) + (colElse_fc5c2383e3501734a894800943e5ec74 * !if_result_661b38a6456dcbf4792c91db4ea8f4ec);
+float distIf_019b22b99e87fcb41927e0a5979ee787 = distance10fc656da492424e9757568d34136d0e;
+float4 colIf_b761a64241e108f408c821af85cc6f4d = colour10fc656da492424e9757568d34136d0e;
+float distanceElse_b4a9edfee7eda924f84814795119ec70 = distance10fc656da492424e9757568d34136d0e;
+float4 colElse_7c6ee9683a91a974fb015992f9f90bf4 = colour10fc656da492424e9757568d34136d0e;
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_019b22b99e87fcb41927e0a5979ee787, colIf_b761a64241e108f408c821af85cc6f4d, distancef041e9cb2fa4455d853ef9789ba6c70d, _Colourf041e9cb2fa4455d853ef9789ba6c70d, _Smooth10fc656da492424e9757568d34136d0e);
+int else_result_6bae100972fd944458eb0b6f9f440339 = distancef041e9cb2fa4455d853ef9789ba6c70d < distance10fc656da492424e9757568d34136d0e;
+distanceElse_b4a9edfee7eda924f84814795119ec70 = (distancef041e9cb2fa4455d853ef9789ba6c70d * else_result_6bae100972fd944458eb0b6f9f440339) + (distanceElse_b4a9edfee7eda924f84814795119ec70 * !else_result_6bae100972fd944458eb0b6f9f440339);
+colElse_7c6ee9683a91a974fb015992f9f90bf4   = (_Colourf041e9cb2fa4455d853ef9789ba6c70d * else_result_6bae100972fd944458eb0b6f9f440339) + (colElse_7c6ee9683a91a974fb015992f9f90bf4 * !else_result_6bae100972fd944458eb0b6f9f440339);
+int if_result_bfcee0fecaf81eb41a3dc594c1ad50a7 = _IsActive10fc656da492424e9757568d34136d0e > 0;
+distance10fc656da492424e9757568d34136d0e = (distIf_019b22b99e87fcb41927e0a5979ee787 * if_result_bfcee0fecaf81eb41a3dc594c1ad50a7) + (distanceElse_b4a9edfee7eda924f84814795119ec70 * !if_result_bfcee0fecaf81eb41a3dc594c1ad50a7);
+colour10fc656da492424e9757568d34136d0e   = (colIf_b761a64241e108f408c821af85cc6f4d * if_result_bfcee0fecaf81eb41a3dc594c1ad50a7) + (colElse_7c6ee9683a91a974fb015992f9f90bf4 * !if_result_bfcee0fecaf81eb41a3dc594c1ad50a7);
 
 
 float4 positiond30d7187114b45b68aabda807c282bc1 = (rayPos4D - _Positiond30d7187114b45b68aabda807c282bc1) / _Scaled30d7187114b45b68aabda807c282bc1;
@@ -327,17 +329,17 @@ distanced30d7187114b45b68aabda807c282bc1 = SDF_Cube_05845aac9d55425c8e1f8d191d01
 distanced30d7187114b45b68aabda807c282bc1 /= _MarchingStepAmountd30d7187114b45b68aabda807c282bc1;
 distanced30d7187114b45b68aabda807c282bc1 = (distanced30d7187114b45b68aabda807c282bc1 * (_IsActived30d7187114b45b68aabda807c282bc1)) + (_RenderDistance * !(_IsActived30d7187114b45b68aabda807c282bc1));
 
-float distIf_f4fd31693f5c7ff4491c0bb312a4605f = distance10fc656da492424e9757568d34136d0e;
-float4 colIf_799b002c3a3ea8d45bfc12c53545fcd4 = colour10fc656da492424e9757568d34136d0e;
-float distanceElse_30dae2283a5f1c44780bf9a7de53a4dc = distance10fc656da492424e9757568d34136d0e;
-float4 colElse_43e33f10fb84d9548ab6cf2e639d27c1 = colour10fc656da492424e9757568d34136d0e;
-Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_f4fd31693f5c7ff4491c0bb312a4605f, colIf_799b002c3a3ea8d45bfc12c53545fcd4, distanced30d7187114b45b68aabda807c282bc1, _Colourd30d7187114b45b68aabda807c282bc1, _Smooth10fc656da492424e9757568d34136d0e);
-int else_result_2855eb760fc893a4cb331e8106a8ffb7 = distanced30d7187114b45b68aabda807c282bc1 < distance10fc656da492424e9757568d34136d0e;
-distanceElse_30dae2283a5f1c44780bf9a7de53a4dc = (distanced30d7187114b45b68aabda807c282bc1 * else_result_2855eb760fc893a4cb331e8106a8ffb7) + (distanceElse_30dae2283a5f1c44780bf9a7de53a4dc * !else_result_2855eb760fc893a4cb331e8106a8ffb7);
-colElse_43e33f10fb84d9548ab6cf2e639d27c1   = (_Colourd30d7187114b45b68aabda807c282bc1 * else_result_2855eb760fc893a4cb331e8106a8ffb7) + (colElse_43e33f10fb84d9548ab6cf2e639d27c1 * !else_result_2855eb760fc893a4cb331e8106a8ffb7);
-int if_result_17088c8d89e38764da37ddad5fa26856 = _IsActive10fc656da492424e9757568d34136d0e > 0;
-distance10fc656da492424e9757568d34136d0e = (distIf_f4fd31693f5c7ff4491c0bb312a4605f * if_result_17088c8d89e38764da37ddad5fa26856) + (distanceElse_30dae2283a5f1c44780bf9a7de53a4dc * !if_result_17088c8d89e38764da37ddad5fa26856);
-colour10fc656da492424e9757568d34136d0e   = (colIf_799b002c3a3ea8d45bfc12c53545fcd4 * if_result_17088c8d89e38764da37ddad5fa26856) + (colElse_43e33f10fb84d9548ab6cf2e639d27c1 * !if_result_17088c8d89e38764da37ddad5fa26856);
+float distIf_28ef120f2fd01f5488a58eb89fb7a181 = distance10fc656da492424e9757568d34136d0e;
+float4 colIf_5bafdf14c4f97724787b4b9a04655ca7 = colour10fc656da492424e9757568d34136d0e;
+float distanceElse_1ef52e8b983a99847ba83020237ea337 = distance10fc656da492424e9757568d34136d0e;
+float4 colElse_b4eedd2249c9e154a803643e5b48fdf7 = colour10fc656da492424e9757568d34136d0e;
+Oper_Blend_c08c11b6fc54453486aa264d1da70b87(distIf_28ef120f2fd01f5488a58eb89fb7a181, colIf_5bafdf14c4f97724787b4b9a04655ca7, distanced30d7187114b45b68aabda807c282bc1, _Colourd30d7187114b45b68aabda807c282bc1, _Smooth10fc656da492424e9757568d34136d0e);
+int else_result_fd6ff9f24955c02469b0300f6d94b5c1 = distanced30d7187114b45b68aabda807c282bc1 < distance10fc656da492424e9757568d34136d0e;
+distanceElse_1ef52e8b983a99847ba83020237ea337 = (distanced30d7187114b45b68aabda807c282bc1 * else_result_fd6ff9f24955c02469b0300f6d94b5c1) + (distanceElse_1ef52e8b983a99847ba83020237ea337 * !else_result_fd6ff9f24955c02469b0300f6d94b5c1);
+colElse_b4eedd2249c9e154a803643e5b48fdf7   = (_Colourd30d7187114b45b68aabda807c282bc1 * else_result_fd6ff9f24955c02469b0300f6d94b5c1) + (colElse_b4eedd2249c9e154a803643e5b48fdf7 * !else_result_fd6ff9f24955c02469b0300f6d94b5c1);
+int if_result_b7e0b222521abab47b10cf148d30a64d = _IsActive10fc656da492424e9757568d34136d0e > 0;
+distance10fc656da492424e9757568d34136d0e = (distIf_28ef120f2fd01f5488a58eb89fb7a181 * if_result_b7e0b222521abab47b10cf148d30a64d) + (distanceElse_1ef52e8b983a99847ba83020237ea337 * !if_result_b7e0b222521abab47b10cf148d30a64d);
+colour10fc656da492424e9757568d34136d0e   = (colIf_5bafdf14c4f97724787b4b9a04655ca7 * if_result_b7e0b222521abab47b10cf148d30a64d) + (colElse_b4eedd2249c9e154a803643e5b48fdf7 * !if_result_b7e0b222521abab47b10cf148d30a64d);
 
 
 // Operation End 10fc656da492424e9757568d34136d0e
@@ -417,17 +419,17 @@ distance5ebbfc4f35c24df29be3937f93a35c80 = SDF_Sphere_5a5c930dec9347e2970ec043d9
 distance5ebbfc4f35c24df29be3937f93a35c80 /= _MarchingStepAmount5ebbfc4f35c24df29be3937f93a35c80;
 distance5ebbfc4f35c24df29be3937f93a35c80 = (distance5ebbfc4f35c24df29be3937f93a35c80 * (_IsActive5ebbfc4f35c24df29be3937f93a35c80)) + (_RenderDistance * !(_IsActive5ebbfc4f35c24df29be3937f93a35c80));
 
-float distIf_e13fd83b8ba39be4086822c0fcb6595e = distance21d601d9bc9b4a358952d64fd5bdb481;
-float4 colIf_6f5cb4f44e9fa304dbd66957c3158164 = colour21d601d9bc9b4a358952d64fd5bdb481;
-float distanceElse_d8493a3d7824d2e4e8e7e63414eeafa8 = distance21d601d9bc9b4a358952d64fd5bdb481;
-float4 colElse_1e890e556136779448057e8abdd1361f = colour21d601d9bc9b4a358952d64fd5bdb481;
-Oper_Cut_e668285f5b654bfab03360efeb593db7(distIf_e13fd83b8ba39be4086822c0fcb6595e, colIf_6f5cb4f44e9fa304dbd66957c3158164, distance5ebbfc4f35c24df29be3937f93a35c80, _Colour5ebbfc4f35c24df29be3937f93a35c80);
-int else_result_cfd50f3ec2b68d345b48b08133ae17a6 = distance5ebbfc4f35c24df29be3937f93a35c80 < distance21d601d9bc9b4a358952d64fd5bdb481;
-distanceElse_d8493a3d7824d2e4e8e7e63414eeafa8 = (distance5ebbfc4f35c24df29be3937f93a35c80 * else_result_cfd50f3ec2b68d345b48b08133ae17a6) + (distanceElse_d8493a3d7824d2e4e8e7e63414eeafa8 * !else_result_cfd50f3ec2b68d345b48b08133ae17a6);
-colElse_1e890e556136779448057e8abdd1361f   = (_Colour5ebbfc4f35c24df29be3937f93a35c80 * else_result_cfd50f3ec2b68d345b48b08133ae17a6) + (colElse_1e890e556136779448057e8abdd1361f * !else_result_cfd50f3ec2b68d345b48b08133ae17a6);
-int if_result_b3281eb0c7cc58345b9c7ffb33f2ca23 = _IsActive21d601d9bc9b4a358952d64fd5bdb481 > 0;
-distance21d601d9bc9b4a358952d64fd5bdb481 = (distIf_e13fd83b8ba39be4086822c0fcb6595e * if_result_b3281eb0c7cc58345b9c7ffb33f2ca23) + (distanceElse_d8493a3d7824d2e4e8e7e63414eeafa8 * !if_result_b3281eb0c7cc58345b9c7ffb33f2ca23);
-colour21d601d9bc9b4a358952d64fd5bdb481   = (colIf_6f5cb4f44e9fa304dbd66957c3158164 * if_result_b3281eb0c7cc58345b9c7ffb33f2ca23) + (colElse_1e890e556136779448057e8abdd1361f * !if_result_b3281eb0c7cc58345b9c7ffb33f2ca23);
+float distIf_f72393febd547864b90a3f9542e39cbb = distance21d601d9bc9b4a358952d64fd5bdb481;
+float4 colIf_41a0132691bce004395e014e14c1df4b = colour21d601d9bc9b4a358952d64fd5bdb481;
+float distanceElse_0812fe7b9ea4c554382ff462107adf50 = distance21d601d9bc9b4a358952d64fd5bdb481;
+float4 colElse_a7aab5b0f9b3f8f4c9fa4ee1a7fc3b7c = colour21d601d9bc9b4a358952d64fd5bdb481;
+Oper_Cut_e668285f5b654bfab03360efeb593db7(distIf_f72393febd547864b90a3f9542e39cbb, colIf_41a0132691bce004395e014e14c1df4b, distance5ebbfc4f35c24df29be3937f93a35c80, _Colour5ebbfc4f35c24df29be3937f93a35c80);
+int else_result_814f520f522af7a449d790db08e1e450 = distance5ebbfc4f35c24df29be3937f93a35c80 < distance21d601d9bc9b4a358952d64fd5bdb481;
+distanceElse_0812fe7b9ea4c554382ff462107adf50 = (distance5ebbfc4f35c24df29be3937f93a35c80 * else_result_814f520f522af7a449d790db08e1e450) + (distanceElse_0812fe7b9ea4c554382ff462107adf50 * !else_result_814f520f522af7a449d790db08e1e450);
+colElse_a7aab5b0f9b3f8f4c9fa4ee1a7fc3b7c   = (_Colour5ebbfc4f35c24df29be3937f93a35c80 * else_result_814f520f522af7a449d790db08e1e450) + (colElse_a7aab5b0f9b3f8f4c9fa4ee1a7fc3b7c * !else_result_814f520f522af7a449d790db08e1e450);
+int if_result_c2fa16175e3358b4aad5143d5b2b2191 = _IsActive21d601d9bc9b4a358952d64fd5bdb481 > 0;
+distance21d601d9bc9b4a358952d64fd5bdb481 = (distIf_f72393febd547864b90a3f9542e39cbb * if_result_c2fa16175e3358b4aad5143d5b2b2191) + (distanceElse_0812fe7b9ea4c554382ff462107adf50 * !if_result_c2fa16175e3358b4aad5143d5b2b2191);
+colour21d601d9bc9b4a358952d64fd5bdb481   = (colIf_41a0132691bce004395e014e14c1df4b * if_result_c2fa16175e3358b4aad5143d5b2b2191) + (colElse_a7aab5b0f9b3f8f4c9fa4ee1a7fc3b7c * !if_result_c2fa16175e3358b4aad5143d5b2b2191);
 
 
 // Operation End 21d601d9bc9b4a358952d64fd5bdb481
@@ -597,28 +599,22 @@ resultColour   = (colour21d601d9bc9b4a358952d64fd5bdb481 * resultdistance21d601d
         Varyings o = (Varyings)0;
         UNITY_TRANSFER_INSTANCE_ID(i, o);
         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-        o.vertex = TransformObjectToHClip(i.vertex.xyz);
         o.uv = UnityStereoTransformScreenSpaceTex(i.uv);
+
+        o.vertex = TransformObjectToHClip(i.vertex.xyz);
+
+        // NOTE(WSWhitehouse): If using cmd.DrawMesh uncomment this
+        // o.vertex = float4(i.vertex.xyz, 1.0);
+        // #if UNITY_UV_STARTS_AT_TOP
+        // o.vertex.y *= -1;
+        // #endif
         
         return o;
       }
 
       half4 frag(Varyings i) : SV_Target0
       {
-        UNITY_SETUP_INSTANCE_ID(i);
-        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-
-        #if defined(UNITY_STEREO_INSTANCING_ENABLED)
-        if (SLICE_ARRAY_INDEX == 0)
-        {
-          return half4(1,0,0,1);
-        }
-        else
-        {
-          return half4(0,0,1,1);
-        }
-        #endif
-        
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);        
         
         Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
 

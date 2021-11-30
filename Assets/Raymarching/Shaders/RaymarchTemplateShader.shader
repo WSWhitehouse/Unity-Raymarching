@@ -2,10 +2,12 @@ Shader "Raymarch/RaymarchTemplateShader"
 {
   Properties
   {
-    _MainTex ("Texture", 2D) = "white" {}
+    // NOTE(WSWhitehouse): if you see red, run and hide
+    _MainTex ("Texture", 2D) = "red" {}
   }
   SubShader
   {
+    Tags { "RenderPipeline" = "UniversalPipeline" }
     Cull Off ZWrite Off ZTest Always
 
     HLSLINCLUDE
@@ -28,18 +30,18 @@ Shader "Raymarch/RaymarchTemplateShader"
     // DEBUG SETTINGS //
 
     // RAYMARCH SETTINGS START //
-    static const float _RenderDistance = 100;
-    static const float _HitResolution = 0.001;
-    static const float _Relaxation = 1.2;
-    static const int _MaxIterations = 164;
+    #define _RenderDistance 100
+    #define _HitResolution 0.001
+    #define _Relaxation 1.2
+    #define _MaxIterations 164
     // RAYMARCH SETTINGS END //
 
     // LIGHTING SETTINGS START //
-    static const float4 _AmbientColour = float4(0.2117, 0.2274, 0.2588, 1);
-    static const float _ColourMultiplier = 1.0;
-    static const float _AOStepSize = 1.0;
-    static const float _AOIntensity = 1.0;
-    static const int _AOIterations = 1;
+    #define _AmbientColour float4(0.2117, 0.2274, 0.2588, 1)
+    #define _ColourMultiplier 1.0
+    #define _AOStepSize 1.0
+    #define _AOIntensity 1.0
+    #define _AOIterations 1
     // LIGHTING SETTINGS END //
 
     // Camera Settings
@@ -264,28 +266,22 @@ Shader "Raymarch/RaymarchTemplateShader"
         Varyings o = (Varyings)0;
         UNITY_TRANSFER_INSTANCE_ID(i, o);
         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-        o.vertex = TransformObjectToHClip(i.vertex.xyz);
         o.uv = UnityStereoTransformScreenSpaceTex(i.uv);
+
+        o.vertex = TransformObjectToHClip(i.vertex.xyz);
+
+        // NOTE(WSWhitehouse): If using cmd.DrawMesh uncomment this
+        // o.vertex = float4(i.vertex.xyz, 1.0);
+        // #if UNITY_UV_STARTS_AT_TOP
+        // o.vertex.y *= -1;
+        // #endif
         
         return o;
       }
 
       half4 frag(Varyings i) : SV_Target0
       {
-        UNITY_SETUP_INSTANCE_ID(i);
-        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-
-        #if defined(UNITY_STEREO_INSTANCING_ENABLED)
-        if (SLICE_ARRAY_INDEX == 0)
-        {
-          return half4(1,0,0,1);
-        }
-        else
-        {
-          return half4(0,0,1,1);
-        }
-        #endif
-        
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);        
         
         Ray ray = CreateCameraRay(i.uv, _CamToWorldMatrix);
 
